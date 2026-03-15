@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Программа{% endblock %}
+
+{% block content %}
+<h2>Программа конференции</h2>
+
+{% for day in program %}
+<section class="program-day">
+   <h3>{{ day.date }}</h3>
+
+   {% for talk in day.talks %}
+   <div class="talk-card">
+      <div class="talk-time">{{ talk.time }}</div>
+         <div class="talk-info">
+            <strong>{{ talk.title }}</strong>
+            <p>{{ talk.author }}</p>
+         </div>
+      </div>
+   {% endfor %}
+
+</section>
+{% endfor %}
+{% endblock %}

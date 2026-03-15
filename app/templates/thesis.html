@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Подача тезисов{% endblock %}
+
+{% block content %}
+<h2>Подача тезисов доклада</h2>
+
+{% if not application %}
+<div class="alert alert-warning">
+   ⚠️ Для подачи тезисов необходимо сначала подать заявку на участие.
+   <a href="{{ url_for('conference.show_application', conf_id=conference.id) }}">Подать заявку</a>
+</div>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data" class="form-thesis">
+   {# <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> #}
+   <input type="hidden" name="conference_id" value="{{ conference.id }}">
+
+   <fieldset>
+      <legend>Автор</legend>
+
+      <div class="form-row">
+         <div class="form-group">
+            <label>Фамилия *</label>
+            <input type="text" name="surname" required>
+         </div>
+
+         <div class="form-group">
+            <label>Имя *</label>
+            <input type="text" name="name" required>
+         </div>
+
+         <div class="form-group">
+            <label>Отчество</label>
+            <input type="text" name="patronymic">
+         </div>
+      </div>
+
+      <div class="form-row">
+         <div class="form-group">
+            <label>Email *</label>
+            <input type="email" name="email" required placeholder="ivan@example.com">
+         </div>
+      </div>
+   </fieldset>
+
+   <fieldset>
+      <legend>Доклад</legend>
+
+      <div class="form-group">
+         <label>Название доклада *</label>
+         <input type="text" name="title" required>
+      </div>
+
+      <div class="form-group">
+         <label>Файл тезисов (PDF/DOC/DOCX) *</label>
+         <input type="file" name="file" accept=".pdf" required>
+      </div>
+   </fieldset>
+
+   <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Отправить тезисы</button>
+      <a href="/admin" class="btn btn-secondary">Отмена</a>
+   </div>
+</form>
+<script src="{{ url_for('static', filename='js/application.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/application.css') }}">
+{% endblock %}

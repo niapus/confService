@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Заявка на участие{% endblock %}
+
+{% block content %}
+<h2>Заявка на участие в конференции</h2>
+
+<form method="post" enctype="multipart/form-data" class="form-application" id="application-form">
+   {# <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> #}
+   <input type="hidden" name="conference_id" value="{{ conference.id }}">
+
+   <fieldset>
+      <legend>Персональные данные</legend>
+
+      <div class="form-row">
+         <div class="form-group">
+            <label>Фамилия *</label>
+            <input type="text" name="surname" required placeholder="Иванов">
+         </div>
+
+         <div class="form-group">
+            <label>Имя *</label>
+            <input type="text" name="name" required placeholder="Иван">
+         </div>
+
+         <div class="form-group">
+            <label>Отчество</label>
+            <input type="text" name="patronymic" placeholder="Иванович">
+         </div>
+      </div>
+
+      <div class="form-row">
+         <div class="form-group">
+            <label>Пол *</label>
+            <div class="radio-group">
+               <label class="radio-label">
+                  <input type="radio" name="gender" value="male" required> Мужской
+               </label>
+               <label class="radio-label">
+                  <input type="radio" name="gender" value="female" required> Женский
+               </label>
+            </div>
+         </div>
+
+         <div class="form-group">
+            <label>Дата рождения *</label>
+            <input type="date" name="birth_date" required >
+         </div>
+      </div>
+   </fieldset>
+
+   <fieldset>
+      <legend>Образование и статус</legend>
+
+      <div class="form-row">
+         <div class="form-group">
+            <label>Ученая степень *</label>
+            <select name="degree" required>
+               <option value="none">Нет</option>
+               <option value="candidate">Кандидат наук</option>
+               <option value="doctor">Доктор наук</option>
+            </select>
+         </div>
+
+         <div class="form-group">
+            <label>Статус *</label>
+            <div class="checkbox-group">
+               <label class="checkbox-label">
+                  <input type="checkbox" name="status" value="worker" id="status-worker"> Работник
+               </label>
+               <label class="checkbox-label">
+                  <input type="checkbox" name="status" value="student" id="status-student"> Студент
+               </label>
+            </div>
+         </div>
+      </div>
+
+      <div class="form-group" id="work-place-group" style="display: none;">
+         <label>Место работы *</label>
+     
+         <div class="sub-field">
+            <input type="text" name="work_name" required>
+         </div>
+     
+         <div class="sub-field">
+            <label>Институт:</label>
+            <input type="text" name="work_place">
+         </div>
+     
+         <div class="sub-field">
+            <label>Должность *:</label>
+            <input type="text" name="work_position" required>
+         </div>
+      </div>
+  
+      <div class="form-group" id="study-place-group" style="display: none;">
+         <label>Место учебы *</label>
+     
+         <div class="sub-field">
+            <input type="text" name="study_name">
+         </div>
+     
+         <div class="sub-field">
+            <label>Институт:</label>
+            <input type="text" name="study_place">
+         </div>
+     
+         <div class="sub-field">
+            <label>Уровень обучения *:</label>
+            <select name="study_level" required>
+               <option value="none">Бакалавриат</option>
+               <option value="education_spec">Специалитет</option>
+               <option value="education_mag">Магистратура</option>
+               <option value="education_asp">Аспирантура</option>
+            </select>
+         </div>
+      </div>
+   </fieldset>
+
+   <fieldset>
+      <legend>Участие</legend>
+
+      <div class="form-group">
+         <div class="radio-group">
+            <label class="radio-label">
+               <input type="radio" name="participation_format" value="offline" required> Очно
+            </label>
+            <label class="radio-label">
+               <input type="radio" name="participation_format" value="online" required> Онлайн
+            </label>
+         </div>
+      </div>
+   </fieldset>
+
+   <fieldset>
+      <legend>Контакты</legend>
+      <div class="form-group">
+         <label>Email *</label>
+         <input type="email" name="email" required placeholder="ivan@example.com">
+      </div>
+   </fieldset>
+
+   <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Отправить заявку</button>
+      {# <a href="{{ url_for('conference_detail', id=conference.id) }}" class="btn btn-secondary">Отмена</a> #}
+   </div>
+</form>
+
+<script src="{{ url_for('static', filename='js/application.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/application.css') }}">
+{% endblock %}

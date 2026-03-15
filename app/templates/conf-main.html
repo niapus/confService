@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Главная | {{ conference.title }}{% endblock %}
+
+{% block content %}
+
+<h2>{{ conference.tagline }}</h2>
+<section class="deadlines">
+   <h3>Важные даты</h3>
+   <ul>
+      <li>Окончание регистрации: {{ conference.registration_deadline }}</li>
+      <li>Окончание приема тезисов: {{ conference.submission_deadline }}</li>
+      <li>Публикация программы: {{ conference.program_date }}</li>
+   </ul>
+</section>
+<p>{{ conference.description_html|safe }}</p>
+<section class="conf-application">
+   <div class="buttons">
+      <a class="btn"
+         href="{{ url_for('conference.show_application', conf_id=conference.id) }}">
+         Подать заявку
+      </a>
+      <a class="btn btn-last"
+         href="{{ url_for('conference.show_upload_thesis', conf_id=conference.id) }}">
+         Загрузить тезисы
+      </a>
+   </div>
+</section>
+{% endblock %}

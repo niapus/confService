@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+<link rel="stylesheet" href="тест.css">
+<script src="editor.js"></script>
+{% block title %}Редактор страницы{% endblock %}
+
+{% block content %}
+
+<h2>Редактор страницы конференции</h2>
+
+<div class="editor-wrapper">
+
+    <!-- Переключение режима -->
+    <div class="mode-switch">
+        <button type="button" onclick="setMode('text')">Обычный текст</button>
+        <button type="button" onclick="setMode('markdown')">Markdown</button>
+    </div>
+
+    <!-- Панель инструментов -->
+    <div class="toolbar">
+        <button type="button" onclick="wrapSelection('**')"><b>B</b></button>
+        <button type="button" onclick="wrapSelection('*')"><i>I</i></button>
+        <button type="button" onclick="wrapSelection('__')"><u>U</u></button>
+
+        <button type="button" onclick="makeList('• ')">• Список</button>
+        <button type="button" onclick="makeList('1. ')">1. Список</button>
+
+        <button type="button" onclick="indent()">→ Отступ</button>
+        <button type="button" onclick="outdent()">← Отступ</button>
+    </div>
+
+    <form method="post" action="/save-page">
+        <textarea id="editor" name="content" rows="18"></textarea>
+
+        <input type="hidden" name="mode" id="mode" value="text">
+
+        <button type="submit" class="btn-primary">Сохранить</button>
+    </form>
+
+</div>
+
+{% endblock %}
