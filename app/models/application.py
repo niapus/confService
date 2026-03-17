@@ -1,5 +1,3 @@
-from sqlalchemy.orm import relationship
-
 from app.core.database import Base
 from sqlalchemy import Column, Integer, String, ForeignKey, Enum, Date, Boolean
 
@@ -27,7 +25,7 @@ class GenderEnum(enum.Enum):
 class Application(Base):
     __tablename__ = "applications"
     id = Column(Integer, primary_key=True)
-    conference_id = Column(Integer, ForeignKey("conferences.id", ondelete="CASCADE"), nullable=False)
+    conference_id = Column(Integer, ForeignKey("conferences.id", ondelete="CASCADE"), nullable=False, index=True)
 
     surname = Column(String(100), nullable=False)
     name = Column(String(100), nullable=False)
@@ -50,4 +48,8 @@ class Application(Base):
     study_level = Column(Enum(EducationEnum))
 
     participation_format = Column(Enum(ParticipationFormatEnum), nullable=False)
-    email = Column(String(100), nullable=False)
+    email = Column(String(100), nullable=False, index=True)
+
+    @property
+    def status_value(self):
+        return self.status.value

@@ -1,4 +1,4 @@
-from app.core.database import Session
+from app.mapper.application_mapper import ApplicationMapper
 from app.repository.application_repository import ApplicationRepository
 from app.service import ConferenceService
 from app.models.application import *
@@ -8,6 +8,7 @@ from datetime import datetime
 class ApplicationService:
     def __init__(self, conference_service: ConferenceService):
         self.__repo = ApplicationRepository()
+        self.__mapper = ApplicationMapper()
         self.__conf_service = conference_service
 
     def create_application(self, conf_id, application_data, session):
@@ -28,6 +29,15 @@ class ApplicationService:
     def get_application_by_conf_email(self, conf_id, email, session):
         application = self.__repo.find_application_by_conf_email(conf_id, email, session)
         return application
+
+    def get_full_applications(self, conf_id, session):
+        conf = self.__conf_service.get_conference_by_id(conf_id, session)
+
+        query_result = self.__repo.get_full_applications(conf_id, session)
+
+        data = self.__mapper.from_query_result_to_full_application_dto(query_result)
+
+        return data
 
     def __convert_application_data(self, data):
         result = dict(data)

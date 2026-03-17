@@ -1,6 +1,5 @@
 from app.core.database import Session
 from flask import Blueprint, render_template, request, redirect
-import logging
 
 from app.service import conference_service, thesis_service
 
