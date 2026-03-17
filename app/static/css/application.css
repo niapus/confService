@@ -1,14 +1,3 @@
-.sub-field {
-   display: flex;
-   align-items: center;
-   margin-bottom: 10px;
-}
-
-.sub-field label {
-   width: 30%;
-   margin-bottom: 0;
-}
-
 .form-application, .form-thesis {
    max-width: 800px;
    margin: 20px auto;
@@ -178,4 +167,3 @@ legend {
       gap: 10px;
    }
 }
-
