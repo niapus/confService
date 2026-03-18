@@ -1,4 +1,4 @@
-from flask import jsonify, Blueprint
+from flask import jsonify, Blueprint, render_template
 
 from app.core.database import Session
 from app.service import application_service
@@ -17,3 +17,7 @@ def get_full_applications(conf_id):
         'conference_id': conf_id,
         'applications': applications_data
     })
+
+@api_bp.get('/conferences/<int:conf_id>/page')
+def conference_page(conf_id):
+    return render_template('conference_set.html', conf_id=conf_id)
