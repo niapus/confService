@@ -25,24 +25,18 @@ function ApplicationRow({ application }) {
          )
       ),
       React.createElement('td', null, application.email),
-      React.createElement('td', null, application.age),
+      React.createElement('td', null, `${application.age} лет`),
       React.createElement(
          'td',
          null,
-         application.is_student && React.createElement(
-            'div',
-            null,
-            React.createElement('div', null, application.study_name),
-            React.createElement('div', { className: 'small' }, application.study_place),
-            React.createElement('div', { className: 'small' }, application.study_level)
-         ),
-         application.is_worker && React.createElement(
-            'div',
-            null,
-            React.createElement('div', null, application.work_name),
-            React.createElement('div', { className: 'small' }, application.work_place),
-            React.createElement('div', { className: 'small' }, application.work_position)
-         )
+         application.degree === 'none' ? 'Нет' : 
+         application.degree === 'candidate' ? 'Кандидат наук' : 'Доктор наук'
+      ),
+      React.createElement(
+         'td',
+         null,
+         application.is_student ? 'Студент' : 
+         application.is_worker ? 'Работник' : '—'
       ),
       React.createElement(
          'td',
@@ -66,8 +60,7 @@ function ApplicationRow({ application }) {
                application.thesis.status === 'pending' && '⏳ На рассмотрении',
                application.thesis.status === 'accepted' && '✅ Принят',
                application.thesis.status === 'rejected' && '❌ Отклонён'
-            ),
-            React.createElement('div', { className: 'small' }, application.thesis.file_name)
+            )
          ) : React.createElement('span', { className: 'status-badge no-thesis' }, '📄 Нет тезисов')
       ),
       React.createElement(
@@ -80,14 +73,6 @@ function ApplicationRow({ application }) {
                onClick: () => window.location.href = `/admin/applications/${application.id}`
             },
             '👁️'
-         ),
-         application.thesis && React.createElement(
-            'button',
-            {
-               className: 'action-btn',
-               onClick: () => window.location.href = `/admin/theses/${application.thesis.id}/download`
-            },
-            '📥'
          )
       )
    );
@@ -234,7 +219,8 @@ function ConferenceApp() {
                   React.createElement('th', null, 'ФИО'),
                   React.createElement('th', null, 'Email'),
                   React.createElement('th', null, 'Возраст'),
-                  React.createElement('th', null, 'Место'),
+                  React.createElement('th', null, 'Степень'),
+                  React.createElement('th', null, 'Статус'),
                   React.createElement('th', null, 'Формат'),
                   React.createElement('th', null, 'Доклад'),
                   React.createElement('th', null, 'Действия')
@@ -245,19 +231,6 @@ function ConferenceApp() {
                null,
                filteredApplications.map(app => React.createElement(ApplicationRow, { key: app.id, application: app }))
             )
-         )
-      ),
-
-      React.createElement(
-         'div',
-         { className: 'export-section' },
-         React.createElement(
-            'button',
-            {
-               className: 'btn btn-primary',
-               onClick: () => window.location.href = `/admin/api/conferences/${conferenceId}/export`
-            },
-            '📊 Экспорт в Excel'
          )
       )
    );
