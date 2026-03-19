@@ -10,7 +10,7 @@ body {
     padding: 20px;
 }
 
-.loading, .error {
+.error {
     text-align: center;
     padding: 40px;
     font-size: 18px;
