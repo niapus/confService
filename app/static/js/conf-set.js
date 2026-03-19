@@ -70,7 +70,7 @@ function ApplicationRow({ application }) {
             'button',
             {
                className: 'action-btn',
-               onClick: () => window.location.href = `/admin/applications/${application.id}`
+               onClick: () => window.location.href = `/admin/applications/${application.thesis.id}`
             },
             '👁️'
          )
@@ -137,7 +137,6 @@ function ConferenceApp() {
       online: applications.filter(app => app.participation_format === 'online').length
    };
 
-   if (loading) return React.createElement('div', { className: 'loading' }, 'Загрузка...');
    if (error) return React.createElement('div', { className: 'error' }, `Ошибка: ${error}`);
 
    return React.createElement(
