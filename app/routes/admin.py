@@ -44,3 +44,7 @@ def delete_conference(conf_id):
     thesis_service.delete_conference_theses_files(conf_id, g.db)
     conference_service.delete_conference(conf_id, g.db)
     return redirect('/admin')
+
+@admin_bp.get('/conferences/<int:conf_id>')
+def conference_page(conf_id):
+    return render_template('conference_set.html', conf_id=conf_id)

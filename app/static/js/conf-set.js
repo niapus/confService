@@ -35,8 +35,8 @@ function ApplicationRow({ application }) {
       React.createElement(
          'td',
          null,
-         application.is_student ? 'Студент' : 
-         application.is_worker ? 'Работник' : '—'
+         application.is_worker ? 'Работник' :
+         application.is_student ? 'Студент' : '—'
       ),
       React.createElement(
          'td',
@@ -80,7 +80,7 @@ function ApplicationRow({ application }) {
 
 function ConferenceApp() {
    const pathParts = window.location.pathname.split('/');
-   const conferenceId = pathParts[pathParts.length - 2];
+   const conferenceId = pathParts[pathParts.length - 1];
    const [applications, setApplications] = useState([]);
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState(null);
