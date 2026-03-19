@@ -2,3 +2,5 @@
 /uploads
 conference_service.db
 .gitignore
+__pycache__/
+*.pyc
