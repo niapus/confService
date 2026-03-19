@@ -1,4 +1,6 @@
-from flask import Blueprint, render_template, request, redirect, g
+import os.path
+
+from flask import Blueprint, render_template, request, redirect, g, send_from_directory
 
 from app.service import conference_service, thesis_service
 
@@ -48,3 +50,10 @@ def delete_conference(conf_id):
 @admin_bp.get('/conferences/<int:conf_id>')
 def conference_page(conf_id):
     return render_template('conference_set.html', conf_id=conf_id)
+
+@admin_bp.get(f'/applications/<int:thesis_id>')
+def view_thesis_file(thesis_id):
+    thesis = thesis_service.get_thesis_by_id(thesis_id, g.db)
+    dir_path = os.path.dirname(thesis.file_path)
+    file_name = os.path.basename(thesis.file_path)
+    return send_from_directory(dir_path, file_name, as_attachment=False)
