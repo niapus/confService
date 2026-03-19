@@ -1,10 +1,10 @@
 from app.models.conference import Conference
+from sqlalchemy import exists
 
 class ConferenceRepository:
 
     def save(self, conference, session):
         session.add(conference)
-        session.commit()
         return conference
 
     def get_by_id(self, conference_id, session):
@@ -17,4 +17,8 @@ class ConferenceRepository:
 
     def delete(self, conference, session):
         session.delete(conference)
-        session.commit()
+
+    def exists(self, conf_id, session):
+        return session.query(
+            exists().where(Conference.id == conf_id)
+        ).scalar()

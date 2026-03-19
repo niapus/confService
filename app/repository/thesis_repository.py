@@ -4,7 +4,6 @@ class ThesisRepository:
 
     def save(self, thesis, session):
         session.add(thesis)
-        session.commit()
         return thesis
 
     def get_all(self, session):

@@ -1,3 +1,4 @@
+from app.exceptions.exceptions import ConferenceNotFoundException, ValidationException
 from app.repository.conference_repository import ConferenceRepository
 from datetime import date, datetime
 from app.models.conference import Conference
@@ -11,15 +12,23 @@ class ConferenceService:
 
     def get_conference_by_id(self, conf_id, session):
         conference = self.__repo.get_by_id(conf_id, session)
+
+        if not conference:
+            raise ConferenceNotFoundException(conf_id)
         return conference
 
+    def exists(self, conf_id, session):
+        existing = self.__repo.exists(conf_id, session)
+
+        if not existing:
+            raise ConferenceNotFoundException(conf_id)
+        return existing
+
     def create_conference(self, conf_data, session):
-        converted_data = self.__convert_data(conf_data)
+        valid_data = self.__convert_and_validate_data(conf_data)
 
         new_conference = Conference()
-
-        for field, value in converted_data.items():
-            setattr(new_conference, field, value)
+        self.__fill_conference(new_conference, valid_data)
 
         description_html = self.__md_service.to_html(new_conference.description_md)
         new_conference.description_html = description_html
@@ -27,15 +36,13 @@ class ConferenceService:
         return self.__repo.save(new_conference, session)
 
     def update_conference(self, conf_id, update_conf_data, session):
-        conference = self.__repo.get_by_id(conf_id, session)
+        conference = self.get_conference_by_id(conf_id, session)
 
-        if conference:
-            conf_data = self.__convert_data(update_conf_data)
+        valid_data = self.__convert_and_validate_data(update_conf_data)
 
-            for field, value in conf_data.items():
-                setattr(conference, field, value)
+        self.__fill_conference(conference, valid_data)
 
-            self.__repo.save(conference, session)
+        self.__repo.save(conference, session)
 
     def get_all_conferences(self, session):
         conferences = self.__repo.get_all(session)
@@ -45,15 +52,71 @@ class ConferenceService:
         conference = self.__repo.get_by_id(conf_id, session)
         self.__repo.delete(conference, session)
 
+    def __fill_conference(self, conference, data):
+        for field, value in data.items():
+            if hasattr(conference, field):
+                setattr(conference, field, value)
 
     def __convert_data(self, conf_data):
-        conf_data.update({
+        return {
+            "title": conf_data.get("title"),
+            "description_md": conf_data.get("description_md"),
+            "tagline": conf_data.get("tagline"),
             "performance_time": int(conf_data.get("performance_time")),
             "registration_deadline": datetime.strptime(conf_data.get("registration_deadline"), '%Y-%m-%d').date(),
             "submission_deadline": datetime.strptime(conf_data.get("submission_deadline"), '%Y-%m-%d').date(),
             "program_date": datetime.strptime(conf_data.get("program_date"), '%Y-%m-%d').date(),
             "start_date": datetime.fromisoformat(conf_data.get("start_date").replace('T', ' ')),
             "end_date": datetime.fromisoformat(conf_data.get("end_date").replace('T', ' '))
-        })
+        }
 
-        return conf_data
+    def __convert_and_validate_data(self, data):
+        cleaned_data = self.__clean_data(data)
+        self.__check_empty_fields(cleaned_data)
+
+        converted_data = self.__convert_data(cleaned_data)
+        self.__validate_dates(converted_data)
+        return converted_data
+
+    def __validate_dates(self, data):
+        start = data.get('start_date')
+        end = data.get('end_date')
+        reg_deadline = data.get('registration_deadline')
+        thesis_deadline = data.get('submission_deadline')
+        program_date = data.get('program_date')
+
+        if start < datetime.now():
+            raise ValidationException(f"Начало конференции ({start}) не может быть в прошлом")
+
+        if end < start:
+            raise ValidationException(f"Конец конференции ({end}) не может быть до её начала ({start})")
+
+        if reg_deadline > start.date() or reg_deadline > end.date():
+            raise ValidationException(f"Дедлайн регистрации ({reg_deadline}) должен быть раньше\
+                                        даты начала конференции ({start})")
+
+        if thesis_deadline > start.date():
+            raise ValidationException(f"Дедлайн для подачи тезисов ({thesis_deadline}) \
+                                        должен быть до начала конференции ({start})")
+
+        if program_date > start.date() or program_date < thesis_deadline:
+            raise ValidationException(f"Программа должна публиковаться до начала конференции, \
+                                        но после дедлайна на подачу тезисов")
+
+    def __check_empty_fields(self, cleaned_data):
+        str_values = ['title', 'description_md']
+        for key in str_values:
+            if not cleaned_data.get(key):
+                raise ValidationException(f"Обязательное поле {key} не может быть пустым")
+
+
+    def __clean_data(self, data):
+        cleaned = {}
+
+        for key, value in data.items():
+            if isinstance(value, str):
+                cleaned[key] = value.strip()
+            else:
+                cleaned[key] = value
+
+        return cleaned

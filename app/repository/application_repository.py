@@ -8,7 +8,6 @@ class ApplicationRepository:
 
     def save(self, application, session):
         session.add(application)
-        session.commit()
         return application
 
     def find_application_by_conf_email(self, conf_id, email, session: Session):
