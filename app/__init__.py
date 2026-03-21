@@ -3,6 +3,7 @@ from app.core.database import Base, engine, Session
 from app.routes.api import api_bp
 from app.routes.conference import conference_bp
 from app.routes.admin import admin_bp
+from app.routes.main import main_bp
 from app.config import Config
 
 def create_app():
@@ -28,5 +29,6 @@ def create_app():
     app.register_blueprint(conference_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(api_bp)
+    app.register_blueprint(main_bp)
 
     return app

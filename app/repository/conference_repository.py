@@ -1,5 +1,6 @@
 from app.models.conference import Conference
 from sqlalchemy import exists
+from datetime import date
 
 class ConferenceRepository:
 
@@ -22,3 +23,13 @@ class ConferenceRepository:
         return session.query(
             exists().where(Conference.id == conf_id)
         ).scalar()
+
+    def get_future_conferences(self, session):
+        return session.query(Conference).filter(
+            Conference.end_date > date.today() #TODO конференции идут сейчас
+        ).order_by(Conference.end_date).all()
+
+    def get_past_conferences(self, session):
+        return session.query(Conference).filter(
+            Conference.end_date < date.today()
+        ).order_by(Conference.end_date.desc()).all()

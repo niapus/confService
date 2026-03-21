@@ -1,0 +1,644 @@
+{% extends "base.html" %}
+
+{% block title %}Главная | Конференции{% endblock %}
+
+{% block content %}
+
+<div class="conferences-timeline">
+    <h1>Конференции</h1>
+    
+    <!-- Будущие конференции -->
+    {% if conferences_future %}
+    <section class="timeline-section">
+        <h2>Предстоящие конференции</h2>
+        <div class="timeline">
+            {% set current_date = None %}
+            {% for conference in conferences_future %}
+                {% if conference.start_date != current_date %}
+                    {% if current_date is not none %}
+                        </div> <!-- Закрываем предыдущую группу -->
+                    {% endif %}
+                    <div class="timeline-date-group">
+                        <div class="timeline-date">
+                            <div class="date-day">{{ conference.start_date.strftime('%d') }}</div>
+                            <div class="date-month">{{ conference.start_date.strftime('%b') }}</div>
+                            <div class="date-year">{{ conference.start_date.strftime('%Y') }}</div>
+                            <div class="date-weekday">{{ conference.start_date.strftime('%A') }}</div>
+                            {% set event_count = conferences_future|selectattr('start_date', 'equalto', conference.start_date)|list|length %}
+                            {% if event_count > 1 %}
+                                <div class="event-count">{{ event_count }} конференции</div>
+                            {% endif %}
+                        </div>
+                        <div class="timeline-events">
+                            {% set current_date = conference.start_date %}
+                {% endif %}
+                
+                <div class="timeline-item future" data-start-date="{{ conference.start_date.isoformat() }}">
+                    <div class="timeline-content">
+                        <div class="card-badge">
+                            {% set days_until = (conference.start_date - now).days %}
+                            {% if days_until <= 7 %}
+                                🔥 Через {{ days_until }} дней
+                            {% elif days_until <= 30 %}
+                                ⏰ Через {{ days_until }} дней
+                            {% else %}
+                                📅 Скоро
+                            {% endif %}
+                        </div>
+                        <h3>{{ conference.title }}</h3>
+                        <p class="tagline">{{ conference.tagline }}</p>
+                        
+                        <div class="conference-dates">
+                            <div class="date-range">
+                                <span class="date-icon">📅</span>
+                                <span class="date-text">
+                                    {{ conference.start_date.strftime('%d.%m.%Y') }} - 
+                                    {{ conference.end_date.strftime('%d.%m.%Y') }}
+                                </span>
+                                <span class="duration">
+                                    ({{ (conference.end_date - conference.start_date).days + 1 }} дня/дней)
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="deadlines">
+                            <div class="deadline-item {% if conference.registration_deadline < now.date() %}expired{% endif %}">
+                                <span class="deadline-label">📝 Регистрация до:</span>
+                                <span class="deadline-value">{{ conference.registration_deadline.strftime('%d.%m.%Y') }}</span>
+                                {% if conference.registration_deadline < now.date() %}
+                                    <span class="expired-badge">(Закрыта)</span>
+                                {% endif %}
+                            </div>
+                            <div class="deadline-item {% if conference.submission_deadline < now.date() %}expired{% endif %}">
+                                <span class="deadline-label">📄 Тезисы до:</span>
+                                <span class="deadline-value">{{ conference.submission_deadline.strftime('%d.%m.%Y') }}</span>
+                                {% if conference.submission_deadline < now.date() %}
+                                    <span class="expired-badge">(Прием завершен)</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="card-actions">
+                            {% if conference.registration_deadline >= now.date() %}
+                                <a href="{{ url_for('conference.show_application', conf_id=conference.id) }}" 
+                                   class="btn btn-primary">
+                                    ✍️ Подать заявку
+                                </a>
+                            {% else %}
+                                <button class="btn btn-disabled" disabled>
+                                    🔒 Регистрация закрыта
+                                </button>
+                            {% endif %}
+                            
+                            {% if conference.submission_deadline >= now.date() %}
+                                <a href="{{ url_for('conference.show_upload_thesis', conf_id=conference.id) }}" 
+                                   class="btn btn-secondary">
+                                    📎 Загрузить тезисы
+                                </a>
+                            {% else %}
+                                <button class="btn btn-disabled" disabled>
+                                    🔒 Прием тезисов завершен
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                {% if loop.last and current_date is not none %}
+                    </div> <!-- Закрываем последнюю группу -->
+                {% endif %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+    
+    <!-- Прошедшие конференции -->
+    {% if conferences_past %}
+    <section class="timeline-section">
+        <h2>Прошедшие конференции</h2>
+        <div class="timeline">
+            {% set current_date = None %}
+            {% for conference in conferences_past %}
+                {% if conference.start_date != current_date %}
+                    {% if current_date is not none %}
+                        </div> <!-- Закрываем предыдущую группу -->
+                    {% endif %}
+                    <div class="timeline-date-group">
+                        <div class="timeline-date past-date">
+                            <div class="date-day">{{ conference.start_date.strftime('%d') }}</div>
+                            <div class="date-month">{{ conference.start_date.strftime('%b') }}</div>
+                            <div class="date-year">{{ conference.start_date.strftime('%Y') }}</div>
+                            <div class="date-weekday">{{ conference.start_date.strftime('%A') }}</div>
+                            {% set event_count = conferences_past|selectattr('start_date', 'equalto', conference.start_date)|list|length %}
+                            {% if event_count > 1 %}
+                                <div class="event-count">{{ event_count }} конференции</div>
+                            {% endif %}
+                        </div>
+                        <div class="timeline-events">
+                            {% set current_date = conference.start_date %}
+                {% endif %}
+                
+                <div class="timeline-item past">
+                    <div class="timeline-content">
+                        <div class="card-badge past">
+                            {% set days_ago = (now - conference.end_date).days %}
+                            {% if days_ago <= 30 %}
+                                📊 Завершена недавно
+                            {% else %}
+                                ✅ Завершена
+                            {% endif %}
+                        </div>
+                        <h3>{{ conference.title }}</h3>
+                        <p class="tagline">{{ conference.tagline }}</p>
+                        
+                        <div class="conference-dates">
+                            <div class="date-range">
+                                <span class="date-icon">📅</span>
+                                <span class="date-text">
+                                    {{ conference.start_date.strftime('%d.%m.%Y') }} - 
+                                    {{ conference.end_date.strftime('%d.%m.%Y') }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="stats-mini">
+                            <div class="stat-item">
+                                <span class="stat-label">👥 Участников:</span>
+                                <span class="stat-value">{{ conference.participants_count or '—' }}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">📄 Докладов:</span>
+                                <span class="stat-value">{{ conference.papers_count or '—' }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card-actions">
+                            <a href="{{ url_for('conference.show_program', conf_id=conference.id) }}" 
+                               class="btn btn-outline">
+                                📖 Программа
+                            </a>
+                            <a href="{{ url_for('conference.show_proceedings', conf_id=conference.id) }}"
+                               class="btn btn-outline">
+                                📚 Сборник тезисов
+                            </a>
+                            <a href="{{ url_for('conference.show_photos', conf_id=conference.id) }}" 
+                               class="btn btn-outline">
+                                📸 Фотоотчет
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if loop.last and current_date is not none %}
+                    </div> <!-- Закрываем последнюю группу -->
+                {% endif %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+    
+    <!-- Если нет конференций -->
+    {% if not conferences_future and not conferences_past %}
+    <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <h3>Нет конференций</h3>
+        <p>На данный момент нет запланированных конференций</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.conferences-timeline {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.conferences-timeline h1 {
+    text-align: center;
+    margin-bottom: 50px;
+    color: #2c3e50;
+    font-size: 2.5em;
+}
+
+.timeline-section {
+    margin-bottom: 60px;
+}
+
+.timeline-section h2 {
+    margin-bottom: 30px;
+    padding-left: 120px;
+    color: #555;
+    font-size: 1.8em;
+    position: relative;
+}
+
+.timeline-section h2:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100px;
+    height: 2px;
+    background: linear-gradient(90deg, #3498db, transparent);
+}
+
+.timeline {
+    position: relative;
+}
+
+.timeline:before {
+    content: '';
+    position: absolute;
+    left: 85px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, #3498db, #bdc3c7);
+}
+
+.timeline-date-group {
+    display: flex;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.timeline-date {
+    width: 140px;
+    flex-shrink: 0;
+    text-align: center;
+    background: white;
+    border-radius: 12px;
+    padding: 15px 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    z-index: 2;
+    position: relative;
+    margin-right: 20px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.timeline-date:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.timeline-date.past-date {
+    opacity: 0.8;
+}
+
+.timeline-date .date-day {
+    font-size: 36px;
+    font-weight: bold;
+    color: #3498db;
+    line-height: 1;
+}
+
+.past-date .date-day {
+    color: #95a5a6;
+}
+
+.timeline-date .date-month {
+    font-size: 16px;
+    color: #7f8c8d;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+.timeline-date .date-year {
+    font-size: 14px;
+    color: #95a5a6;
+    margin-top: 3px;
+}
+
+.timeline-date .date-weekday {
+    font-size: 12px;
+    color: #bdc3c7;
+    margin-top: 5px;
+    text-transform: uppercase;
+}
+
+.timeline-date .event-count {
+    margin-top: 8px;
+    padding: 4px 8px;
+    background: #f0f0f0;
+    border-radius: 20px;
+    font-size: 11px;
+    color: #7f8c8d;
+    font-weight: bold;
+}
+
+.timeline-events {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.timeline-item {
+    position: relative;
+    animation: slideIn 0.5s ease forwards;
+    opacity: 0;
+    transform: translateX(-20px);
+}
+
+@keyframes slideIn {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.timeline-content {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
+
+.timeline-content:hover {
+    transform: translateX(5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.card-badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    background: linear-gradient(135deg, #4caf50, #45a049);
+    color: white;
+}
+
+.card-badge.past {
+    background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+}
+
+.timeline-content h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.5em;
+    color: #2c3e50;
+    padding-right: 120px;
+}
+
+.tagline {
+    color: #7f8c8d;
+    font-style: italic;
+    margin-bottom: 15px;
+    font-size: 0.95em;
+}
+
+.conference-dates {
+    margin-bottom: 15px;
+    padding: 10px;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 8px;
+}
+
+.date-range {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.date-icon {
+    font-size: 1.2em;
+}
+
+.date-text {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.duration {
+    font-size: 0.85em;
+    color: #7f8c8d;
+}
+
+.deadlines {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.deadline-item {
+    margin-bottom: 8px;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.deadline-item.expired {
+    opacity: 0.7;
+}
+
+.deadline-label {
+    font-weight: 600;
+    color: #555;
+}
+
+.deadline-value {
+    color: #2c3e50;
+}
+
+.expired-badge {
+    font-size: 0.8em;
+    color: #e74c3c;
+    font-weight: 500;
+}
+
+.stats-mini {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.stat-label {
+    font-size: 0.85em;
+    color: #7f8c8d;
+}
+
+.stat-value {
+    font-weight: bold;
+    color: #3498db;
+}
+
+.card-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.9em;
+    transition: all 0.3s ease;
+    text-align: center;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: #3498db;
+    color: white;
+    border: 1px solid #3498db;
+}
+
+.btn-primary:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: #95a5a6;
+    color: white;
+    border: 1px solid #95a5a6;
+}
+
+.btn-secondary:hover {
+    background: #7f8c8d;
+    transform: translateY(-2px);
+}
+
+.btn-outline {
+    background: transparent;
+    color: #3498db;
+    border: 1px solid #3498db;
+}
+
+.btn-outline:hover {
+    background: #3498db;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn-disabled {
+    background: #e0e0e0;
+    color: #999;
+    border: 1px solid #ccc;
+    cursor: not-allowed;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+}
+
+.empty-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.empty-state p {
+    color: #7f8c8d;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .timeline:before {
+        left: 20px;
+    }
+    
+    .timeline-section h2 {
+        padding-left: 20px;
+    }
+    
+    .timeline-section h2:before {
+        display: none;
+    }
+    
+    .timeline-date-group {
+        flex-direction: column;
+        margin-bottom: 30px;
+    }
+    
+    .timeline-date {
+        width: auto;
+        margin-right: 0;
+        margin-bottom: 15px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 20px;
+        width: fit-content;
+    }
+    
+    .timeline-date .date-day,
+    .timeline-date .date-month,
+    .timeline-date .date-year,
+    .timeline-date .date-weekday {
+        display: inline;
+        font-size: 14px;
+        margin: 0 5px;
+    }
+    
+    .timeline-date .date-day {
+        font-size: 18px;
+    }
+    
+    .timeline-date .event-count {
+        display: inline-block;
+        margin: 0 0 0 10px;
+    }
+    
+    .timeline-content h3 {
+        padding-right: 100px;
+        font-size: 1.2em;
+    }
+    
+    .card-actions {
+        flex-direction: column;
+    }
+    
+    .btn {
+        text-align: center;
+    }
+}
+</style>
+
+<script>
+// Добавляем индексы для анимации
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.timeline-item').forEach((item, index) => {
+        item.style.animationDelay = `${index * 0.05}s`;
+    });
+    
+    // Добавляем подсказки при наведении на дату
+    document.querySelectorAll('.timeline-date').forEach(date => {
+        const eventCount = date.querySelector('.event-count');
+        if (eventCount) {
+            date.setAttribute('title', `В этот день проводится ${eventCount.textContent}`);
+        }
+    });
+});
+</script>
+
+{% endblock %}

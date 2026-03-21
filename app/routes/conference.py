@@ -1,4 +1,3 @@
-from app.core.database import Session
 from flask import Blueprint, render_template, abort, request, g, redirect
 from app.service import conference_service, application_service, thesis_service
 
@@ -24,7 +23,7 @@ def show_upload_thesis(conf_id):
 @conference_bp.post(f'/<int:conf_id>/application')
 def create_application(conf_id):
     application_data = request.form
-    application = application_service.create_application(conf_id, application_data, g.db)
+    application_service.create_application(conf_id, application_data, g.db)
     return redirect(f'/conference/{conf_id}')
 
 @conference_bp.post(f'<int:conf_id>/thesis')

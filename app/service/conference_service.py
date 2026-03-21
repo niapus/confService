@@ -25,8 +25,8 @@ class ConferenceService:
         return existing
 
     def create_conference(self, conf_data, session):
-        valid_data = self.__convert_and_validate_data(conf_data)
-
+        # valid_data = self.__convert_and_validate_data(conf_data)
+        valid_data = self.__convert_data(conf_data)
         new_conference = Conference()
         self.__fill_conference(new_conference, valid_data)
 
@@ -51,6 +51,12 @@ class ConferenceService:
     def delete_conference(self, conf_id, session):
         conference = self.__repo.get_by_id(conf_id, session)
         self.__repo.delete(conference, session)
+
+    def get_future_conferences(self, session):
+        return self.__repo.get_future_conferences(session)
+
+    def get_past_conferences(self, session):
+        return self.__repo.get_past_conferences(session)
 
     def __fill_conference(self, conference, data):
         for field, value in data.items():

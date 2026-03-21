@@ -1,6 +1,5 @@
 from flask import jsonify, Blueprint, g
 
-from app.core.database import Session
 from app.service import application_service
 
 api_bp = Blueprint("api", __name__, url_prefix="/admin/api")
