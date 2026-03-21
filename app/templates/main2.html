@@ -6,8 +6,7 @@
 
 <div class="conferences-timeline">
     <h1>Конференции</h1>
-    
-    <!-- Будущие конференции -->
+
     {% if conferences_future %}
     <section class="timeline-section">
         <h2>Предстоящие конференции</h2>
@@ -16,7 +15,7 @@
             {% for conference in conferences_future %}
                 {% if conference.start_date != current_date %}
                     {% if current_date is not none %}
-                        </div> <!-- Закрываем предыдущую группу -->
+                        </div>
                     {% endif %}
                     <div class="timeline-date-group">
                         <div class="timeline-date">
@@ -105,14 +104,13 @@
                 </div>
                 
                 {% if loop.last and current_date is not none %}
-                    </div> <!-- Закрываем последнюю группу -->
+                    </div>
                 {% endif %}
             {% endfor %}
         </div>
     </section>
     {% endif %}
-    
-    <!-- Прошедшие конференции -->
+
     {% if conferences_past %}
     <section class="timeline-section">
         <h2>Прошедшие конференции</h2>
@@ -121,7 +119,7 @@
             {% for conference in conferences_past %}
                 {% if conference.start_date != current_date %}
                     {% if current_date is not none %}
-                        </div> <!-- Закрываем предыдущую группу -->
+                        </div>
                     {% endif %}
                     <div class="timeline-date-group">
                         <div class="timeline-date past-date">
@@ -190,14 +188,13 @@
                 </div>
                 
                 {% if loop.last and current_date is not none %}
-                    </div> <!-- Закрываем последнюю группу -->
+                    </div>
                 {% endif %}
             {% endfor %}
         </div>
     </section>
     {% endif %}
-    
-    <!-- Если нет конференций -->
+
     {% if not conferences_future and not conferences_past %}
     <div class="empty-state">
         <div class="empty-icon">📭</div>
@@ -625,13 +622,11 @@
 </style>
 
 <script>
-// Добавляем индексы для анимации
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.timeline-item').forEach((item, index) => {
         item.style.animationDelay = `${index * 0.05}s`;
     });
-    
-    // Добавляем подсказки при наведении на дату
+
     document.querySelectorAll('.timeline-date').forEach(date => {
         const eventCount = date.querySelector('.event-count');
         if (eventCount) {
