@@ -40,12 +40,12 @@ class ApplicationService:
         application = self.__repo.find_application_by_conf_email(conf_id, email, session)
         return application
 
-    def get_full_applications(self, conf_id, session):
+    def get_full_applications_for_conference(self, conf_id, session):
         conference = self.__conf_service.exists(conf_id, session)
 
-        query_result = self.__repo.get_full_applications(conf_id, session)
+        applications = self.__repo.get_full_applications_for_conference(conf_id, session)
 
-        data = self.__mapper.from_query_result_to_full_application_dto(query_result)
+        data = self.__mapper.applications_to_full_applications_dto(applications)
 
         return data
 

@@ -1,7 +1,6 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from app.models.application import Application
 from app.models.thesis import Thesis
-from sqlalchemy import and_
 
 
 class ApplicationRepository:
@@ -14,18 +13,11 @@ class ApplicationRepository:
         application = session.query(Application).filter_by(conference_id=conf_id, email=email).first()
         return application
 
-    def get_full_applications(self, conf_id, session: Session):
-        results = session.query(
-            Application,
-            Thesis
-        ).outerjoin(
-            Thesis,
-            and_(  # объединяем условия через and_
-                Thesis.conference_id == Application.conference_id,
-                Thesis.email == Application.email
-            )
+    def get_full_applications_for_conference(self, conf_id, session: Session):
+        result = session.query(Application).options(
+            joinedload(Application.theses)
         ).filter(
             Application.conference_id == conf_id
         ).all()
 
-        return results
+        return result

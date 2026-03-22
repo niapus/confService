@@ -1,8 +1,6 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, Date
+from sqlalchemy import Column, Integer, String, Text, Date
 from sqlalchemy.orm import relationship
 from app.core.database import Base
-from app.models.application import Application
-from app.models.thesis import Thesis
 
 
 class Conference(Base):
@@ -18,24 +16,14 @@ class Conference(Base):
 
     registration_deadline = Column(Date, nullable=False)
     submission_deadline = Column(Date, nullable=False)
-    program_date = Column(Date, nullable=False)
 
-    start_date = Column(DateTime, nullable=False)
-    end_date = Column(DateTime, nullable=False)
+    start_date = Column(Date, nullable=False)
+    end_date = Column(Date, nullable=False)
 
     performance_time = Column(Integer, nullable=False)
 
     applications = relationship(
         "Application",
-        backref="conference",
+        back_populates="conference",
         cascade="all, delete-orphan"
     )
-
-    theses = relationship(
-        "Thesis",
-        backref="conference",
-        cascade="all, delete-orphan"
-    )
-
-    def __repr__(self):
-        return f"Конференция: id {self.id} название {self.title}"

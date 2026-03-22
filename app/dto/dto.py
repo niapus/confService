@@ -5,15 +5,17 @@ from datetime import date
 
 @dataclass
 class ThesisInApplicationDTO:
-    id: Optional[int]
-    title: Optional[str]
-    file_path: Optional[str]
-    file_name: Optional[str]
-    status: Optional[str]
+    id: int
+    authors: str
+    title: str
+    file_path: str
+    file_name: str
+    status: str
 
     def to_dict(self):
         return {
             'id': self.id,
+            'authors': self.authors,
             'title': self.title,
             'file_path': self.file_path,
             'file_name': self.file_name,
@@ -46,7 +48,7 @@ class FullApplicationDTO:
     participation_format: str
     email: str
 
-    thesis_info: Optional[ThesisInApplicationDTO]
+    theses: list[ThesisInApplicationDTO]
 
     def to_dict(self):
         result = {
@@ -65,13 +67,9 @@ class FullApplicationDTO:
             'study_place': self.study_place,
             'study_level': self.study_level,
             'participation_format': self.participation_format,
-            'email': self.email
+            'email': self.email,
+            'theses': [t.to_dict() for t in self.theses]
         }
-
-        if self.thesis_info:
-            result['thesis'] = self.thesis_info.to_dict()
-        else:
-            result['thesis'] = None
 
         return result
 

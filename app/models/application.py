@@ -1,3 +1,5 @@
+from sqlalchemy.orm import relationship
+
 from app.core.database import Base
 from sqlalchemy import Column, Integer, String, ForeignKey, Enum, Date, Boolean
 
@@ -50,6 +52,13 @@ class Application(Base):
     participation_format = Column(Enum(ParticipationFormatEnum), nullable=False)
     email = Column(String(100), nullable=False, index=True)
 
-    @property
-    def status_value(self):
-        return self.status.value
+    conference = relationship(
+        "Conference",
+        back_populates="applications"
+    )
+
+    theses = relationship(
+        "Thesis",
+        back_populates="application",
+        cascade="all, delete-orphan"
+    )

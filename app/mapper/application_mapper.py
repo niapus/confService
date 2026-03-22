@@ -1,23 +1,10 @@
-from typing import Optional
-
 from app.dto.dto import FullApplicationDTO, ThesisInApplicationDTO
 from app.models.application import Application
 from app.models.thesis import Thesis
 
 
 class ApplicationMapper:
-    def __to_dto(self, application: Application, thesis: Optional[Thesis]) -> FullApplicationDTO:
-        thesis_dto = None
-
-        if thesis:
-            thesis_dto = ThesisInApplicationDTO(
-                id=thesis.id,
-                title=thesis.title,
-                file_path=thesis.file_path,
-                file_name=thesis.file_name,
-                status=thesis.status.value
-            )
-
+    def __to_dto(self, application: Application) -> FullApplicationDTO:
         return FullApplicationDTO(
             id=application.id,
             surname=application.surname,
@@ -36,14 +23,19 @@ class ApplicationMapper:
             study_level=application.study_level.value,
             participation_format=application.participation_format.value,
             email=application.email,
-            thesis_info=thesis_dto
+            theses=[self.__thesis_to_dto(t) for t in application.theses]
         )
 
-    def from_query_result_to_full_application_dto(self, query_result):
-        result = []
+    def __thesis_to_dto(self, thesis: Thesis) -> ThesisInApplicationDTO:
+        return ThesisInApplicationDTO(
+            id=thesis.id,
+            authors=thesis.authors,
+            title=thesis.title,
+            file_path=thesis.file_path,
+            file_name=thesis.file_name,
+            status=thesis.status.value
+        )
 
-        for app, thesis in query_result:
-            dto = self.__to_dto(app, thesis)
-            result.append(dto)
 
-        return result
+    def applications_to_full_applications_dto(self, applications):
+        return [self.__to_dto(app) for app in applications]

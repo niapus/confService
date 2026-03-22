@@ -42,6 +42,9 @@ class ConferenceService:
 
         self.__fill_conference(conference, valid_data)
 
+        description_html = self.__md_service.to_html(conference.description_md)
+        conference.description_html = description_html
+
         self.__repo.save(conference, session)
 
     def get_all_conferences(self, session):
@@ -71,9 +74,8 @@ class ConferenceService:
             "performance_time": int(conf_data.get("performance_time")),
             "registration_deadline": datetime.strptime(conf_data.get("registration_deadline"), '%Y-%m-%d').date(),
             "submission_deadline": datetime.strptime(conf_data.get("submission_deadline"), '%Y-%m-%d').date(),
-            "program_date": datetime.strptime(conf_data.get("program_date"), '%Y-%m-%d').date(),
-            "start_date": datetime.fromisoformat(conf_data.get("start_date").replace('T', ' ')),
-            "end_date": datetime.fromisoformat(conf_data.get("end_date").replace('T', ' '))
+            "start_date": datetime.strptime(conf_data.get("start_date"), '%Y-%m-%d').date(),
+            "end_date": datetime.strptime(conf_data.get("end_date"), '%Y-%m-%d').date()
         }
 
     def __convert_and_validate_data(self, data):
@@ -91,21 +93,21 @@ class ConferenceService:
         thesis_deadline = data.get('submission_deadline')
         program_date = data.get('program_date')
 
-        if start < datetime.now():
+        if start < date.today():
             raise ValidationException(f"Начало конференции ({start}) не может быть в прошлом")
 
         if end < start:
             raise ValidationException(f"Конец конференции ({end}) не может быть до её начала ({start})")
 
-        if reg_deadline > start.date() or reg_deadline > end.date():
+        if reg_deadline > start or reg_deadline > end:
             raise ValidationException(f"Дедлайн регистрации ({reg_deadline}) должен быть раньше\
                                         даты начала конференции ({start})")
 
-        if thesis_deadline > start.date():
+        if thesis_deadline > start:
             raise ValidationException(f"Дедлайн для подачи тезисов ({thesis_deadline}) \
                                         должен быть до начала конференции ({start})")
 
-        if program_date > start.date() or program_date < thesis_deadline:
+        if program_date > start or program_date < thesis_deadline:
             raise ValidationException(f"Программа должна публиковаться до начала конференции, \
                                         но после дедлайна на подачу тезисов")
 
@@ -114,7 +116,6 @@ class ConferenceService:
         for key in str_values:
             if not cleaned_data.get(key):
                 raise ValidationException(f"Обязательное поле {key} не может быть пустым")
-
 
     def __clean_data(self, data):
         cleaned = {}

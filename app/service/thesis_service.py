@@ -27,7 +27,7 @@ class ThesisService:
         if not application:
             raise ApplicationNotFoundException(data.get("email"))
 
-        #TODO проверка уже отправленных тезисов
+        #TODO проверка уже отправленных тезисов с таким названием
         valid_data = self.__validate_data(data)
 
         original_filename, ext = self.__validate_file(file)
@@ -41,11 +41,8 @@ class ThesisService:
         file.save(file_path)
 
         thesis = Thesis(
-            conference_id=conf_id,
-            surname=valid_data.get("surname"),
-            name=valid_data.get("name"),
-            patronymic=valid_data.get("patronymic"),
-            email=valid_data.get("email"),
+            application_id=application.id,
+            authors=valid_data.get("authors"),
             title=valid_data.get("title"),
             file_path=file_path,
             file_name=original_filename,
@@ -88,7 +85,7 @@ class ThesisService:
     def __validate_data(self, data):
         cleaned = self.__clean_data(data)
 
-        str_values = ['name', 'surname', 'email', 'title']
+        str_values = ['authors', 'title']
 
         for key in str_values:
             if not cleaned.get(key):
