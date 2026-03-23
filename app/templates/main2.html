@@ -4,205 +4,175 @@
 
 {% block content %}
 
-<div class="conferences-timeline">
-    <h1>Конференции</h1>
+{% if conferences_future %}
+<section class="timeline-section">
+   <h2>Предстоящие конференции</h2>
+   <div class="timeline">
+      {% set ns = namespace(last_date=None) %}
+      {% for conference in conferences_future %}
+         {% if conference.start_date != ns.last_date %}
+            {% if not loop.first %}
+                  </div>
+               </div>
+            {% endif %}
+            <div class="timeline-date-group">
+               <div class="timeline-date">
+                  <div class="date-day">{{ conference.start_date.strftime('%d') }}</div>
+                  <div class="date-month">{{ conference.start_date.strftime('%b') }}</div>
+                  <div class="date-year">{{ conference.start_date.strftime('%Y') }}</div>
+                  <div class="date-weekday">{{ conference.start_date.strftime('%A') }}</div>
+               </div>
+               <div class="timeline-events">
+            {% set ns.last_date = conference.start_date %}
+         {% endif %}
 
-    {% if conferences_future %}
-    <section class="timeline-section">
-        <h2>Предстоящие конференции</h2>
-        <div class="timeline">
-            {% set current_date = None %}
-            {% for conference in conferences_future %}
-                {% if conference.start_date != current_date %}
-                    {% if current_date is not none %}
-                        </div>
-                    {% endif %}
-                    <div class="timeline-date-group">
-                        <div class="timeline-date">
-                            <div class="date-day">{{ conference.start_date.strftime('%d') }}</div>
-                            <div class="date-month">{{ conference.start_date.strftime('%b') }}</div>
-                            <div class="date-year">{{ conference.start_date.strftime('%Y') }}</div>
-                            <div class="date-weekday">{{ conference.start_date.strftime('%A') }}</div>
-                            {% set event_count = conferences_future|selectattr('start_date', 'equalto', conference.start_date)|list|length %}
-                            {% if event_count > 1 %}
-                                <div class="event-count">{{ event_count }} конференции</div>
-                            {% endif %}
-                        </div>
-                        <div class="timeline-events">
-                            {% set current_date = conference.start_date %}
-                {% endif %}
-                
-                <div class="timeline-item future" data-start-date="{{ conference.start_date.isoformat() }}">
-                    <div class="timeline-content">
-                        <div class="card-badge">
-                            {% set days_until = (conference.start_date - now).days %}
-                            {% if days_until <= 7 %}
-                                🔥 Через {{ days_until }} дней
-                            {% elif days_until <= 30 %}
-                                ⏰ Через {{ days_until }} дней
-                            {% else %}
-                                📅 Скоро
-                            {% endif %}
-                        </div>
-                        <h3>{{ conference.title }}</h3>
-                        <p class="tagline">{{ conference.tagline }}</p>
-                        
-                        <div class="conference-dates">
-                            <div class="date-range">
-                                <span class="date-icon">📅</span>
-                                <span class="date-text">
-                                    {{ conference.start_date.strftime('%d.%m.%Y') }} - 
-                                    {{ conference.end_date.strftime('%d.%m.%Y') }}
-                                </span>
-                                <span class="duration">
-                                    ({{ (conference.end_date - conference.start_date).days + 1 }} дня/дней)
-                                </span>
-                            </div>
-                        </div>
-                        
-                        <div class="deadlines">
-                            <div class="deadline-item {% if conference.registration_deadline < now.date() %}expired{% endif %}">
-                                <span class="deadline-label">📝 Регистрация до:</span>
-                                <span class="deadline-value">{{ conference.registration_deadline.strftime('%d.%m.%Y') }}</span>
-                                {% if conference.registration_deadline < now.date() %}
-                                    <span class="expired-badge">(Закрыта)</span>
-                                {% endif %}
-                            </div>
-                            <div class="deadline-item {% if conference.submission_deadline < now.date() %}expired{% endif %}">
-                                <span class="deadline-label">📄 Тезисы до:</span>
-                                <span class="deadline-value">{{ conference.submission_deadline.strftime('%d.%m.%Y') }}</span>
-                                {% if conference.submission_deadline < now.date() %}
-                                    <span class="expired-badge">(Прием завершен)</span>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="card-actions">
-                            {% if conference.registration_deadline >= now.date() %}
-                                <a href="{{ url_for('conference.show_application', conf_id=conference.id) }}" 
-                                   class="btn btn-primary">
-                                    ✍️ Подать заявку
-                                </a>
-                            {% else %}
-                                <button class="btn btn-disabled" disabled>
-                                    🔒 Регистрация закрыта
-                                </button>
-                            {% endif %}
-                            
-                            {% if conference.submission_deadline >= now.date() %}
-                                <a href="{{ url_for('conference.show_upload_thesis', conf_id=conference.id) }}" 
-                                   class="btn btn-secondary">
-                                    📎 Загрузить тезисы
-                                </a>
-                            {% else %}
-                                <button class="btn btn-disabled" disabled>
-                                    🔒 Прием тезисов завершен
-                                </button>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                
-                {% if loop.last and current_date is not none %}
-                    </div>
-                {% endif %}
-            {% endfor %}
-        </div>
-    </section>
-    {% endif %}
+         <div class="timeline-item future" data-start-date="{{ conference.start_date.isoformat() }}">
+            <div class="timeline-content">
+               <div class="card-badge">
+                  {% set days_until = (conference.start_date - now).days %}
+                  {% if days_until <= 1 %}
+                     🔥 Через 1 день
+                  {% elif days_until <= 4 %}
+                     🔥 Через {{ days_until }} дня
+                  {% elif days_until <= 7 %}
+                     🔥 Через {{ days_until }} дней
+                  {% else %}
+                     ⏰ Скоро
+                  {% endif %}
+               </div>
+               <h3>{{ conference.title }}</h3>
+               <p class="tagline">{{ conference.tagline }}</p>
 
-    {% if conferences_past %}
-    <section class="timeline-section">
-        <h2>Прошедшие конференции</h2>
-        <div class="timeline">
-            {% set current_date = None %}
-            {% for conference in conferences_past %}
-                {% if conference.start_date != current_date %}
-                    {% if current_date is not none %}
-                        </div>
-                    {% endif %}
-                    <div class="timeline-date-group">
-                        <div class="timeline-date past-date">
-                            <div class="date-day">{{ conference.start_date.strftime('%d') }}</div>
-                            <div class="date-month">{{ conference.start_date.strftime('%b') }}</div>
-                            <div class="date-year">{{ conference.start_date.strftime('%Y') }}</div>
-                            <div class="date-weekday">{{ conference.start_date.strftime('%A') }}</div>
-                            {% set event_count = conferences_past|selectattr('start_date', 'equalto', conference.start_date)|list|length %}
-                            {% if event_count > 1 %}
-                                <div class="event-count">{{ event_count }} конференции</div>
-                            {% endif %}
-                        </div>
-                        <div class="timeline-events">
-                            {% set current_date = conference.start_date %}
-                {% endif %}
-                
-                <div class="timeline-item past">
-                    <div class="timeline-content">
-                        <div class="card-badge past">
-                            {% set days_ago = (now - conference.end_date).days %}
-                            {% if days_ago <= 30 %}
-                                📊 Завершена недавно
-                            {% else %}
-                                ✅ Завершена
-                            {% endif %}
-                        </div>
-                        <h3>{{ conference.title }}</h3>
-                        <p class="tagline">{{ conference.tagline }}</p>
-                        
-                        <div class="conference-dates">
-                            <div class="date-range">
-                                <span class="date-icon">📅</span>
-                                <span class="date-text">
-                                    {{ conference.start_date.strftime('%d.%m.%Y') }} - 
-                                    {{ conference.end_date.strftime('%d.%m.%Y') }}
-                                </span>
-                            </div>
-                        </div>
-                        
-                        <div class="stats-mini">
-                            <div class="stat-item">
-                                <span class="stat-label">👥 Участников:</span>
-                                <span class="stat-value">{{ conference.participants_count or '—' }}</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">📄 Докладов:</span>
-                                <span class="stat-value">{{ conference.papers_count or '—' }}</span>
-                            </div>
-                        </div>
-                        
-                        {#<div class="card-actions">
-                            <a href="{{ url_for('conference.show_program', conf_id=conference.id) }}" 
-                               class="btn btn-outline">
-                                📖 Программа
-                            </a>
-                            <a href="{{ url_for('conference.show_proceedings', conf_id=conference.id) }}"
-                               class="btn btn-outline">
-                                📚 Сборник тезисов
-                            </a>
-                            <a href="{{ url_for('conference.show_photos', conf_id=conference.id) }}" 
-                               class="btn btn-outline">
-                                📸 Фотоотчет
-                            </a>
-                        </div>#}
-                    </div>
-                </div>
-                
-                {% if loop.last and current_date is not none %}
-                    </div>
-                {% endif %}
-            {% endfor %}
-        </div>
-    </section>
-    {% endif %}
+               <div class="conference-dates">
+                  <div class="date-range">
+                     <span class="date-icon">📅</span>
+                     <span class="date-text">
+                        {{ conference.start_date.strftime('%d.%m.%Y') }} -
+                        {{ conference.end_date.strftime('%d.%m.%Y') }}
+                     </span>
+                     <span class="duration">
+                        ({{ (conference.end_date - conference.start_date).days + 1 }} дня/дней)
+                     </span>
+                  </div>
+               </div>
 
-    {% if not conferences_future and not conferences_past %}
-    <div class="empty-state">
-        <div class="empty-icon">📭</div>
-        <h3>Нет конференций</h3>
-        <p>На данный момент нет запланированных конференций</p>
-    </div>
-    {% endif %}
+               <div class="deadlines">
+                  <div class="deadline-item {% if conference.registration_deadline < now %}expired{% endif %}">
+                     <span class="deadline-label"> Регистрация до:</span>
+                     <span class="deadline-value">{{ conference.registration_deadline.strftime('%d.%m.%Y') }}</span>
+                     {% if conference.registration_deadline < now %}
+                        <span class="expired-badge">(Закрыта)</span>
+                     {% endif %}
+                  </div>
+                  <div class="deadline-item {% if conference.submission_deadline < now %}expired{% endif %}">
+                     <span class="deadline-label"> Загрузить тезисы можно до:</span>
+                     <span class="deadline-value">{{ conference.submission_deadline.strftime('%d.%m.%Y') }}</span>
+                     {% if conference.submission_deadline < now %}
+                        <span class="expired-badge">(Прием завершен)</span>
+                     {% endif %}
+                  </div>
+               </div>
+
+               <div class="card-actions">
+                  {% if conference.registration_deadline >= now %}
+                     <a href="{{ url_for('conference.show_application', conf_id=conference.id) }}"
+                        class="btn btn-primary">
+                        ✍️ Подать заявку
+                     </a>
+                  {% else %}
+                     <button class="btn btn-disabled" disabled>
+                        🔒 Регистрация закрыта
+                     </button>
+                  {% endif %}
+
+                  {% if conference.submission_deadline >= now %}
+                     <a href="{{ url_for('conference.show_upload_thesis', conf_id=conference.id) }}"
+                        class="btn btn-secondary">
+                        📝 Загрузить тезисы
+                     </a>
+                  {% else %}
+                     <button class="btn btn-disabled" disabled>
+                        🔒 Прием тезисов завершен
+                     </button>
+                  {% endif %}
+               </div>
+            </div>
+         </div>
+      {% endfor %}
+   </div>
+</section>
+{% endif %}
+
+{% if conferences_past %}
+<section class="timeline-section">
+   <h2>Прошедшие конференции</h2>
+   <div class="timeline">
+      {% set ns = namespace(last_date=None) %}
+      {% for conference in conferences_past %}
+         {% if conference.start_date != ns.last_date %}
+            {% if not loop.first %}
+                  </div>
+               </div>
+            {% endif %}
+            <div class="timeline-date-group">
+               <div class="timeline-date past-date">
+                  <div class="date-day">{{ conference.start_date.strftime('%d') }}</div>
+                  <div class="date-month">{{ conference.start_date.strftime('%b') }}</div>
+                  <div class="date-year">{{ conference.start_date.strftime('%Y') }}</div>
+                  <div class="date-weekday">{{ conference.start_date.strftime('%A') }}</div>
+               </div>
+               <div class="timeline-events">
+            {% set ns.last_date = conference.start_date %}
+         {% endif %}
+
+         <div class="timeline-item past">
+            <div class="timeline-content">
+               <div class="card-badge past">
+                  {% set days_ago = (now - conference.end_date).days %}
+                  {% if days_ago <= 30 %}
+                     ✅️ Завершена недавно
+                  {% else %}
+                     ✅ Завершена
+                  {% endif %}
+               </div>
+               <h3>{{ conference.title }}</h3>
+               <p class="tagline">{{ conference.tagline }}</p>
+
+               <div class="conference-dates">
+                  <div class="date-range">
+                     <span class="date-icon">📅</span>
+                     <span class="date-text">
+                        {{ conference.start_date.strftime('%d.%m.%Y') }} -
+                        {{ conference.end_date.strftime('%d.%m.%Y') }}
+                     </span>
+                  </div>
+               </div>
+
+               <div class="stats-mini">
+                  <div class="stat-item">
+                     <span class="stat-label">👥 Участников:</span>
+                     <span class="stat-value">{{ conference.participants_count or '—' }}</span>
+                  </div>
+                  <div class="stat-item">
+                     <span class="stat-label">📄 Докладов:</span>
+                     <span class="stat-value">{{ conference.papers_count or '—' }}</span>
+                  </div>
+               </div>
+            </div>
+         </div>
+
+      {% endfor %}
+   </div>
+</section>
+{% endif %}
+
+{% if not conferences_future and not conferences_past %}
+<div class="empty-state">
+   <div class="empty-icon">📭</div>
+    <h3>Нет конференций</h3>
+    <p>На данный момент нет запланированных конференций</p>
 </div>
+{% endif %}
 
 <style>
 .conferences-timeline {
@@ -240,39 +210,19 @@
     background: linear-gradient(90deg, #3498db, transparent);
 }
 
-.timeline {
-    position: relative;
-}
-
-.timeline:before {
-    content: '';
-    position: absolute;
-    left: 85px;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: linear-gradient(180deg, #3498db, #bdc3c7);
-}
-
 .timeline-date-group {
     display: flex;
-    margin-bottom: 30px;
-    position: relative;
 }
 
 .timeline-date {
     width: 140px;
-    flex-shrink: 0;
     text-align: center;
     background: white;
     border-radius: 12px;
     padding: 15px 10px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    z-index: 2;
-    position: relative;
     margin-right: 20px;
-    transition: all 0.3s ease;
-    cursor: pointer;
+    transition: all 0.3s;
 }
 
 .timeline-date:hover {
@@ -295,35 +245,12 @@
     color: #95a5a6;
 }
 
-.timeline-date .date-month {
+.timeline-date > * {
     font-size: 16px;
     color: #7f8c8d;
     text-transform: uppercase;
     font-weight: 600;
     margin-top: 5px;
-}
-
-.timeline-date .date-year {
-    font-size: 14px;
-    color: #95a5a6;
-    margin-top: 3px;
-}
-
-.timeline-date .date-weekday {
-    font-size: 12px;
-    color: #bdc3c7;
-    margin-top: 5px;
-    text-transform: uppercase;
-}
-
-.timeline-date .event-count {
-    margin-top: 8px;
-    padding: 4px 8px;
-    background: #f0f0f0;
-    border-radius: 20px;
-    font-size: 11px;
-    color: #7f8c8d;
-    font-weight: bold;
 }
 
 .timeline-events {
@@ -334,7 +261,6 @@
 }
 
 .timeline-item {
-    position: relative;
     animation: slideIn 0.5s ease forwards;
     opacity: 0;
     transform: translateX(-20px);
@@ -377,11 +303,10 @@
     background: linear-gradient(135deg, #95a5a6, #7f8c8d);
 }
 
-.timeline-content h3 {
-    margin: 0 0 10px 0;
+h3 {
+    margin: 0 0 10px;
     font-size: 1.5em;
     color: #2c3e50;
-    padding-right: 120px;
 }
 
 .tagline {
@@ -391,22 +316,16 @@
     font-size: 0.95em;
 }
 
-.conference-dates {
-    margin-bottom: 15px;
-    padding: 10px;
+.conference-dates, .deadlines {
+    margin-bottom: 20px;
+    padding: 12px;
     background: linear-gradient(135deg, #f8f9fa, #e9ecef);
     border-radius: 8px;
 }
 
 .date-range {
     display: flex;
-    align-items: center;
     gap: 8px;
-    flex-wrap: wrap;
-}
-
-.date-icon {
-    font-size: 1.2em;
 }
 
 .date-text {
@@ -421,9 +340,6 @@
 
 .deadlines {
     background: #f8f9fa;
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 20px;
 }
 
 .deadline-item {
@@ -558,25 +474,24 @@
     color: #7f8c8d;
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
     .timeline:before {
         left: 20px;
     }
-    
+
     .timeline-section h2 {
         padding-left: 20px;
     }
-    
+
     .timeline-section h2:before {
         display: none;
     }
-    
+
     .timeline-date-group {
         flex-direction: column;
         margin-bottom: 30px;
     }
-    
+
     .timeline-date {
         width: auto;
         margin-right: 0;
@@ -587,34 +502,31 @@
         padding: 10px 20px;
         width: fit-content;
     }
-    
-    .timeline-date .date-day,
-    .timeline-date .date-month,
-    .timeline-date .date-year,
-    .timeline-date .date-weekday {
+
+    .timeline-date > * {
         display: inline;
         font-size: 14px;
         margin: 0 5px;
     }
-    
+
     .timeline-date .date-day {
         font-size: 18px;
     }
-    
+
     .timeline-date .event-count {
         display: inline-block;
         margin: 0 0 0 10px;
     }
-    
+
     .timeline-content h3 {
         padding-right: 100px;
         font-size: 1.2em;
     }
-    
+
     .card-actions {
         flex-direction: column;
     }
-    
+
     .btn {
         text-align: center;
     }
