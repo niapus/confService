@@ -16,7 +16,7 @@
                 <div class="card-badge">Скоро</div>
                 <h3>{{ conference.title }}</h3>
                 <p class="tagline">{{ conference.tagline }}</p>
-                
+
                 <div class="dates">
                     <div class="date-item">
                         <span class="date-label">Регистрация до:</span>
@@ -31,13 +31,13 @@
                         <span class="date-value">{{ conference.start_date }}</span>
                     </div>
                 </div>
-                
+
                 <div class="card-actions">
-                    <a href="{{ url_for('conference.show_application', conf_id=conference.id) }}" 
+                    <a href="{{ url_for('conference.show_application', conf_id=conference.id) }}"
                        class="btn btn-primary">
                         Подать заявку
                     </a>
-                    <a href="{{ url_for('conference.show_upload_thesis', conf_id=conference.id) }}" 
+                    <a href="{{ url_for('conference.show_upload_thesis', conf_id=conference.id) }}"
                        class="btn btn-secondary">
                         Загрузить тезисы
                     </a>
@@ -61,20 +61,20 @@
                 <div class="card-badge past">Завершена</div>
                 <h3>{{ conference.title }}</h3>
                 <p class="tagline">{{ conference.tagline }}</p>
-                
+
                 <div class="dates">
                     <div class="date-item">
                         <span class="date-label">Дата проведения:</span>
                         <span class="date-value">{{ conference.start_date }}</span>
                     </div>
                 </div>
-                
+
                 {#<div class="card-actions">
-                    <a href="{{ url_for('conference.show_program', conf_id=conference.id) }}" 
+                    <a href="{{ url_for('conference.show_program', conf_id=conference.id) }}"
                        class="btn btn-outline">
                         Смотреть программу
                     </a>
-                    <a href="{{ url_for('conference.show_proceedings', conf_id=conference.id) }}" 
+                    <a href="{{ url_for('conference.show_proceedings', conf_id=conference.id) }}"
                        class="btn btn-outline">
                         Сборник тезисов
                     </a>
@@ -241,17 +241,16 @@
     font-size: 1.1em;
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
     .conferences-grid {
         grid-template-columns: 1fr;
         gap: 20px;
     }
-    
+
     .card-actions {
         flex-direction: column;
     }
-    
+
     .btn {
         text-align: center;
     }

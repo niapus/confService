@@ -622,13 +622,11 @@
 </style>
 
 <script>
-// Добавляем индексы для анимации
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.timeline-item').forEach((item, index) => {
         item.style.animationDelay = `${index * 0.05}s`;
     });
-    
-    // Добавляем подсказки при наведении на дату
+
     document.querySelectorAll('.timeline-date').forEach(date => {
         const eventCount = date.querySelector('.event-count');
         if (eventCount) {
