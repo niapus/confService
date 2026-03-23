@@ -5,3 +5,4 @@ conference_service.db
 __pycache__
 *.pyc
 .venv
+.idea
