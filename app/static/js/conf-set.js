@@ -16,7 +16,7 @@ function ApplicationRow({ application }) {
       React.createElement(
          'td',
          null,
-         React.createElement('strong', null, `${application.surname} ${application.name}${application.patronymic ? ' ' + application.patronymic : ''}`),
+         React.createElement('strong', null, `${application.surname} ${application.name} ${application.patronymic || ''}`),
          React.createElement(
             'div',
             { className: 'badges' },
@@ -25,18 +25,16 @@ function ApplicationRow({ application }) {
          )
       ),
       React.createElement('td', null, application.email),
-      React.createElement('td', null, application.age ? `${application.age} лет` : '—'),
+      React.createElement('td', null, application.birth_date),
       React.createElement(
          'td',
          null,
          application.degree === 'none' ? 'Нет' :
-         application.degree === 'candidate' ? 'Кандидат наук' :
-         application.degree === 'doctor' ? 'Доктор наук' : '—'
+         application.degree === 'candidate' ? 'Кандидат наук' : 'Доктор наук'
       ),
       React.createElement(
          'td',
          null,
-         application.is_worker && application.is_student ? 'Работает и учится' :
          application.is_worker ? 'Работник' :
          application.is_student ? 'Студент' : '—'
       ),
@@ -68,11 +66,11 @@ function ApplicationRow({ application }) {
       React.createElement(
          'td',
          null,
-         application.theses && application.theses.length > 0 && React.createElement(
+         React.createElement(
             'button',
             {
                className: 'action-btn',
-               onClick: () => window.location.href = `/admin/theses/${application.theses[0].id}`
+               onClick: () => window.location.href = `/admin/applications/${application.theses && application.theses[0] ? application.theses[0].id : ''}`
             },
             '👁️'
          )
@@ -109,23 +107,11 @@ function ConferenceApp() {
          });
    }, [conferenceId]);
 
-   const calculateAge = (birthDate) => {
-      if (!birthDate) return null;
-      const today = new Date();
-      const birth = new Date(birthDate);
-      let age = today.getFullYear() - birth.getFullYear();
-      const monthDiff = today.getMonth() - birth.getMonth();
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-         age--;
-      }
-      return age;
-   };
-
    const filteredApplications = applications.filter(app => {
       const searchLower = filters.search.toLowerCase();
-      const fullName = `${app.surname} ${app.name}${app.patronymic ? ' ' + app.patronymic : ''}`.toLowerCase();
+      const fullName = `${app.surname} ${app.name} ${app.patronymic || ''}`;
       const matchesSearch = !filters.search ||
-         fullName.includes(searchLower) ||
+         fullName.toLowerCase().includes(searchLower) ||
          app.email.toLowerCase().includes(searchLower);
 
       const matchesFormat = filters.format === 'all' ||
@@ -152,7 +138,6 @@ function ConferenceApp() {
       online: applications.filter(app => app.participation_format === 'online').length
    };
 
-   if (loading) return React.createElement('div', { className: 'loading' }, 'Загрузка...');
    if (error) return React.createElement('div', { className: 'error' }, `Ошибка: ${error}`);
 
    return React.createElement(
@@ -233,7 +218,7 @@ function ConferenceApp() {
                   null,
                   React.createElement('th', null, 'ФИО'),
                   React.createElement('th', null, 'Email'),
-                  React.createElement('th', null, 'Возраст'),
+                  React.createElement('th', null, 'Дата рождения'),
                   React.createElement('th', null, 'Степень'),
                   React.createElement('th', null, 'Статус'),
                   React.createElement('th', null, 'Формат'),
@@ -244,7 +229,7 @@ function ConferenceApp() {
             React.createElement(
                'tbody',
                null,
-               filteredApplications.map(app => React.createElement(ApplicationRow, { key: app.id, application: { ...app, age: calculateAge(app.birth_date) } }))
+               filteredApplications.map(app => React.createElement(ApplicationRow, { key: app.id, application: app }))
             )
          )
       )
