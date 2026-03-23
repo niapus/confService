@@ -6,8 +6,7 @@
 
 <div class="conferences-page">
     <h1>Конференции</h1>
-    
-    <!-- Будущие конференции -->
+
     {% if conferences_future %}
     <section class="conferences-section future">
         <h2>Предстоящие конференции</h2>
@@ -28,8 +27,8 @@
                         <span class="date-value">{{ conference.submission_deadline }}</span>
                     </div>
                     <div class="date-item">
-                        <span class="date-label">Программа:</span>
-                        <span class="date-value">{{ conference.program_date }}</span>
+                        <span class="date-label">Дата проведения:</span>
+                        <span class="date-value">{{ conference.start_date }}</span>
                     </div>
                 </div>
                 
@@ -52,8 +51,7 @@
         <p class="empty-message">На данный момент нет предстоящих конференций</p>
     </section>
     {% endif %}
-    
-    <!-- Прошедшие конференции -->
+
     {% if conferences_past %}
     <section class="conferences-section past">
         <h2>Прошедшие конференции</h2>
@@ -67,7 +65,7 @@
                 <div class="dates">
                     <div class="date-item">
                         <span class="date-label">Дата проведения:</span>
-                        <span class="date-value">{{ conference.program_date }}</span>
+                        <span class="date-value">{{ conference.start_date }}</span>
                     </div>
                 </div>
                 

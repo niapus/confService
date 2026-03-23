@@ -1,16 +1,14 @@
-// ===============================
-// Переключение секций
-// ===============================
-
 function showSection(section) {
     document.getElementById("conferences-section").style.display =
         section === "conferences" ? "block" : "none";
 
     document.getElementById("theses-section").style.display =
         section === "theses" ? "block" : "none";
+
+    document.getElementById("applications-section").style.display =
+        section === "applications" ? "block" : "none";
 }
 
-// Подсветка активной кнопки
 document.addEventListener("DOMContentLoaded", () => {
     showSection('conferences');
     

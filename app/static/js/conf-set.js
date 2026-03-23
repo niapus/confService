@@ -16,7 +16,7 @@ function ApplicationRow({ application }) {
       React.createElement(
          'td',
          null,
-         React.createElement('strong', null, application.full_name),
+         React.createElement('strong', null, `${application.surname} ${application.name}${application.patronymic ? ' ' + application.patronymic : ''}`),
          React.createElement(
             'div',
             { className: 'badges' },
@@ -25,16 +25,18 @@ function ApplicationRow({ application }) {
          )
       ),
       React.createElement('td', null, application.email),
-      React.createElement('td', null, `${application.age} лет`),
+      React.createElement('td', null, application.age ? `${application.age} лет` : '—'),
       React.createElement(
          'td',
          null,
-         application.degree === 'none' ? 'Нет' : 
-         application.degree === 'candidate' ? 'Кандидат наук' : 'Доктор наук'
+         application.degree === 'none' ? 'Нет' :
+         application.degree === 'candidate' ? 'Кандидат наук' :
+         application.degree === 'doctor' ? 'Доктор наук' : '—'
       ),
       React.createElement(
          'td',
          null,
+         application.is_worker && application.is_student ? 'Работает и учится' :
          application.is_worker ? 'Работник' :
          application.is_student ? 'Студент' : '—'
       ),
@@ -50,27 +52,27 @@ function ApplicationRow({ application }) {
       React.createElement(
          'td',
          null,
-         application.thesis ? React.createElement(
+         application.theses && application.theses.length > 0 ? React.createElement(
             'div',
             null,
-            React.createElement('strong', null, application.thesis.title),
+            React.createElement('strong', null, application.theses[0].title),
             React.createElement(
                'div',
-               { className: `status-badge ${application.thesis.status}` },
-               application.thesis.status === 'pending' && '⏳ На рассмотрении',
-               application.thesis.status === 'accepted' && '✅ Принят',
-               application.thesis.status === 'rejected' && '❌ Отклонён'
+               { className: `status-badge ${application.theses[0].status}` },
+               application.theses[0].status === 'pending' && '⏳ На рассмотрении',
+               application.theses[0].status === 'accepted' && '✅ Принят',
+               application.theses[0].status === 'rejected' && '❌ Отклонён'
             )
          ) : React.createElement('span', { className: 'status-badge no-thesis' }, '📄 Нет тезисов')
       ),
       React.createElement(
          'td',
          null,
-         React.createElement(
+         application.theses && application.theses.length > 0 && React.createElement(
             'button',
             {
                className: 'action-btn',
-               onClick: () => window.location.href = `/admin/applications/${application.thesis.id}`
+               onClick: () => window.location.href = `/admin/theses/${application.theses[0].id}`
             },
             '👁️'
          )
@@ -92,7 +94,7 @@ function ConferenceApp() {
    });
 
    useEffect(() => {
-      fetch(`/admin/api/conferences/${conferenceId}`)
+      fetch(`/admin/api/conferences/${conferenceId}/applications`)
          .then(res => {
             if (!res.ok) throw new Error('Ошибка загрузки');
             return res.json();
@@ -107,22 +109,35 @@ function ConferenceApp() {
          });
    }, [conferenceId]);
 
+   const calculateAge = (birthDate) => {
+      if (!birthDate) return null;
+      const today = new Date();
+      const birth = new Date(birthDate);
+      let age = today.getFullYear() - birth.getFullYear();
+      const monthDiff = today.getMonth() - birth.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+         age--;
+      }
+      return age;
+   };
+
    const filteredApplications = applications.filter(app => {
       const searchLower = filters.search.toLowerCase();
-      const matchesSearch = !filters.search || 
-         app.full_name.toLowerCase().includes(searchLower) ||
+      const fullName = `${app.surname} ${app.name}${app.patronymic ? ' ' + app.patronymic : ''}`.toLowerCase();
+      const matchesSearch = !filters.search ||
+         fullName.includes(searchLower) ||
          app.email.toLowerCase().includes(searchLower);
-      
-      const matchesFormat = filters.format === 'all' || 
+
+      const matchesFormat = filters.format === 'all' ||
          app.participation_format === filters.format;
-      
-      const hasThesis = !!app.thesis;
+
+      const hasThesis = app.theses && app.theses.length > 0;
       const matchesThesis = filters.thesis === 'all' ||
          (filters.thesis === 'with' && hasThesis) ||
          (filters.thesis === 'without' && !hasThesis);
-      
-      const thesisStatus = app.thesis ? app.thesis.status : 'none';
-      const matchesStatus = filters.status === 'all' || 
+
+      const thesisStatus = hasThesis ? app.theses[0].status : 'none';
+      const matchesStatus = filters.status === 'all' ||
          thesisStatus === filters.status;
 
       return matchesSearch && matchesFormat && matchesThesis && matchesStatus;
@@ -130,20 +145,21 @@ function ConferenceApp() {
 
    const stats = {
       total: applications.length,
-      withThesis: applications.filter(app => app.thesis).length,
+      withThesis: applications.filter(app => app.theses && app.theses.length > 0).length,
       students: applications.filter(app => app.is_student).length,
       workers: applications.filter(app => app.is_worker).length,
       offline: applications.filter(app => app.participation_format === 'offline').length,
       online: applications.filter(app => app.participation_format === 'online').length
    };
 
+   if (loading) return React.createElement('div', { className: 'loading' }, 'Загрузка...');
    if (error) return React.createElement('div', { className: 'error' }, `Ошибка: ${error}`);
 
    return React.createElement(
       'div',
       { className: 'conference-detail' },
       React.createElement('h1', null, `Конференция #${conferenceId}`),
-      
+
       React.createElement(
          'div',
          { className: 'stats-grid' },
@@ -228,7 +244,7 @@ function ConferenceApp() {
             React.createElement(
                'tbody',
                null,
-               filteredApplications.map(app => React.createElement(ApplicationRow, { key: app.id, application: app }))
+               filteredApplications.map(app => React.createElement(ApplicationRow, { key: app.id, application: { ...app, age: calculateAge(app.birth_date) } }))
             )
          )
       )

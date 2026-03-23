@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>{% if conference %}Редактирование{% else %}Создание{% endif %} конференции</title>
-    <link rel="stylesheet" href="/static/css/admin-css.css">
+   <meta charset="UTF-8">
+   <title>{% if conference %}Редактирование{% else %}Создание{% endif %} конференции</title>
+   <link rel="stylesheet" href="/static/css/admin-css.css">
 </head>
 <body>
 
@@ -16,10 +16,10 @@
    <main class="content">
       <div class="form-container">
          <h1>{% if conference %}Редактировать{% else %}Создать{% endif %} конференцию</h1>
-            
-         <form method="POST" class="conference-form" 
+
+         <form method="POST" class="conference-form"
             action="{% if conference %}/admin/conferences/{{ conference.id }}/edit{% else %}/admin/conferences/new{% endif %}">
-                
+
             <div class="form-row">
                <div class="form-group">
                   <label>Название *</label>
@@ -40,38 +40,32 @@
             <div class="form-row">
                <div class="form-group">
                   <label>Дата начала *</label>
-                  <input type="datetime-local" name="start_date" 
-                     value="{{ conference.start_date.strftime('%Y-%m-%dT%H:%M') if conference else '' }}" required>
+                  <input type="date" name="start_date"
+                     value="{{ conference.start_date.strftime('%Y-%m-%d') if conference else '' }}" required>
                </div>
 
                <div class="form-group">
                   <label>Дата окончания *</label>
-                  <input type="datetime-local" name="end_date" 
-                     value="{{ conference.end_date.strftime('%Y-%m-%dT%H:%M') if conference else '' }}" required>
+                  <input type="date" name="end_date"
+                     value="{{ conference.end_date.strftime('%Y-%m-%d') if conference else '' }}" required>
                </div>
             </div>
 
             <div class="form-row">
                <div class="form-group">
                   <label>Дедлайн регистрации *</label>
-                  <input type="date" name="registration_deadline" 
+                  <input type="date" name="registration_deadline"
                      value="{{ conference.registration_deadline.strftime('%Y-%m-%d') if conference else '' }}" required>
                </div>
 
                <div class="form-group">
                   <label>Дедлайн подачи тезисов *</label>
-                  <input type="date" name="submission_deadline" 
+                  <input type="date" name="submission_deadline"
                      value="{{ conference.submission_deadline.strftime('%Y-%m-%d') if conference else '' }}" required>
                </div>
-               </div>
+            </div>
 
-               <div class="form-row">
-                  <div class="form-group">
-                  <label>Дата программы</label>
-                  <input type="date" name="program_date" 
-                     value="{{ conference.program_date.strftime('%Y-%m-%d') if conference and conference.program_date else '' }}">
-               </div>
-
+            <div class="form-row">
                <div class="form-group">
                   <label>Время на выступление (мин) *</label>
                   <input type="number" name="performance_time" min="1" 
