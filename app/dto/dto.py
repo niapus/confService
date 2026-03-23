@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from typing import Optional
 from datetime import date
 
+from app.models.application import GenderEnum, DegreeEnum, EducationEnum, ParticipationFormatEnum
+
 
 @dataclass
 class ThesisInApplicationDTO:
@@ -86,3 +88,43 @@ class FullApplicationDTO:
         return today.year - self.birth_date.year - (
             (today.month, today.day) < (self.birth_date.month, self.birth_date.day)
         )
+
+@dataclass
+class ConferenceDTO:
+    title: str
+
+    description_md: str
+    tagline: str
+
+    registration_deadline: date
+    submission_deadline: date
+
+    start_date: date
+    end_date: date
+
+    performance_time: int
+
+@dataclass
+class ApplicationDTO:
+    surname: str
+    name: str
+    patronymic: Optional[str]
+
+    gender: GenderEnum
+    birth_date: date
+
+    degree: DegreeEnum
+
+    is_worker: bool
+    is_student: bool
+
+    work_name: Optional[str]
+    work_place: Optional[str]
+    work_position: Optional[str]
+
+    study_name: Optional[str]
+    study_place: Optional[str]
+    study_level: Optional[EducationEnum]
+
+    participation_format: ParticipationFormatEnum
+    email: str

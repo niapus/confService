@@ -22,24 +22,24 @@
       <div class="form-row">
          <div class="form-group">
             <label>Фамилия *</label>
-            <input type="text" name="surname" required>
+            <input type="text" name="surname" value="{{ application.surname if application else '' }}" required>
          </div>
 
          <div class="form-group">
             <label>Имя *</label>
-            <input type="text" name="name" required>
+            <input type="text" name="name" value="{{ application.name if application else '' }}" required>
          </div>
 
          <div class="form-group">
             <label>Отчество</label>
-            <input type="text" name="patronymic">
+            <input type="text" name="patronymic" value="{{ application.patronymic if application else '' }}">
          </div>
       </div>
 
       <div class="form-row">
          <div class="form-group">
             <label>Email *</label>
-            <input type="email" name="email" required placeholder="ivan@example.com">
+            <input type="email" name="email" value="{{ application.email if application else '' }}" required placeholder="ivan@example.com">
          </div>
       </div>
    </fieldset>
@@ -48,19 +48,26 @@
       <legend>Доклад</legend>
 
       <div class="form-group">
+         <label>Авторы тезисов *</label>
+         <input type="text" name="authors" required placeholder="Иванов И.И., Петров П.П.">
+         <small>Укажите всех авторов через запятую</small>
+      </div>
+
+      <div class="form-group">
          <label>Название доклада *</label>
-         <input type="text" name="title" required>
+         <input type="text" name="title" required placeholder="Название работы">
       </div>
 
       <div class="form-group">
          <label>Файл тезисов (PDF/DOC/DOCX) *</label>
-         <input type="file" name="file" accept=".pdf" required>
+         <input type="file" name="file" accept=".pdf,.doc,.docx" required>
+         <small>Поддерживаемые форматы: PDF, DOC, DOCX</small>
       </div>
    </fieldset>
 
    <div class="form-actions">
       <button type="submit" class="btn btn-primary">Отправить тезисы</button>
-      <a href="/admin" class="btn btn-secondary">Отмена</a>
+      <a href="{{ url_for('conference.show_conference', conf_id=conference.id) }}" class="btn btn-secondary">Отмена</a>
    </div>
 </form>
 <script src="{{ url_for('static', filename='js/application.js') }}"></script>

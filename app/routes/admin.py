@@ -2,6 +2,7 @@ import os.path
 
 from flask import Blueprint, render_template, request, redirect, g, send_from_directory
 
+from app.dto_builders.dto_builder import build_conference_dto
 from app.service import conference_service, thesis_service
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
@@ -12,8 +13,8 @@ def show_admin_create_conference():
 
 @admin_bp.post('/conferences/new')
 def create_conference():
-    conf_data = request.form.to_dict()
-    conference_service.create_conference(conf_data, g.db)
+    dto = build_conference_dto(request.form)
+    conference_service.create_conference(dto, g.db)
     return redirect(f'/admin')
 
 @admin_bp.get(f'/conferences/<int:conf_id>/edit')
@@ -23,8 +24,8 @@ def show_update_conference(conf_id):
 
 @admin_bp.post(f'/conferences/<int:conf_id>/edit')
 def update_conference(conf_id):
-    conf_data = request.form.to_dict()
-    conference_service.update_conference(conf_id, conf_data, g.db)
+    dto = build_conference_dto(request.form)
+    conference_service.update_conference(conf_id, dto, g.db)
     return redirect(f'/admin')
 
 @admin_bp.get('')
@@ -51,12 +52,12 @@ def delete_conference(conf_id):
 def conference_page(conf_id):
     return render_template('conference_set.html', conf_id=conf_id)
 
-# @admin_bp.get(f'/applications/<int:thesis_id>')
-# def view_thesis_file(thesis_id):
-#     thesis = thesis_service.get_thesis_by_id(thesis_id, g.db)
-#     dir_path = os.path.dirname(thesis.file_path)
-#     file_name = os.path.basename(thesis.file_path)
-#     return send_from_directory(dir_path, file_name, as_attachment=False)
+@admin_bp.get(f'/thesis/<int:thesis_id>')
+def view_thesis_file(thesis_id):
+    thesis = thesis_service.get_thesis_by_id(thesis_id, g.db)
+    dir_path = os.path.dirname(thesis.file_path)
+    file_name = os.path.basename(thesis.file_path)
+    return send_from_directory(dir_path, file_name, as_attachment=False)
 
 @admin_bp.get(f'/applications/<int:thesis_id>')
 def view_thesis_page(thesis_id):

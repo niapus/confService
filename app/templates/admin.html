@@ -11,6 +11,7 @@
    <aside class="sidebar">
       <h2>Администрирование</h2>
       <button onclick="showSection('conferences')">Конференции</button>
+      <button onclick="showSection('applications')">Заявки</button>
       <button onclick="showSection('theses')">Тезисы</button>
    </aside>
 
@@ -31,6 +32,7 @@
                   <th>Даты проведения</th>
                   <th>Дедлайн регистрации</th>
                   <th>Дедлайн подачи</th>
+                  <th>Время выступления (мин)</th>
                   <th>Действия</th>
                </tr>
             </thead>
@@ -41,11 +43,12 @@
                   <td>{{ conference.title }}</td>
                   <td>{{ conference.tagline or '' }}</td>
                   <td>
-                     {{ conference.start_date.strftime('%d.%m.%Y') }} - 
+                     {{ conference.start_date.strftime('%d.%m.%Y') }} -
                      {{ conference.end_date.strftime('%d.%m.%Y') }}
                   </td>
                   <td>{{ conference.registration_deadline.strftime('%d.%m.%Y') }}</td>
                   <td>{{ conference.submission_deadline.strftime('%d.%m.%Y') }}</td>
+                  <td>{{ conference.performance_time }}</td>
                   <td>
                      <a href="/admin/conferences/{{ conference.id }}/edit" class="small">✏️ Ред.</a>
                      <form method="POST" action="/admin/conferences/{{ conference.id }}/delete" style="display:inline;" onsubmit="return confirm('Удалить конференцию?')">
@@ -59,16 +62,88 @@
          </table>
       </section>
 
+      <section id="applications-section" style="display:none;">
+         <div class="section-header">
+            <h2>Заявки</h2>
+         </div>
+
+         <table id="applications-table">
+            <thead>
+               <tr>
+                  <th>ID</th>
+                  <th>Конференция</th>
+                  <th>ФИО</th>
+                  <th>Email</th>
+                  <th>Пол</th>
+                  <th>Ученая степень</th>
+                  <th>Формат участия</th>
+                  <th>Статус</th>
+                  <th>Действия</th>
+               </tr>
+            </thead>
+            <tbody>
+               {% for application in applications %}
+               <tr>
+                  <td>{{ application.id }}</td>
+                  <td>{{ application.conference.title if application.conference else 'Конференция удалена' }}</td>
+                  <td>
+                     {{ application.surname }} {{ application.name }}
+                     {% if application.patronymic %} {{ application.patronymic }}{% endif %}
+                  </td>
+                  <td>{{ application.email }}</td>
+                  <td>
+                     {% if application.gender.value == 'male' %}Мужской
+                     {% elif application.gender.value == 'female' %}Женский
+                     {% endif %}
+                  </td>
+                  <td>
+                     {% if application.degree.value == 'none' %}Нет
+                     {% elif application.degree.value == 'candidate' %}Кандидат наук
+                     {% elif application.degree.value == 'doctor' %}Доктор наук
+                     {% endif %}
+                  </td>
+                  <td>
+                     {% if application.participation_format.value == 'offline' %}Очно
+                     {% elif application.participation_format.value == 'online' %}Онлайн
+                     {% endif %}
+                  </td>
+                  <td>
+                     <span class="status-badge">
+                        {% if application.is_worker and application.is_student %}
+                           Работает и учится
+                        {% elif application.is_worker %}
+                           Работает
+                        {% elif application.is_student %}
+                           Учится
+                        {% else %}
+                           Другое
+                        {% endif %}
+                     </span>
+                  </td>
+                  <td>
+                     <a href="/admin/applications/{{ application.id }}" class="small">👁️ Детали</a>
+                     {% if application.theses %}
+                        <span class="small">📄 Тезисы: {{ application.theses|length }}</span>
+                     {% endif %}
+                  </td>
+               </tr>
+               {% endfor %}
+            </tbody>
+         </table>
+      </section>
+
       <section id="theses-section" style="display:none;">
-         <h2>Поданные тезисы</h2>
+         <h2>Тезисы</h2>
          <table id="theses-table">
             <thead>
                <tr>
                   <th>ID</th>
                   <th>Конференция</th>
-                  <th>Автор</th>
+                  <th>Авторы</th>
+                  <th>Заявитель</th>
                   <th>Email</th>
-                  <th>Название</th>
+                  <th>Название тезиса</th>
+                  <th>Файл</th>
                   <th>Статус</th>
                   <th>Действия</th>
                </tr>
@@ -77,28 +152,41 @@
                {% for thesis in theses %}
                <tr>
                   <td>{{ thesis.id }}</td>
-                  <td>{{ thesis.conference.title if thesis.conference else 'Конференция удалена' }}</td>
-                  <td>{{ thesis.name }}</td>
-                  <td>{{ thesis.email }}</td>
+                  <td>{{ thesis.application.conference.title if thesis.application and thesis.application.conference else 'Конференция удалена' }}</td>
+                  <td>{{ thesis.authors }}</td>
+                  <td>
+                     {% if thesis.application %}
+                        {{ thesis.application.surname }} {{ thesis.application.name }}
+                        {% if thesis.application.patronymic %} {{ thesis.application.patronymic }}{% endif %}
+                     {% else %}
+                        Заявка удалена
+                     {% endif %}
+                  </td>
+                  <td>{{ thesis.application.email if thesis.application else '—' }}</td>
                   <td>{{ thesis.title }}</td>
                   <td>
+                     <a href="{{ url_for('admin.view_thesis_file', thesis_id=thesis.id) }}" target="_blank" class="small">
+                        📄 {{ thesis.file_name }}
+                     </a>
+                  </td>
+                  <td>
                      <span class="status-badge
-                        {% if thesis.status_value == 'pending' %}status-pending
-                        {% elif thesis.status_value == 'accepted' %}status-accepted
-                        {% elif thesis.status_value == 'rejected' %}status-rejected
+                        {% if thesis.status.value == 'pending' %}status-pending
+                        {% elif thesis.status.value == 'accepted' %}status-accepted
+                        {% elif thesis.status.value == 'rejected' %}status-rejected
                         {% endif %}">
-                        {% if thesis.status_value == 'pending' %}На рассмотрении
-                        {% elif thesis.status_value == 'accepted' %}Принят
-                        {% elif thesis.status_value == 'rejected' %}Отклонён
+                        {% if thesis.status.value == 'pending' %}На рассмотрении
+                        {% elif thesis.status.value == 'accepted' %}Принят
+                        {% elif thesis.status.value == 'rejected' %}Отклонён
                         {% endif %}
                      </span>
                   </td>
                   <td>
                      <form method="POST" action="/admin/theses/{{ thesis.id }}/status">
                         <select name="status" onchange="this.form.submit()" class="small">
-                           <option value="pending" {% if thesis.status_value =='pending' %}selected{% endif %}>На рассмотрении</option>
-                           <option value="accepted" {% if thesis.status_value =='accepted' %}selected{% endif %}>Принят</option>
-                           <option value="rejected" {% if thesis.status_value =='rejected' %}selected{% endif %}>Отклонён</option>
+                           <option value="pending" {% if thesis.status.value =='pending' %}selected{% endif %}>На рассмотрении</option>
+                           <option value="accepted" {% if thesis.status.value =='accepted' %}selected{% endif %}>Принят</option>
+                           <option value="rejected" {% if thesis.status.value =='rejected' %}selected{% endif %}>Отклонён</option>
                         </select>
                      </form>
                   </td>

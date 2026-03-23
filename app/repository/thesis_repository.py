@@ -1,3 +1,4 @@
+from app.models.application import Application
 from app.models.thesis import Thesis
 
 class ThesisRepository:
@@ -14,5 +15,7 @@ class ThesisRepository:
         return thesis
 
     def get_by_conf_id(self, conf_id, session):
-        theses = session.query(Thesis).filter_by(conference_id=conf_id).all()
-        return theses
+        return session.query(Thesis)\
+            .join(Application)\
+            .filter(Application.conference_id == conf_id)\
+            .all()

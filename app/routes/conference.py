@@ -1,4 +1,6 @@
 from flask import Blueprint, render_template, abort, request, g, redirect
+
+from app.dto_builders.dto_builder import build_application_dto
 from app.service import conference_service, application_service, thesis_service
 
 
@@ -22,8 +24,8 @@ def show_upload_thesis(conf_id):
 
 @conference_bp.post(f'/<int:conf_id>/application')
 def create_application(conf_id):
-    application_data = request.form
-    application_service.create_application(conf_id, application_data, g.db)
+    dto = build_application_dto(request.form)
+    application_service.create_application(conf_id, dto, g.db)
     return redirect(f'/conference/{conf_id}')
 
 @conference_bp.post(f'<int:conf_id>/thesis')

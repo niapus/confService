@@ -5,407 +5,438 @@
 {% block content %}
 
 <div class="thesis-detail-container">
-    <div class="thesis-header">
-        <h1>{{ thesis.title }}</h1>
-        <div class="thesis-meta">
-            <span class="status-badge status-{{ thesis.status.value }}">
-                {% if thesis.status.value == 'pending' %}⏳ На рассмотрении
-                {% elif thesis.status.value == 'accepted' %}✅ Принят
-                {% elif thesis.status.value == 'rejected' %}❌ Отклонён
-                {% endif %}
-            </span>
-            <span class="date-badge">📅 ID: {{ thesis.id }}</span>
-        </div>
-    </div>
+   <div class="thesis-header">
+      <h1>{{ thesis.title }}</h1>
+      <div class="thesis-meta">
+         <span class="status-badge status-{{ thesis.status.value }}">
+            {% if thesis.status.value == 'pending' %}⏳ На рассмотрении
+            {% elif thesis.status.value == 'accepted' %}✅ Принят
+            {% elif thesis.status.value == 'rejected' %}❌ Отклонён
+            {% endif %}
+         </span>
+         <span class="date-badge">📅 ID: {{ thesis.id }}</span>
+      </div>
+   </div>
 
-    <div class="thesis-content-grid">
-        <!-- Информация об авторе -->
-        <div class="info-card">
-            <h2>Информация об авторе</h2>
-            
-            <div class="info-row">
-                <div class="info-label">ФИО:</div>
-                <div class="info-value">
-                    {{ thesis.surname }} {{ thesis.name }} 
-                    {% if thesis.patronymic %}{{ thesis.patronymic }}{% endif %}
-                </div>
-            </div>
-            
-            <div class="info-row">
-                <div class="info-label">Email:</div>
-                <div class="info-value">
-                    <a href="mailto:{{ thesis.email }}" class="email-link">{{ thesis.email }}</a>
-                </div>
-            </div>
-        </div>
+   <div class="thesis-content-grid">
+      <div class="info-card">
+         <h2>Информация об авторе</h2>
 
-        <!-- Основная информация о тезисе -->
-        <div class="info-card">
-            <h2>Основная информация</h2>
-            
-            <div class="info-row">
-                <div class="info-label">Название тезиса:</div>
-                <div class="info-value">{{ thesis.title }}</div>
+         <div class="info-row">
+            <div class="info-label">ФИО:</div>
+            <div class="info-value">
+               {{ thesis.application.surname }} {{ thesis.application.name }}
+               {% if thesis.application.patronymic %}{{ thesis.application.patronymic }}{% endif %}
             </div>
-            
-            <div class="info-row">
-                <div class="info-label">Файл:</div>
-                <div class="info-value">
-                    {% if thesis.file_path %}
-                       {# <a href="{{ url_for('thesis.download', thesis_id=thesis.id) }}" class="file-link">
-                            📎 {{ thesis.file_name or thesis.file_path.split('/')[-1] }}
-                        </a>#}
-                    {% else %}
-                        <span class="empty-value">Файл не прикреплен</span>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
+         </div>
 
-        <!-- Информация о конференции -->
-        <div class="info-card">
-            <h2>Конференция</h2>
-            
-            <div class="info-row">
-                <div class="info-label">Название:</div>
-                <div class="info-value">
-                    <a href="{{ url_for('admin.conference_page', conf_id=thesis.application.conference.id) }}" class="conference-link">
-                        {{ thesis.application.conference.title }}
-                    </a>
-                </div>
+         <div class="info-row">
+            <div class="info-label">Email:</div>
+            <div class="info-value">
+               <a href="mailto:{{ thesis.application.email }}" class="email-link">{{ thesis.application.email }}</a>
             </div>
-            
-            <div class="info-row">
-                <div class="info-label">Даты проведения:</div>
-                <div class="info-value">
-                    {{ thesis.application.conference.start_date.strftime('%d.%m.%Y %H:%M') }} -
-                    {{ thesis.application.conference.end_date.strftime('%d.%m.%Y %H:%M') }}
-                </div>
-            </div>
-            
-            <div class="info-row">
-                <div class="info-label">Дедлайн регистрации:</div>
-                <div class="info-value">{{ thesis.application.conference.registration_deadline.strftime('%d.%m.%Y') }}</div>
-            </div>
-            
-            <div class="info-row">
-                <div class="info-label">Дедлайн тезисов:</div>
-                <div class="info-value">{{ thesis.application.conference.submission_deadline.strftime('%d.%m.%Y') }}</div>
-            </div>
-        </div>
+         </div>
 
-        <!-- Дополнительная информация о конференции -->
-        <div class="info-card">
-            <h2>Дополнительно</h2>
-            
-            <div class="info-row">
-                <div class="info-label">Дата программы:</div>
-                <div class="info-value">{{ thesis.application.conference.program_date.strftime('%d.%m.%Y') }}</div>
-            </div>
-            
-            <div class="info-row">
-                <div class="info-label">Время на выступление:</div>
-                <div class="info-value">{{ thesis.application.conference.performance_time }} минут</div>
-            </div>
-            
-            <div class="info-row">
-                <div class="info-label">Теги:</div>
-                <div class="info-value">{{ thesis.application.conference.tagline or '—' }}</div>
-            </div>
-        </div>
+         <div class="info-row">
+            <div class="info-label">Авторы тезиса:</div>
+            <div class="info-value">{{ thesis.authors }}</div>
+         </div>
+      </div>
 
-        <!-- Действия с тезисом -->
-        <div class="action-card">
-            <h2>Действия</h2>
-            <div class="action-buttons">
-                {% if thesis.status.value == 'pending' %}
-                    <button class="btn btn-success" onclick="updateStatus('accepted')">
-                        ✅ Принять тезис
-                    </button>
-                    <button class="btn btn-danger" onclick="updateStatus('rejected')">
-                        ❌ Отклонить тезис
-                    </button>
-                {% endif %}
-                
-                {#<a href="{{ url_for('thesis.download', thesis_id=thesis.id) }}" class="btn btn-primary">
-                    📎 Скачать файл
-                </a>#}
-                
-                <button class="btn btn-secondary" onclick="window.print()">
-                    🖨️ Печать
-                </button>
+      <div class="info-card">
+         <h2>Основная информация</h2>
+
+         <div class="info-row">
+            <div class="info-label">Название тезиса:</div>
+            <div class="info-value">{{ thesis.title }}</div>
+         </div>
+
+         <div class="info-row">
+            <div class="info-label">Файл:</div>
+            <div class="info-value">
+               {% if thesis.file_path %}
+                  <a href="{{ url_for('admin.view_thesis_file', thesis_id=thesis.id) }}" class="file-link">
+                      {{ thesis.file_name }}
+                  </a>
+               {% else %}
+                  <span class="empty-value">Файл не прикреплен</span>
+               {% endif %}
             </div>
-        </div>
-    </div>
+         </div>
+      </div>
+
+      <div class="info-card">
+         <h2>Конференция</h2>
+
+         <div class="info-row">
+            <div class="info-label">Название:</div>
+            <div class="info-value">
+               <a href="{{ url_for('admin.conference_page', conf_id=thesis.application.conference.id) }}" class="conference-link">
+                  {{ thesis.application.conference.title }}
+               </a>
+            </div>
+         </div>
+
+         <div class="info-row">
+            <div class="info-label">Даты проведения:</div>
+            <div class="info-value">
+               {{ thesis.application.conference.start_date }} -
+               {{ thesis.application.conference.end_date }}
+            </div>
+         </div>
+
+         <div class="info-row">
+            <div class="info-label">Дедлайн регистрации:</div>
+            <div class="info-value">{{ thesis.application.conference.registration_deadline }}</div>
+         </div>
+
+         <div class="info-row">
+            <div class="info-label">Дедлайн тезисов:</div>
+            <div class="info-value">{{ thesis.application.conference.submission_deadline }}</div>
+         </div>
+      </div>
+
+      <div class="info-card">
+         <h2>Дополнительно</h2>
+
+         <div class="info-row">
+            <div class="info-label">Время на выступление:</div>
+            <div class="info-value">{{ thesis.application.conference.performance_time }} минут</div>
+         </div>
+
+         <div class="info-row">
+            <div class="info-label">Теги:</div>
+            <div class="info-value">{{ thesis.application.conference.tagline or '—' }}</div>
+         </div>
+
+         <div class="info-row">
+            <div class="info-label">Статус участника:</div>
+            <div class="info-value">
+               {% if thesis.application.is_worker and thesis.application.is_student %}
+                  Работает и учится
+               {% elif thesis.application.is_worker %}
+                  Работник
+               {% elif thesis.application.is_student %}
+                  Студент
+               {% else %}
+                  —
+               {% endif %}
+            </div>
+         </div>
+
+         <div class="info-row">
+            <div class="info-label">Ученая степень:</div>
+            <div class="info-value">
+               {% if thesis.application.degree.value == 'none' %}Нет
+               {% elif thesis.application.degree.value == 'candidate' %}Кандидат наук
+               {% elif thesis.application.degree.value == 'doctor' %}Доктор наук
+               {% endif %}
+            </div>
+         </div>
+
+         <div class="info-row">
+            <div class="info-label">Формат участия:</div>
+            <div class="info-value">
+               {% if thesis.application.participation_format.value == 'offline' %}Очно
+               {% elif thesis.application.participation_format.value == 'online' %}Онлайн
+               {% endif %}
+            </div>
+         </div>
+      </div>
+
+      <div class="action-card">
+         <h2>Действия</h2>
+         <div class="action-buttons">
+            {% if thesis.status.value == 'pending' %}
+               <button class="btn btn-success" onclick="updateStatus('accepted')">
+                  ✅ Принять тезис
+               </button>
+               <button class="btn btn-danger" onclick="updateStatus('rejected')">
+                  ❌ Отклонить тезис
+               </button>
+            {% endif %}
+
+            {#{% if thesis.file_path %}
+               <a href="{{ url_for('thesis.download', thesis_id=thesis.id) }}" class="btn btn-primary">
+                  📎 Скачать файл
+               </a>
+            {% endif %}#}
+
+            <button class="btn btn-secondary" onclick="window.print()">
+               🖨️ Печать
+            </button>
+         </div>
+      </div>
+   </div>
 </div>
 
 <style>
 .thesis-detail-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+   max-width: 1200px;
+   margin: 0 auto;
+   padding: 20px;
 }
 
 .thesis-header {
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid #eee;
+   margin-bottom: 30px;
+   padding-bottom: 20px;
+   border-bottom: 2px solid #eee;
 }
 
 .thesis-header h1 {
-    margin: 0 0 15px 0;
-    color: #2c3e50;
-    font-size: 2em;
+   margin: 0 0 15px 0;
+   color: #2c3e50;
+   font-size: 2em;
 }
 
 .thesis-meta {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-    flex-wrap: wrap;
+   display: flex;
+   gap: 15px;
+   align-items: center;
+   flex-wrap: wrap;
 }
 
 .status-badge {
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 0.9em;
-    font-weight: bold;
-    display: inline-block;
+   padding: 5px 12px;
+   border-radius: 20px;
+   font-size: 0.9em;
+   font-weight: bold;
+   display: inline-block;
 }
 
 .status-pending {
-    background: #fff3cd;
-    color: #856404;
+   background: #fff3cd;
+   color: #856404;
 }
 
 .status-accepted {
-    background: #d4edda;
-    color: #155724;
+   background: #d4edda;
+   color: #155724;
 }
 
 .status-rejected {
-    background: #f8d7da;
-    color: #721c24;
+   background: #f8d7da;
+   color: #721c24;
 }
 
 .date-badge {
-    padding: 5px 12px;
-    background: #e9ecef;
-    border-radius: 20px;
-    font-size: 0.9em;
-    color: #495057;
+   padding: 5px 12px;
+   background: #e9ecef;
+   border-radius: 20px;
+   font-size: 0.9em;
+   color: #495057;
 }
 
 .thesis-content-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
-    gap: 20px;
+   display: grid;
+   grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+   gap: 20px;
 }
 
 .info-card {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    transition: box-shadow 0.3s ease;
+   background: white;
+   border-radius: 12px;
+   padding: 20px;
+   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+   transition: box-shadow 0.3s ease;
 }
 
 .info-card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .info-card.full-width {
-    grid-column: 1 / -1;
+   grid-column: 1 / -1;
 }
 
 .info-card h2 {
-    margin: 0 0 20px 0;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #3498db;
-    color: #2c3e50;
-    font-size: 1.3em;
+   margin: 0 0 20px 0;
+   padding-bottom: 10px;
+   border-bottom: 2px solid #3498db;
+   color: #2c3e50;
+   font-size: 1.3em;
 }
 
 .info-row {
-    display: flex;
-    padding: 10px 0;
-    border-bottom: 1px solid #f0f0f0;
+   display: flex;
+   padding: 10px 0;
+   border-bottom: 1px solid #f0f0f0;
 }
 
 .info-row:last-child {
-    border-bottom: none;
+   border-bottom: none;
 }
 
 .info-label {
-    width: 140px;
-    flex-shrink: 0;
-    font-weight: 600;
-    color: #7f8c8d;
+   width: 140px;
+   flex-shrink: 0;
+   font-weight: 600;
+   color: #7f8c8d;
 }
 
 .info-value {
-    flex: 1;
-    color: #2c3e50;
+   flex: 1;
+   color: #2c3e50;
 }
 
 .empty-value {
-    color: #bdc3c7;
-    font-style: italic;
+   color: #bdc3c7;
+   font-style: italic;
 }
 
 .conference-link, .email-link, .file-link {
-    color: #3498db;
-    text-decoration: none;
-    transition: color 0.3s ease;
+   color: #3498db;
+   text-decoration: none;
+   transition: color 0.3s ease;
 }
 
 .conference-link:hover, .email-link:hover, .file-link:hover {
-    color: #2980b9;
-    text-decoration: underline;
+   color: #2980b9;
+   text-decoration: underline;
 }
 
 .action-card {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    grid-column: 1 / -1;
+   background: white;
+   border-radius: 12px;
+   padding: 20px;
+   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+   grid-column: 1 / -1;
 }
 
 .action-card h2 {
-    margin: 0 0 20px 0;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #3498db;
-    color: #2c3e50;
-    font-size: 1.3em;
+   margin: 0 0 20px 0;
+   padding-bottom: 10px;
+   border-bottom: 2px solid #3498db;
+   color: #2c3e50;
+   font-size: 1.3em;
 }
 
 .action-buttons {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
+   display: flex;
+   gap: 15px;
+   flex-wrap: wrap;
 }
 
 .btn {
-    padding: 10px 20px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-size: 0.9em;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    border: none;
-    display: inline-block;
+   padding: 10px 20px;
+   border-radius: 6px;
+   text-decoration: none;
+   font-size: 0.9em;
+   transition: all 0.3s ease;
+   cursor: pointer;
+   border: none;
+   display: inline-block;
 }
 
 .btn-primary {
-    background: #3498db;
-    color: white;
+   background: #3498db;
+   color: white;
 }
 
 .btn-primary:hover {
-    background: #2980b9;
-    transform: translateY(-2px);
+   background: #2980b9;
+   transform: translateY(-2px);
 }
 
 .btn-success {
-    background: #28a745;
-    color: white;
+   background: #28a745;
+   color: white;
 }
 
 .btn-success:hover {
-    background: #218838;
-    transform: translateY(-2px);
+   background: #218838;
+   transform: translateY(-2px);
 }
 
 .btn-danger {
-    background: #dc3545;
-    color: white;
+   background: #dc3545;
+   color: white;
 }
 
 .btn-danger:hover {
-    background: #c82333;
-    transform: translateY(-2px);
+   background: #c82333;
+   transform: translateY(-2px);
 }
 
 .btn-secondary {
-    background: #6c757d;
-    color: white;
+   background: #6c757d;
+   color: white;
 }
 
 .btn-secondary:hover {
-    background: #5a6268;
-    transform: translateY(-2px);
+   background: #5a6268;
+   transform: translateY(-2px);
 }
 
 .btn-outline {
-    background: transparent;
-    border: 1px solid #3498db;
-    color: #3498db;
+   background: transparent;
+   border: 1px solid #3498db;
+   color: #3498db;
 }
 
 .btn-outline:hover {
-    background: #3498db;
-    color: white;
-    transform: translateY(-2px);
+   background: #3498db;
+   color: white;
+   transform: translateY(-2px);
 }
 
 /* Адаптивность */
 @media (max-width: 768px) {
-    .thesis-detail-container {
-        padding: 10px;
-    }
-    
-    .thesis-content-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-    
-    .info-row {
-        flex-direction: column;
-    }
-    
-    .info-label {
-        width: auto;
-        margin-bottom: 5px;
-    }
-    
-    .action-buttons {
-        flex-direction: column;
-    }
-    
-    .btn {
-        text-align: center;
-    }
-    
-    .thesis-header h1 {
-        font-size: 1.5em;
-    }
+   .thesis-detail-container {
+      padding: 10px;
+   }
+
+   .thesis-content-grid {
+      grid-template-columns: 1fr;
+      gap: 15px;
+   }
+
+   .info-row {
+      flex-direction: column;
+   }
+
+   .info-label {
+      width: auto;
+      margin-bottom: 5px;
+   }
+
+   .action-buttons {
+      flex-direction: column;
+   }
+
+   .btn {
+      text-align: center;
+   }
+
+   .thesis-header h1 {
+      font-size: 1.5em;
+   }
 }
 </style>
 
 <script>
 function updateStatus(status) {
-    if (confirm(`Вы уверены, что хотите ${status === 'accepted' ? 'принять' : 'отклонить'} этот тезис?`)) {
-        fetch(`/admin/theses/{{ thesis.id }}/status`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                {#'X-CSRFToken': '{{ csrf_token() }}'#}
-            },
-            body: JSON.stringify({ status: status })
-        })
-        .then(response => {
-            if (response.ok) {
-                window.location.reload();
-            } else {
-                alert('Произошла ошибка при обновлении статуса');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
+   if (confirm(`Вы уверены, что хотите ${status === 'accepted' ? 'принять' : 'отклонить'} этот тезис?`)) {
+      fetch(`/admin/theses/{{ thesis.id }}/status`, {
+         method: 'POST',
+         headers: {
+            'Content-Type': 'application/json',
+            {#'X-CSRFToken': '{{ csrf_token() }}'#}
+         },
+         body: JSON.stringify({ status: status })
+      })
+      .then(response => {
+         if (response.ok) {
+            window.location.reload();
+         } else {
             alert('Произошла ошибка при обновлении статуса');
-        });
-    }
+         }
+      })
+      .catch(error => {
+         console.error('Error:', error);
+         alert('Произошла ошибка при обновлении статуса');
+      });
+   }
 }
 </script>
 

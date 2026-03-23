@@ -20,7 +20,7 @@ class ApplicationMapper:
             work_position=application.work_position,
             study_name=application.study_name,
             study_place=application.study_place,
-            study_level=application.study_level.value,
+            study_level=application.study_level.value if application.study_level else None,
             participation_format=application.participation_format.value,
             email=application.email,
             theses=[self.__thesis_to_dto(t) for t in application.theses]
@@ -35,7 +35,6 @@ class ApplicationMapper:
             file_name=thesis.file_name,
             status=thesis.status.value
         )
-
 
     def applications_to_full_applications_dto(self, applications):
         return [self.__to_dto(app) for app in applications]

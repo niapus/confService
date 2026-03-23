@@ -23,6 +23,11 @@ class ValidationException(AppException):
     def __init__(self, message):
         super().__init__(message, status_code=400)
 
+class ConversionException(AppException):
+    def __init__(self, field, message):
+        message = f"{field}: {message}"
+        super().__init__(message, status_code=400) #TODO
+
 class ApplicationNotFoundException(AppException):
     def __init__(self, email):
         message = f"Заявка с email {email} не найдена"
