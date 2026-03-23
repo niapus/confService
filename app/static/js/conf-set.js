@@ -94,7 +94,7 @@ function ConferenceApp() {
    });
 
    useEffect(() => {
-      fetch(`/admin/api/conferences/${conferenceId}/applications`)
+      fetch(`/admin/api/conferences/${conferenceId}`)
          .then(res => {
             if (!res.ok) throw new Error('Ошибка загрузки');
             return res.json();
