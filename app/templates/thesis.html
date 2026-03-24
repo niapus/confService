@@ -48,7 +48,7 @@
       <legend>Доклад</legend>
 
       <div class="form-group">
-         <label>Авторы тезисов *</label>
+         <label>Авторы доклада *</label>
          <input type="text" name="authors" required placeholder="Иванов И.И., Петров П.П.">
          <small>Укажите всех авторов через запятую</small>
       </div>
@@ -67,9 +67,10 @@
 
    <div class="form-actions">
       <button type="submit" class="btn btn-primary">Отправить тезисы</button>
-      <a href="{{ url_for('conference.show_conference', conf_id=conference.id) }}" class="btn btn-secondary">Отмена</a>
+      <a href="javascript:history.back()" class="btn btn-secondary">Отмена</a>
    </div>
 </form>
+
 <script src="{{ url_for('static', filename='js/application.js') }}"></script>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/application.css') }}">
 {% endblock %}

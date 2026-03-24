@@ -1,8 +1,7 @@
-/venv
+venv/
 /uploads
 conference_service.db
-.gitignore
-__pycache__
+__pycache__/
 *.pyc
-.venv
-.idea
+.venv/
+.idea/

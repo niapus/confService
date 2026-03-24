@@ -1,4 +1,5 @@
-from app.exceptions.exceptions import ApplicationAfterDeadlineException, ApplicationAlreadyExists, ValidationException
+from app.exceptions.validation_exception import ValidationException
+from app.exceptions.conflict_exception import ApplicationAfterDeadlineException, ApplicationAlreadyExists
 from app.mapper.application_mapper import ApplicationMapper
 from app.repository.application_repository import ApplicationRepository
 from app.service import ConferenceService
@@ -45,6 +46,9 @@ class ApplicationService:
         data = self.__mapper.applications_to_full_applications_dto(applications)
 
         return data
+
+    def get_all_applications(self, session):
+        return self.__repo.get_all(session)
 
     def __fill_application(self, application, dto):
         application.surname = dto.surname

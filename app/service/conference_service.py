@@ -1,4 +1,5 @@
-from app.exceptions.exceptions import ConferenceNotFoundException, ValidationException
+from app.exceptions.validation_exception import ValidationException
+from app.exceptions.not_found_exception import ConferenceNotFoundException
 from app.repository.conference_repository import ConferenceRepository
 from datetime import date
 from app.models.conference import Conference

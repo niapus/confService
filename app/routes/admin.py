@@ -3,7 +3,7 @@ import os.path
 from flask import Blueprint, render_template, request, redirect, g, send_from_directory
 
 from app.dto_builders.dto_builder import build_conference_dto
-from app.service import conference_service, thesis_service
+from app.service import conference_service, thesis_service, application_service
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
@@ -32,9 +32,9 @@ def update_conference(conf_id):
 def show_admin_conferences():
     conferences = conference_service.get_all_conferences(g.db)
     theses = thesis_service.get_all_theses(g.db)
-
-    rendered = render_template("admin.html", theses=theses, conferences=conferences)
-    return rendered
+    applications = application_service.get_all_applications(g.db)
+    return render_template("admin.html", theses=theses,
+                               conferences=conferences, applications=applications)
 
 @admin_bp.post(f'/theses/<int:thesis_id>/status')
 def update_thesis_status(thesis_id):

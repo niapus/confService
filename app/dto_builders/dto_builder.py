@@ -1,5 +1,5 @@
 from app.dto.dto import ConferenceDTO, ApplicationDTO
-from app.exceptions.exceptions import ConversionException
+from app.exceptions.conversion_exception import EmptyRequiredFieldException, InvalidFieldFormatException
 from datetime import datetime
 
 from app.models.application import GenderEnum, DegreeEnum, EducationEnum, ParticipationFormatEnum
@@ -67,42 +67,42 @@ def build_application_dto(form):
 
 def __parse_date(value, field):
     if not value or not value.strip():
-        raise ConversionException(field, "Поле не может быть пустым")
+        raise EmptyRequiredFieldException(field)
     try:
         return datetime.strptime(value, "%Y-%m-%d").date()
     except ValueError:
-        raise ConversionException(field, "Неверный формат даты")
+        raise InvalidFieldFormatException(field, "ожидается формат YYYY-MM-DD")
 
 def __parse_int(value, field):
     if not value or not value.strip():
-        raise ConversionException(field, "Поле не может быть пустым")
+        raise EmptyRequiredFieldException(field)
     try:
         return int(value.strip())
     except:
-        raise ConversionException(field, "Должно быть числом")
+        raise InvalidFieldFormatException(field, "должно быть число")
 
 def __parse_str(value, field, required = True):
     if value is None:
         value = ""
     value = value.strip()
     if required and not value:
-        raise ConversionException(field, "Поле не может быть пустым")
+        raise EmptyRequiredFieldException(field)
     return value if value else None
 
 def __parse_enum(value, enum_class, field):
     if not value or not value.strip():
-        raise ConversionException(field, "Поле не может быть пустым")
+        raise EmptyRequiredFieldException(field)
     try:
          return enum_class(value.strip())
     except:
-        raise ConversionException(field, f"Недопустимое значение {value}")
+        raise InvalidFieldFormatException(field, f"недопустимое значение {value}")
 
 def __parse_statuses(form):
     statuses = form.getlist("status")
     if statuses is None:
-        raise ConversionException("status", "Обязательное поле status не может быть пустым")
+        raise EmptyRequiredFieldException("status")
     if not isinstance(statuses, list):
-        raise ConversionException("status", "Ожидается список статусов")
+        raise InvalidFieldFormatException("status", "Ожидается список статусов")
 
     is_worker = "is_worker" in statuses
     is_student = "is_student" in statuses

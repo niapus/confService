@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session, joinedload
 from app.models.application import Application
-from app.models.thesis import Thesis
 
 
 class ApplicationRepository:
@@ -21,3 +20,6 @@ class ApplicationRepository:
         ).all()
 
         return result
+
+    def get_all(self, session):
+        return session.query(Application).all()

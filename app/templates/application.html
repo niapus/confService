@@ -6,7 +6,6 @@
 <h2>Заявка на участие в конференции</h2>
 
 <form method="post" enctype="multipart/form-data" class="form-application" id="application-form">
-   {# <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> #}
    <input type="hidden" name="conference_id" value="{{ conference.id }}">
 
    <fieldset>
@@ -142,7 +141,7 @@
 
    <div class="form-actions">
       <button type="submit" class="btn btn-primary">Отправить заявку</button>
-      {# <a href="{{ url_for('conference_detail', id=conference.id) }}" class="btn btn-secondary">Отмена</a> #}
+      <a href="javascript:history.back()" class="btn btn-secondary">Отмена</a>
    </div>
 </form>
 

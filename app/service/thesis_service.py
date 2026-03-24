@@ -1,8 +1,10 @@
 import os
 from werkzeug.utils import secure_filename
 
-from app.exceptions.exceptions import ApplicationNotFoundException, ThesisNotFoundException, ValidationException, \
-    FileNullNameException, FileExtensionException, FileSizeException, ThesisAfterDeadlineException
+from app.exceptions.conflict_exception import ThesisAfterDeadlineException
+from app.exceptions.exceptions import FileNullNameException, FileExtensionException, FileSizeException
+from app.exceptions.not_found_exception import ApplicationNotFoundException, ThesisNotFoundException
+from app.exceptions.validation_exception import ValidationException
 from app.repository.thesis_repository import ThesisRepository
 from app.service import ConferenceService, ApplicationService
 from app.models.thesis import Thesis, ThesisStatus

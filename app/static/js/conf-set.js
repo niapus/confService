@@ -61,7 +61,7 @@ function ApplicationRow({ application }) {
                application.theses[0].status === 'accepted' && '✅ Принят',
                application.theses[0].status === 'rejected' && '❌ Отклонён'
             )
-         ) : React.createElement('span', { className: 'status-badge no-thesis' }, '📄 Нет тезисов')
+         ) : React.createElement('div', null, 'Нет')
       ),
       React.createElement(
          'td',
