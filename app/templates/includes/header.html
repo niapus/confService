@@ -1,10 +1,16 @@
-<header class="site-header">
-   <div class="container conf-header">
-      <div>
-         {# <h1 class="conf-title">{{ conference.title }}</h1> #}
-         <p class="conf-data">
-           {# {{ conference.date }} | {{ conference.location }}#}
-         </p>
+{% if conference %}
+   <header class="site-header">
+      <div class="container conf-header">
+         <div>
+            <h1 class="conf-title">{{ conference.title }}</h1>
+               <p class="conf-data">
+                  {% if conference.start_date.date == conference.end_date.date %}
+                     Дата проведения: {{ conference.start_date }}
+                  {% else %}
+                     Даты проведения: с {{ conference.start_date }} по {{ conference.end_date }}
+                  {% endif %}
+               </p>
+         </div>
       </div>
-   </div>
-</header>
+   </header>
+{% endif %}

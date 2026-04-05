@@ -44,7 +44,7 @@
       </div>
 
       <div class="info-card">
-         <h2>Основная информация</h2>
+         <h2>Доклад</h2>
 
          <div class="info-row">
             <div class="info-label">Название тезиса:</div>
@@ -144,7 +144,7 @@
          </div>
       </div>
 
-      <div class="action-card">
+      {#<div class="action-card">
          <h2>Действия</h2>
          <div class="action-buttons">
             {% if thesis.status.value == 'pending' %}
@@ -156,17 +156,13 @@
                </button>
             {% endif %}
 
-            {#{% if thesis.file_path %}
+            {% if thesis.file_path %}
                <a href="{{ url_for('thesis.download', thesis_id=thesis.id) }}" class="btn btn-primary">
                   📎 Скачать файл
                </a>
-            {% endif %}#}
-
-            <button class="btn btn-secondary" onclick="window.print()">
-               🖨️ Печать
-            </button>
+            {% endif %}
          </div>
-      </div>
+      </div>#}
    </div>
 </div>
 

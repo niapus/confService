@@ -26,6 +26,7 @@
             {% set ns.last_date = conference.start_date %}
          {% endif %}
 
+      <a href="{{ url_for('conference.show_conference', conf_id=conference.id) }}" style="text-decoration: none">
          <div class="timeline-item future" data-start-date="{{ conference.start_date.isoformat() }}">
             <div class="timeline-content">
                <div class="card-badge">
@@ -98,6 +99,7 @@
                </div>
             </div>
          </div>
+      </a>
       {% endfor %}
    </div>
 </div>
@@ -125,6 +127,8 @@
             {% set ns.last_date = conference.start_date %}
          {% endif %}
 
+
+      <a href="{{ url_for('conference.show_conference', conf_id=conference.id) }}" style="text-decoration: none">
          <div class="timeline-item past">
             <div class="timeline-content">
                <div class="card-badge past">
@@ -160,7 +164,7 @@
                </div>
             </div>
          </div>
-
+      </a>
       {% endfor %}
    </div>
 </div>
@@ -168,7 +172,7 @@
 
 {% if not conferences_future and not conferences_past %}
 <div class="empty-state">
-   <div class="empty-icon">📭</div>
+   <div class="empty">📭</div>
     <h3>Нет конференций</h3>
     <p>На данный момент нет запланированных конференций</p>
 </div>

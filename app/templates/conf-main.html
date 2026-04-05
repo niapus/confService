@@ -4,25 +4,41 @@
 
 {% block content %}
 
-<h2>{{ conference.tagline }}</h2>
-<section class="deadlines">
-   <h3>Важные даты</h3>
-   <ul>
-      <li>Окончание регистрации: {{ conference.registration_deadline }}</li>
-      <li>Окончание приема тезисов: {{ conference.submission_deadline }}</li>
-   </ul>
-</section>
-<p>{{ conference.description_html|safe }}</p>
-<section class="conf-application">
-   <div class="buttons">
-      <a class="btn"
-         href="{{ url_for('conference.show_application', conf_id=conference.id) }}">
-         Подать заявку
-      </a>
-      <a class="btn btn-last"
-         href="{{ url_for('conference.show_upload_thesis', conf_id=conference.id) }}">
-         Загрузить тезисы
-      </a>
+<div class="conference-card">
+   <h2>Теги: {{ conference.tagline }}</h2>
+   <section class="deadlines">
+      <h3>Важные даты</h3>
+      <ul>
+         <li>Окончание регистрации: {{ conference.registration_deadline }}</li>
+         <li>Окончание приема тезисов: {{ conference.submission_deadline }}</li>
+      </ul>
+   </section>
+   <p>{{ conference.description_html|safe }}</p>
+   <div class="conf-application">
+      <div class="buttons">
+         <a class="btn"
+            href="{{ url_for('conference.show_application', conf_id=conference.id) }}">
+            Подать заявку
+         </a>
+         <a class="btn btn-last"
+            href="{{ url_for('conference.show_upload_thesis', conf_id=conference.id) }}">
+            Загрузить тезисы
+         </a>
+      </div>
    </div>
-</section>
+</div>
+
+<style>
+.conference-card {
+   background: white;
+   border-radius: 16px;
+   padding: 0 50px 40px;
+   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+   border: 1px solid #ddd;
+}
+
+.conf-application {
+   padding-top: 25px;
+}
+</style>
 {% endblock %}

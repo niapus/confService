@@ -143,7 +143,10 @@ function ConferenceApp() {
    return React.createElement(
       'div',
       { className: 'conference-detail' },
-      React.createElement('h1', null, `Конференция #${conferenceId}`),
+      React.createElement(
+         'h1', null, `Конференция #${conferenceId}`,
+         React.createElement('a', { href: '/admin', style: { textDecoration: 'none', color: 'inherit'}}, ' | На главную')
+      ),
 
       React.createElement(
          'div',
