@@ -14,7 +14,7 @@
             {% elif thesis.status.value == 'rejected' %}❌ Отклонён
             {% endif %}
          </span>
-         <span class="date-badge">📅 ID: {{ thesis.id }}</span>
+         <span class="date-badge">ID: {{ thesis.id }}</span>
       </div>
    </div>
 
@@ -144,25 +144,74 @@
          </div>
       </div>
 
-      {#<div class="action-card">
+      <div class="info-card full-width">
+         <h2>Личные данные</h2>
+
+         <div class="info-row">
+            <div class="info-label">Пол:</div>
+            <div class="info-value">
+               {% if thesis.application.gender.value == 'male' %}Мужской
+               {% elif thesis.application.gender.value == 'female' %}Женский
+               {% endif %}
+            </div>
+         </div>
+
+         <div class="info-row">
+            <div class="info-label">Дата рождения:</div>
+            <div class="info-value">{{ thesis.application.birth_date }}</div>
+         </div>
+
+         {% if thesis.application.work_name %}
+         <div class="info-row">
+            <div class="info-label">Место работы:</div>
+            <div class="info-value">
+               {% if thesis.application.work_name %}{{ thesis.application.work_name }}{% endif %}
+               {% if thesis.application.work_place %}, {{ thesis.application.work_place }}{% endif %}
+               {% if thesis.application.work_position %}, {{ thesis.application.work_position }}{% endif %}
+            </div>
+         </div>
+         {% endif %}
+
+         {% if thesis.application.study_name %}
+         <div class="info-row">
+            <div class="info-label">Место учёбы:</div>
+            <div class="info-value">
+               {% if thesis.application.study_name %}{{ thesis.application.study_name }}{% endif %}
+               {% if thesis.application.study_place %}, {{ thesis.application.study_place }}{% endif %}
+               {% if thesis.application.study_level %}
+                  <br>
+                  <span class="study-level">
+                     {% if thesis.application.study_level.value == 'none' %}Бакалавриат
+                     {% elif thesis.application.study_level.value == 'education_spec' %}Специалитет
+                     {% elif thesis.application.study_level.value == 'education_mag' %}Магистратура
+                     {% elif thesis.application.study_level.value == 'education_asp' %}Аспирантура
+                     {% endif %}
+                  </span>
+               {% endif %}
+            </div>
+         </div>
+         {% endif %}
+      </div>
+
+      <div class="action-card">
          <h2>Действия</h2>
          <div class="action-buttons">
             {% if thesis.status.value == 'pending' %}
                <button class="btn btn-success" onclick="updateStatus('accepted')">
                   ✅ Принять тезис
                </button>
-               <button class="btn btn-danger" onclick="updateStatus('rejected')">
-                  ❌ Отклонить тезис
-               </button>
             {% endif %}
+            <button class="btn btn-deny" onclick="updateStatus('rejected')">
+               ❌ Отклонить тезис
+            </button>
 
-            {% if thesis.file_path %}
+            {#{% if thesis.file_path %}
                <a href="{{ url_for('thesis.download', thesis_id=thesis.id) }}" class="btn btn-primary">
                   📎 Скачать файл
                </a>
-            {% endif %}
+            {% endif %}#}
          </div>
-      </div>#}
+      </div>
    </div>
 </div>
 
