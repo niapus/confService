@@ -26,7 +26,7 @@ class ConferenceRepository:
 
     def get_future_conferences(self, session):
         return session.query(Conference).filter(
-            Conference.end_date > date.today() #TODO конференции идут сейчас
+            Conference.end_date >= date.today()
         ).order_by(Conference.end_date).all()
 
     def get_past_conferences(self, session):
