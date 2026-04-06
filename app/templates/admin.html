@@ -121,7 +121,9 @@
                      </span>
                   </td>
                   <td>
-                     <a href="/admin/applications/{{ application.id }}" class="small">👁️ Детали</a>
+                     {% for theses in application.theses %}
+                        <a href="/admin/applications/{{ theses.id }}" class="small">👁️ Тезис №{{ loop.index }}</a>
+                     {% endfor %}
                      {% if application.theses %}
                         <span class="small">📄 Тезисы: {{ application.theses|length }}</span>
                      {% endif %}

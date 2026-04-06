@@ -1,11 +1,11 @@
-function updateStatus(status) {
+function updateStatus(status, id) {
    if (confirm(`Вы уверены, что хотите ${status === 'accepted' ? 'принять' : 'отклонить'} этот тезис?`)) {
-      fetch(`/admin/theses/{{ thesis.id }}/status`, {
+      const formData = new FormData();
+      formData.append('status', status);
+
+      fetch(`/admin/theses/${id}/status`, {
          method: 'POST',
-         headers: {
-            'Content-Type': 'application/json',
-         },
-         body: JSON.stringify({ status: status })
+         body: formData
       })
       .then(response => {
          if (response.ok) {

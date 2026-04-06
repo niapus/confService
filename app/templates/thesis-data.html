@@ -196,14 +196,16 @@
       <div class="action-card">
          <h2>Действия</h2>
          <div class="action-buttons">
-            {% if thesis.status.value == 'pending' %}
-               <button class="btn btn-success" onclick="updateStatus('accepted')">
+            {% if thesis.status.value == 'pending' or  thesis.status.value == 'rejected' %}
+               <button class="btn btn-success" onclick="updateStatus('accepted', {{ thesis.id }})">
                   ✅ Принять тезис
                </button>
             {% endif %}
-            <button class="btn btn-deny" onclick="updateStatus('rejected')">
+            {% if thesis.status.value == 'pending' or  thesis.status.value == 'accepted' %}
+            <button class="btn btn-deny" onclick="updateStatus('rejected', {{ thesis.id }})">
                ❌ Отклонить тезис
             </button>
+            {% endif %}
 
             {#{% if thesis.file_path %}
                <a href="{{ url_for('thesis.download', thesis_id=thesis.id) }}" class="btn btn-primary">
