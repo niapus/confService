@@ -1,9 +1,11 @@
-{% block title %}Ошибка {{ error.code }}{% endblock %}
+{% extends "base.html" %}
+
+{% block title %}Ошибка {{ error.status_code }}{% endblock %}
 
 {% block content %}
 
 <div class="alert alert-error">
-   <strong>Ошибка {{ error.code }}:</strong> {{ error.text }}
+   <strong>Ошибка {{ error.status_code }}:</strong> {{ error.message }}
 </div>
 
 {% endblock %}

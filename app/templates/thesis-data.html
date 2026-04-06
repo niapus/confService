@@ -38,7 +38,7 @@
          </div>
 
          <div class="info-row">
-            <div class="info-label">Авторы тезиса:</div>
+            <div class="info-label">Авторы доклада:</div>
             <div class="info-value">{{ thesis.authors }}</div>
          </div>
       </div>
@@ -47,7 +47,7 @@
          <h2>Доклад</h2>
 
          <div class="info-row">
-            <div class="info-label">Название тезиса:</div>
+            <div class="info-label">Название доклада:</div>
             <div class="info-value">{{ thesis.title }}</div>
          </div>
 
@@ -80,19 +80,19 @@
          <div class="info-row">
             <div class="info-label">Даты проведения:</div>
             <div class="info-value">
-               {{ thesis.application.conference.start_date }} -
-               {{ thesis.application.conference.end_date }}
+               {{ thesis.application.conference.start_date.strftime('%d.%m.%Y') }} -
+               {{ thesis.application.conference.end_date.strftime('%d.%m.%Y') }}
             </div>
          </div>
 
          <div class="info-row">
             <div class="info-label">Дедлайн регистрации:</div>
-            <div class="info-value">{{ thesis.application.conference.registration_deadline }}</div>
+            <div class="info-value">{{ thesis.application.conference.registration_deadline.strftime('%d.%m.%Y') }}</div>
          </div>
 
          <div class="info-row">
-            <div class="info-label">Дедлайн тезисов:</div>
-            <div class="info-value">{{ thesis.application.conference.submission_deadline }}</div>
+            <div class="info-label">Дедлайн подачи тезисов:</div>
+            <div class="info-value">{{ thesis.application.conference.submission_deadline.strftime('%d.%m.%Y') }}</div>
          </div>
       </div>
 
@@ -158,7 +158,7 @@
 
          <div class="info-row">
             <div class="info-label">Дата рождения:</div>
-            <div class="info-value">{{ thesis.application.birth_date }}</div>
+            <div class="info-value">{{ thesis.application.birth_date.strftime('%d.%m.%Y') }}</div>
          </div>
 
          {% if thesis.application.work_name %}

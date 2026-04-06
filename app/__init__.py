@@ -1,4 +1,5 @@
 from flask import Flask, g, render_template
+from babel.dates import format_date
 from app.core.database import Base, engine, Session, init_db
 from app.exceptions import AppException
 from app.exceptions.auth_exception import AuthException
@@ -51,6 +52,10 @@ def create_app():
     #         "error.html",
     #         error={'status_code': 500, 'message': "Внутренняя ошибка сервера"}
     #     ), 500
+
+    @app.template_filter('ru_date')
+    def ru_date(value, fmt='d MMM y'):
+        return format_date(value, format=fmt, locale='ru')
 
     init_db()
     __create_admin()

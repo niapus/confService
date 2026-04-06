@@ -9,8 +9,8 @@
    <section class="deadlines">
       <h3>Важные даты</h3>
       <ul>
-         <li>Окончание регистрации: {{ conference.registration_deadline }}</li>
-         <li>Окончание приема тезисов: {{ conference.submission_deadline }}</li>
+         <li>Окончание регистрации: {{ conference.registration_deadline.strftime('%d.%m.%Y') }}</li>
+         <li>Окончание приема тезисов: {{ conference.submission_deadline.strftime('%d.%m.%Y') }}</li>
       </ul>
    </section>
    <p>{{ conference.description_html|safe }}</p>

@@ -17,10 +17,10 @@
             {% endif %}
             <div class="timeline-date-group">
                <div class="timeline-date">
-                  <div class="date-day">{{ conference.start_date.strftime('%d') }}</div>
-                  <div class="date-month">{{ conference.start_date.strftime('%b') }}</div>
-                  <div class="date-year">{{ conference.start_date.strftime('%Y') }}</div>
-                  <div class="date-weekday">{{ conference.start_date.strftime('%A') }}</div>
+                  <div class="date-day">{{ conference.start_date|ru_date('d') }}</div>
+                  <div class="date-month">{{ conference.start_date|ru_date('MMM') }}</div>
+                  <div class="date-year">{{ conference.start_date|ru_date('y') }}</div>
+                  <div class="date-weekday">{{ conference.start_date|ru_date('EEEE') }}</div>
                </div>
                <div class="timeline-events">
             {% set ns.last_date = conference.start_date %}
@@ -118,10 +118,10 @@
             {% endif %}
             <div class="timeline-date-group">
                <div class="timeline-date past-date">
-                  <div class="date-day">{{ conference.start_date.strftime('%d') }}</div>
-                  <div class="date-month">{{ conference.start_date.strftime('%b') }}</div>
-                  <div class="date-year">{{ conference.start_date.strftime('%Y') }}</div>
-                  <div class="date-weekday">{{ conference.start_date.strftime('%A') }}</div>
+                  <div class="date-day">{{ conference.start_date|ru_date('d') }}</div>
+                  <div class="date-month">{{ conference.start_date|ru_date('MMM') }}</div>
+                  <div class="date-year">{{ conference.start_date|ru_date('y') }}</div>
+                  <div class="date-weekday">{{ conference.start_date|ru_date('EEEE') }}</div>
                </div>
                <div class="timeline-events">
             {% set ns.last_date = conference.start_date %}
