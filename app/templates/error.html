@@ -5,8 +5,7 @@
 {% block content %}
 
 <div class="error-alert">
-   <strong class="error-code">Код {{ error.code }}:</strong> {{ error.text }}
-   <br><br>
+   <strong class="error-code">Код {{ error.status_code }}:</strong> {{ error.message }}
    <a href="javascript:history.back()" class="error-back-link">← Назад</a>
 </div>
 
@@ -16,15 +15,23 @@
    padding: 40px;
    border-radius: 12px;
    background: #fee;
-   border-left: 4px solid #c00;
+   border-left: 4px solid #e74c3c;
+   max-width: 500px;
+   margin: 40px auto;
 }
 
 .error-code {
    font-size: 18px;
+   display: block;
+   margin-bottom: 10px;
 }
 
 .error-back-link {
-   color: #39f;
+   display: inline-block;
+   margin-top: 20px;
+   color: #3498db;
    text-decoration: none;
 }
 </style>
+
+{% endblock %}

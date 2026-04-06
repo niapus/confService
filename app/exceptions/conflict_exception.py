@@ -19,3 +19,8 @@ class ThesisAfterDeadlineException(ConflictException):
     def __init__(self, date):
         messages = f"Дедлайн подачи тезисов истек {date}"
         super().__init__(messages)
+
+class ConferenceAlreadyEndedException(ConflictException):
+    def __init__(self, conf_id):
+        message = f"Конференция с id {conf_id} уже прошла"
+        super().__init__(message)

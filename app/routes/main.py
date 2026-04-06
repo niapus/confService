@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, g
 from app.service import conference_service
-from datetime import date, datetime
+from datetime import date
 
 main_bp = Blueprint("main", __name__)
 

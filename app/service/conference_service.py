@@ -1,3 +1,4 @@
+from app.exceptions.conflict_exception import ConferenceAlreadyEndedException
 from app.exceptions.validation_exception import ValidationException
 from app.exceptions.not_found_exception import ConferenceNotFoundException
 from app.repository.conference_repository import ConferenceRepository
@@ -24,6 +25,13 @@ class ConferenceService:
         if not existing:
             raise ConferenceNotFoundException(conf_id)
         return existing
+
+    def get_upcoming_conference(self, conf_id, session):
+        conference = self.get_conference_by_id(conf_id, session)
+        if conference.end_date < date.today():
+            raise ConferenceAlreadyEndedException(conf_id)
+        return conference
+
 
     def create_conference(self, conf_dto, session):
         self.__validate_dates(conf_dto)
