@@ -26,80 +26,80 @@
             {% set ns.last_date = conference.start_date %}
          {% endif %}
 
-      <a href="{{ url_for('conference.show_conference', conf_id=conference.id) }}" style="text-decoration: none">
          <div class="timeline-item future" data-start-date="{{ conference.start_date.isoformat() }}">
             <div class="timeline-content">
-               <div class="card-badge">
-                  {% set days_until = (conference.start_date - now).days %}
-                  {% if days_until <= 1 %}
-                     🔥 Через 1 день
-                  {% elif days_until <= 4 %}
-                     🔥 Через {{ days_until }} дня
-                  {% elif days_until <= 7 %}
-                     🔥 Через {{ days_until }} дней
-                  {% else %}
-                     ⏰ Скоро
-                  {% endif %}
-               </div>
-               <h3>{{ conference.title }}</h3>
-               <p class="tagline">{{ conference.tagline }}</p>
-
-               <div class="conference-dates">
-                  <div class="date-range">
-                     <span class="date-icon">📅</span>
-                     <span class="date-text">
-                        {{ conference.start_date.strftime('%d.%m.%Y') }} -
-                        {{ conference.end_date.strftime('%d.%m.%Y') }}
-                     </span>
-                     <span class="duration">
-                        ({{ (conference.end_date - conference.start_date).days + 1 }} дня/дней)
-                     </span>
-                  </div>
-               </div>
-
-               <div class="deadlines">
-                  <div class="deadline-item {% if conference.registration_deadline < now %}expired{% endif %}">
-                     <span class="deadline-label"> Регистрация до:</span>
-                     <span class="deadline-value">{{ conference.registration_deadline.strftime('%d.%m.%Y') }}</span>
-                     {% if conference.registration_deadline < now %}
-                        <span class="expired-badge">(Закрыта)</span>
+               <a href="{{ url_for('conference.show_conference', conf_id=conference.id) }}" style="text-decoration: none">
+                  <div class="card-badge">
+                     {% set days_until = (conference.start_date - now).days %}
+                     {% if days_until <= 1 %}
+                        🔥 Через 1 день
+                     {% elif days_until <= 4 %}
+                        🔥 Через {{ days_until }} дня
+                     {% elif days_until <= 7 %}
+                        🔥 Через {{ days_until }} дней
+                     {% else %}
+                        ⏰ Скоро
                      {% endif %}
                   </div>
-                  <div class="deadline-item {% if conference.submission_deadline < now %}expired{% endif %}">
-                     <span class="deadline-label"> Загрузить тезисы можно до:</span>
-                     <span class="deadline-value">{{ conference.submission_deadline.strftime('%d.%m.%Y') }}</span>
-                     {% if conference.submission_deadline < now %}
-                        <span class="expired-badge">(Прием завершен)</span>
+                  <h3>{{ conference.title }}</h3>
+                  <p class="tagline">{{ conference.tagline }}</p>
+
+                  <div class="conference-dates">
+                     <div class="date-range">
+                        <span class="date-icon">📅</span>
+                        <span class="date-text">
+                           {{ conference.start_date.strftime('%d.%m.%Y') }} -
+                           {{ conference.end_date.strftime('%d.%m.%Y') }}
+                        </span>
+                        <span class="duration">
+                           ({{ (conference.end_date - conference.start_date).days + 1 }} дня/дней)
+                        </span>
+                     </div>
+                  </div>
+
+                  <div class="deadlines">
+                     <div class="deadline-item {% if conference.registration_deadline < now %}expired{% endif %}">
+                        <span class="deadline-label"> Регистрация до:</span>
+                        <span class="deadline-value">{{ conference.registration_deadline.strftime('%d.%m.%Y') }}</span>
+                        {% if conference.registration_deadline < now %}
+                           <span class="expired-badge">(Закрыта)</span>
+                        {% endif %}
+                     </div>
+                     <div class="deadline-item {% if conference.submission_deadline < now %}expired{% endif %}">
+                        <span class="deadline-label"> Загрузить тезисы можно до:</span>
+                        <span class="deadline-value">{{ conference.submission_deadline.strftime('%d.%m.%Y') }}</span>
+                        {% if conference.submission_deadline < now %}
+                           <span class="expired-badge">(Прием завершен)</span>
+                        {% endif %}
+                     </div>
+                  </div>
+
+                  <div class="card-actions">
+                     {% if conference.registration_deadline >= now %}
+                        <a href="{{ url_for('conference.show_application', conf_id=conference.id) }}"
+                           class="btn btn-primary">
+                           ✍️ Подать заявку
+                        </a>
+                     {% else %}
+                        <button class="btn btn-disabled" disabled>
+                           🔒 Регистрация закрыта
+                        </button>
+                     {% endif %}
+
+                     {% if conference.submission_deadline >= now %}
+                        <a href="{{ url_for('conference.show_upload_thesis', conf_id=conference.id) }}"
+                           class="btn btn-secondary">
+                           📝 Загрузить тезисы
+                        </a>
+                     {% else %}
+                        <button class="btn btn-disabled" disabled>
+                           🔒 Прием тезисов завершен
+                        </button>
                      {% endif %}
                   </div>
-               </div>
-
-               <div class="card-actions">
-                  {% if conference.registration_deadline >= now %}
-                     <a href="{{ url_for('conference.show_application', conf_id=conference.id) }}"
-                        class="btn btn-primary">
-                        ✍️ Подать заявку
-                     </a>
-                  {% else %}
-                     <button class="btn btn-disabled" disabled>
-                        🔒 Регистрация закрыта
-                     </button>
-                  {% endif %}
-
-                  {% if conference.submission_deadline >= now %}
-                     <a href="{{ url_for('conference.show_upload_thesis', conf_id=conference.id) }}"
-                        class="btn btn-secondary">
-                        📝 Загрузить тезисы
-                     </a>
-                  {% else %}
-                     <button class="btn btn-disabled" disabled>
-                        🔒 Прием тезисов завершен
-                     </button>
-                  {% endif %}
-               </div>
+               </a>
             </div>
          </div>
-      </a>
       {% endfor %}
    </div>
 </div>
@@ -128,43 +128,43 @@
          {% endif %}
 
 
-      <a href="{{ url_for('conference.show_conference', conf_id=conference.id) }}" style="text-decoration: none">
          <div class="timeline-item past">
             <div class="timeline-content">
-               <div class="card-badge past">
-                  {% set days_ago = (now - conference.end_date).days %}
-                  {% if days_ago <= 30 %}
-                     ✅️ Завершена недавно
-                  {% else %}
-                     ✅ Завершена
-                  {% endif %}
-               </div>
-               <h3>{{ conference.title }}</h3>
-               <p class="tagline">{{ conference.tagline }}</p>
+               <a href="{{ url_for('conference.show_conference', conf_id=conference.id) }}" style="text-decoration: none">
+                  <div class="card-badge past">
+                     {% set days_ago = (now - conference.end_date).days %}
+                     {% if days_ago <= 30 %}
+                        ✅️ Завершена недавно
+                     {% else %}
+                        ✅ Завершена
+                     {% endif %}
+                  </div>
+                  <h3>{{ conference.title }}</h3>
+                  <p class="tagline">{{ conference.tagline }}</p>
 
-               <div class="conference-dates">
-                  <div class="date-range">
-                     <span class="date-icon">📅</span>
-                     <span class="date-text">
-                        {{ conference.start_date.strftime('%d.%m.%Y') }} -
-                        {{ conference.end_date.strftime('%d.%m.%Y') }}
-                     </span>
+                  <div class="conference-dates">
+                     <div class="date-range">
+                        <span class="date-icon">📅</span>
+                        <span class="date-text">
+                           {{ conference.start_date.strftime('%d.%m.%Y') }} -
+                           {{ conference.end_date.strftime('%d.%m.%Y') }}
+                        </span>
+                     </div>
                   </div>
-               </div>
 
-               <div class="stats-mini">
-                  <div class="stat-item">
-                     <span class="stat-label">👥 Участников:</span>
-                     <span class="stat-value">{{ conference.participants_count or '—' }}</span>
+                  <div class="stats-mini">
+                     <div class="stat-item">
+                        <span class="stat-label">👥 Участников:</span>
+                        <span class="stat-value">{{ conference.participants_count or '—' }}</span>
+                     </div>
+                     <div class="stat-item">
+                        <span class="stat-label">📄 Докладов:</span>
+                        <span class="stat-value">{{ conference.papers_count or '—' }}</span>
+                     </div>
                   </div>
-                  <div class="stat-item">
-                     <span class="stat-label">📄 Докладов:</span>
-                     <span class="stat-value">{{ conference.papers_count or '—' }}</span>
-                  </div>
-               </div>
+               </a>
             </div>
          </div>
-      </a>
       {% endfor %}
    </div>
 </div>
