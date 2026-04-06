@@ -204,6 +204,12 @@ a.small:hover, button.small:hover {
    text-align:center;
 }
 
+.btn-danger {
+   background: #dc3545 !important;
+   color: white !important;
+
+   margin-top: 40px !important;
+}
 
 .status-badge {
    padding: 4px 8px;
