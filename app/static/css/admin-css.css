@@ -102,6 +102,7 @@ a.small, button.small {
    margin-right: 5px;
    text-decoration: none;
    color: black;
+   margin-top: 10px;
 }
 
 a.small:hover, button.small:hover {

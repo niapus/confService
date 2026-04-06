@@ -66,13 +66,20 @@ function ApplicationRow({ application }) {
       React.createElement(
          'td',
          null,
-         React.createElement(
-            'button',
-            {
-               className: 'action-btn',
-               onClick: () => window.location.href = `/admin/applications/${application.theses && application.theses[0] ? application.theses[0].id : ''}`
-            },
-            '👁️'
+         application.theses && application.theses.length > 0 && React.createElement(
+            'div',
+            { className: 'theses-links' },
+            application.theses.map((thesis, index) =>
+               React.createElement(
+                  'a',
+                  {
+                     key: thesis.id,
+                     href: `/admin/applications/${thesis.id}`,
+                     className: 'small',
+                  },
+                  `👁️ Тезис №${index + 1}`
+               )
+            )
          )
       )
    );
