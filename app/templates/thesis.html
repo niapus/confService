@@ -5,7 +5,6 @@
 {% block content %}
 <h2>Подача тезисов доклада</h2>
 
-<!-- ⭐ БЛОК ДЛЯ ОТОБРАЖЕНИЯ ОШИБКИ -->
 {% if error %}
 <div class="alert alert-danger" role="alert">
    <strong>Ошибка:</strong> {{ error }}
@@ -77,7 +76,6 @@
          <label>Файл тезисов (PDF/DOC/DOCX) *</label>
          <input type="file" name="file" accept=".pdf,.doc,.docx" required>
          <small>Поддерживаемые форматы: PDF, DOC, DOCX</small>
-         <!-- ⚠️ file input НЕ может быть предзаполнен по соображениям безопасности -->
       </div>
    </fieldset>
 

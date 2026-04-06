@@ -17,7 +17,6 @@
       <div class="form-container">
          <h1>{% if conference %}Редактировать{% else %}Создать{% endif %} конференцию</h1>
 
-         <!-- ⭐ БЛОК ДЛЯ ОТОБРАЖЕНИЯ ОШИБКИ -->
          {% if error %}
          <div class="alert alert-danger" role="alert">
             <strong>Ошибка:</strong> {{ error }}
