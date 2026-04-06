@@ -42,7 +42,9 @@
                      {% endif %}
                   </div>
                   <h3>{{ conference.title }}</h3>
-                  <p class="tagline">{{ conference.tagline }}</p>
+                  {% if conference.tagline %}
+                     <p class="tagline">{{ conference.tagline }}</p>
+                  {% endif %}
 
                   <div class="conference-dates">
                      <div class="date-range">
@@ -140,7 +142,9 @@
                      {% endif %}
                   </div>
                   <h3>{{ conference.title }}</h3>
-                  <p class="tagline">{{ conference.tagline }}</p>
+                  {% if conference.tagline %}
+                     <p class="tagline">{{ conference.tagline }}</p>
+                  {% endif %}
 
                   <div class="conference-dates">
                      <div class="date-range">
