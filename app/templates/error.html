@@ -1,9 +1,30 @@
+{% extends "base.html" %}
+
 {% block title %}Ошибка {{ error.code }}{% endblock %}
 
 {% block content %}
 
-<div class="alert alert-error">
-   <strong>Ошибка {{ error.code }}:</strong> {{ error.text }}
+<div class="error-alert">
+   <strong class="error-code">Код {{ error.code }}:</strong> {{ error.text }}
+   <br><br>
+   <a href="javascript:history.back()" class="error-back-link">← Назад</a>
 </div>
 
-{% endblock %}
+<style>
+.error-alert {
+   text-align: center;
+   padding: 40px;
+   border-radius: 12px;
+   background: #fee;
+   border-left: 4px solid #c00;
+}
+
+.error-code {
+   font-size: 18px;
+}
+
+.error-back-link {
+   color: #39f;
+   text-decoration: none;
+}
+</style>
