@@ -10,6 +10,8 @@ function StatsCard({ title, value }) {
 }
 
 function ApplicationRow({ application }) {
+   const hasTheses = application.theses && application.theses.length > 0;
+
    return React.createElement(
       'tr',
       null,
@@ -50,40 +52,51 @@ function ApplicationRow({ application }) {
       React.createElement(
          'td',
          null,
-         application.theses && application.theses.length > 0 ? React.createElement(
+         hasTheses ? React.createElement(
             'div',
             null,
-            React.createElement('strong', null, application.theses[0].title),
-            React.createElement(
-               'div',
-               { className: `status-badge ${application.theses[0].status}` },
-               application.theses[0].status === 'pending' && '⏳ На рассмотрении',
-               application.theses[0].status === 'accepted' && '✅ Принят',
-               application.theses[0].status === 'rejected' && '❌ Отклонён'
+            application.theses.map((thesis, index) =>
+               React.createElement(
+                  'div',
+                  { style: { marginBottom: index < application.theses.length - 1 ? '15px' : '0', padding: 0 } },
+                  React.createElement('strong', null,
+                     application.theses.length === 1 ? thesis.title : `${index + 1}. ${thesis.title}`
+                  ),
+                  React.createElement(
+                     'div',
+                     { className: `status-badge ${thesis.status}` },
+                     thesis.status === 'pending' && '⏳ На рассмотрении',
+                     thesis.status === 'accepted' && '✅ Принят',
+                     thesis.status === 'rejected' && '❌ Отклонён'
+                  )
+               )
             )
-         ) : React.createElement('div', null, 'Нет')
+         ) : React.createElement('div', null, 'Нет тезисов')
       ),
       React.createElement(
          'td',
          null,
-         application.theses && application.theses.length > 0 && React.createElement(
+         hasTheses && React.createElement(
             'div',
-            { className: 'theses-links' },
+            null,
             application.theses.map((thesis, index) =>
                React.createElement(
-                  'a',
+                  'button',
                   {
-                     key: thesis.id,
-                     href: `/admin/applications/${thesis.id}`,
-                     className: 'small',
+                     className: 'action-btn',
+                     onClick: () => window.location.href = `/admin/applications/${thesis.id}`,
+                     style: {
+                        marginBottom: index < application.theses.length - 1 ? '20px' : '0',
+                     }
                   },
-                  `👁️ Тезис №${index + 1}`
+                  application.theses.length === 1 ? '👁️' : `👁️ Тезис №${index + 1}`
                )
             )
          )
       )
    );
 }
+
 
 function ConferenceApp() {
    const pathParts = window.location.pathname.split('/');
