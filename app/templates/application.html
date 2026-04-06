@@ -5,7 +5,6 @@
 {% block content %}
 <h2>Заявка на участие в конференции</h2>
 
-<!-- ⭐ БЛОК ДЛЯ ОТОБРАЖЕНИЯ ОШИБКИ -->
 {% if error %}
 <div class="alert alert-danger" role="alert">
    <strong>Ошибка:</strong> {{ error }}
@@ -97,7 +96,7 @@
          </div>
 
          <div class="sub-field">
-            <label>Институт:</label>
+            <label>Институт *:</label>
             <input type="text" name="work_place"
                    value="{{ form_data.work_place if form_data else '' }}">
          </div>
@@ -118,7 +117,7 @@
          </div>
 
          <div class="sub-field">
-            <label>Институт:</label>
+            <label>Институт *:</label>
             <input type="text" name="study_place"
                    value="{{ form_data.study_place if form_data else '' }}">
          </div>

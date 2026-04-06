@@ -16,14 +16,18 @@
    <p>{{ conference.description_html|safe }}</p>
    <div class="conf-application">
       <div class="buttons">
+         {% if conference.registration_deadline >= now %}
          <a class="btn"
             href="{{ url_for('conference.show_application', conf_id=conference.id) }}">
             Подать заявку
          </a>
+         {% endif %}
+         {% if conference.submission_deadline >= now %}
          <a class="btn btn-last"
             href="{{ url_for('conference.show_upload_thesis', conf_id=conference.id) }}">
             Загрузить тезисы
          </a>
+         {% endif %}
       </div>
    </div>
 </div>
