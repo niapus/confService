@@ -1,4 +1,4 @@
-from app.dto.dto import ConferenceDTO, ApplicationDTO
+from app.dto.dto import ConferenceDTO, ApplicationDTO, ThesisDTO
 from app.exceptions.conversion_exception import EmptyRequiredFieldException, InvalidFieldFormatException
 from datetime import datetime
 
@@ -19,20 +19,15 @@ def build_conference_dto(form):
 
 def build_application_dto(form):
     is_worker, is_student = __parse_statuses(form)
-
     surname = __parse_str(form.get("surname"), "surname")
     name = __parse_str(form.get("name"), "name")
     patronymic = __parse_str(form.get("patronymic"), "patronymic", False)
-
     gender = __parse_enum(form.get("gender"), GenderEnum, "gender")
     birth_date = __parse_date(form.get("birth_date"), "birth_date")
-
     degree = __parse_enum(form.get("degree"), DegreeEnum, "degree")
-
     work_name = __parse_str(form.get("work_name"), "work_name", is_worker)
     work_place = __parse_str(form.get("work_place"), "work_place", is_worker)
     work_position = __parse_str(form.get("work_position"), "work_position", is_worker)
-
     study_name = __parse_str(form.get("study_name"), "study_name", is_student)
     study_place = __parse_str(form.get("study_place"), "study_place", is_student)
     study_level = __parse_enum(form.get("study_level"), EducationEnum, "study_level") if is_student else None
@@ -63,6 +58,13 @@ def build_application_dto(form):
         study_level=study_level,
         participation_format=participation_format,
         email=email
+    )
+
+def build_thesis_dto(form):
+    return ThesisDTO(
+        authors=__parse_str(form.get("authors"), "authors"),
+        title=__parse_str(form.get("title"), "title"),
+        email=__parse_str(form.get("email"), "email")
     )
 
 def __parse_date(value, field):
@@ -104,9 +106,7 @@ def __parse_statuses(form):
     if not isinstance(statuses, list):
         raise InvalidFieldFormatException("status", "Ожидается список статусов")
 
-    is_worker = "is_worker" in statuses
-    is_student = "is_student" in statuses
+    is_worker = "worker" in statuses
+    is_student = "student" in statuses
 
-    # if not is_worker and not is_student:
-    #     raise ConversionException("status", "Поле не может быть пустым")
     return is_worker, is_student

@@ -128,3 +128,9 @@ class ApplicationDTO:
 
     participation_format: ParticipationFormatEnum
     email: str
+
+@dataclass
+class ThesisDTO:
+    authors: str
+    title: str
+    email: str

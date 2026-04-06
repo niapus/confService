@@ -4,7 +4,6 @@ function updateStatus(status) {
          method: 'POST',
          headers: {
             'Content-Type': 'application/json',
-            {#'X-CSRFToken': '{{ csrf_token() }}'#}
          },
          body: JSON.stringify({ status: status })
       })

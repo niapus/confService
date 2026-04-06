@@ -1,17 +1,25 @@
 import os.path
 
-from flask import Blueprint, render_template, request, redirect, g, send_from_directory
+from flask import Blueprint, render_template, request, redirect, g, send_from_directory, session as flask_session
 
+from app.decorator.handle_form_errors import handle_form_errors
 from app.dto_builders.dto_builder import build_conference_dto
+from app.exceptions.auth_exception import ForbiddenException
 from app.service import conference_service, thesis_service, application_service
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
+
+@admin_bp.before_request
+def check_admin_auth():
+    if not flask_session.get("admin_id"):
+        raise ForbiddenException()
 
 @admin_bp.get('/conferences/create')
 def show_admin_create_conference():
     return render_template("conference_form.html", conference=None)
 
 @admin_bp.post('/conferences/new')
+@handle_form_errors("conference_form.html")
 def create_conference():
     dto = build_conference_dto(request.form)
     conference_service.create_conference(dto, g.db)
@@ -23,6 +31,7 @@ def show_update_conference(conf_id):
     return render_template("conference_form.html", conference=conference)
 
 @admin_bp.post(f'/conferences/<int:conf_id>/edit')
+@handle_form_errors("conference_form.html")
 def update_conference(conf_id):
     dto = build_conference_dto(request.form)
     conference_service.update_conference(conf_id, dto, g.db)

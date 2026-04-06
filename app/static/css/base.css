@@ -16,22 +16,6 @@ body {
    color: white;
 }
 
-.site-nav {
-   background: white;
-   border-bottom: 1px solid #ddd;
-}
-
-.site-nav ul {
-   list-style: none;
-   padding: 0;
-   display: flex;
-   gap: 1rem;
-}
-
-.nav-toggle {
-   display: none;
-}
-
 .btn {
    background: #3498db;
    color: white;

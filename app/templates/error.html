@@ -1,0 +1,9 @@
+{% block title %}Ошибка {{ error.code }}{% endblock %}
+
+{% block content %}
+
+<div class="alert alert-error">
+   <strong>Ошибка {{ error.code }}:</strong> {{ error.text }}
+</div>
+
+{% endblock %}

@@ -1,13 +1,13 @@
-from app.exceptions.exceptions import AppException
+from app.exceptions import AppException
 
 
 class ConflictException(AppException):
     def __init__(self, message: str):
-        super().__init__(message)
+        super().__init__(message, status_code=409)
 
 class ApplicationAfterDeadlineException(ConflictException):
     def __init__(self, date):
-        message = f"Дедлайн для подачи заявки на участие в этой конференции уже прошел: {date}"
+        message = f"Дедлайн подачи заявки истек {date}"
         super().__init__(message)
 
 class ApplicationAlreadyExists(ConflictException):
@@ -17,5 +17,5 @@ class ApplicationAlreadyExists(ConflictException):
 
 class ThesisAfterDeadlineException(ConflictException):
     def __init__(self, date):
-        messages = f"Дедлайн для подачи тезисов уже прошел {date}"
+        messages = f"Дедлайн подачи тезисов истек {date}"
         super().__init__(messages)

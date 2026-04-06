@@ -1,9 +1,9 @@
-from app.exceptions.exceptions import AppException
+from app.exceptions import AppException
 
 
 class NotFoundException(AppException):
     def __init__(self, message: str):
-        super().__init__(message)
+        super().__init__(message, status_code=404)
 
 class ConferenceNotFoundException(NotFoundException):
     def __init__(self, conf_id):

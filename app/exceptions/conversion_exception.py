@@ -1,11 +1,11 @@
-from app.exceptions.exceptions import AppException
+from app.exceptions import AppException
 
 
 class ConversionException(AppException):
     def __init__(self, field: str, message: str):
         self.field = field
         self.message = message
-        super().__init__(f"{field}: {message}")
+        super().__init__(f"{field}: {message}", status_code=400)
 
 class EmptyRequiredFieldException(ConversionException):
     def __init__(self, field: str):

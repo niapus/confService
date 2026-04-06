@@ -22,7 +22,7 @@ class ApplicationService:
         if app_dto.birth_date > date.today():
             raise ValidationException("День рождения не может быть в будущем")
 
-        existing = self.get_application_by_conf_email(conf_id, app_dto.email, session) #TODO
+        existing = self.get_application_by_conf_email(conf_id, app_dto.email, session)
         if existing:
             raise ApplicationAlreadyExists(app_dto.email)
 

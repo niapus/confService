@@ -157,7 +157,7 @@ a.small:hover, button.small:hover {
    box-shadow: 0 0 0 2px rgba(37,99,235,0.1);
 }
 
-.modal-actions {
+.actions {
    display: flex;
    gap: 10px;
    justify-content: flex-end;

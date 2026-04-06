@@ -1,53 +1,45 @@
 import os
-from werkzeug.utils import secure_filename
 
 from app.exceptions.conflict_exception import ThesisAfterDeadlineException
-from app.exceptions.exceptions import FileNullNameException, FileExtensionException, FileSizeException
+from app.exceptions.file_exception import FileNullNameException, FileExtensionException, FileSizeException
 from app.exceptions.not_found_exception import ApplicationNotFoundException, ThesisNotFoundException
-from app.exceptions.validation_exception import ValidationException
 from app.repository.thesis_repository import ThesisRepository
 from app.service import ConferenceService, ApplicationService
 from app.models.thesis import Thesis, ThesisStatus
-import uuid
 from datetime import date
 from flask import current_app
 
+from app.service.file_service import FileService
+
 
 class ThesisService:
-    def __init__(self, conference_service: ConferenceService, application_service: ApplicationService):
+    def __init__(self, conference_service: ConferenceService, application_service: ApplicationService,
+                 file_service: FileService):
         self.__repo = ThesisRepository()
         self.__conference_service = conference_service
         self.__application_service = application_service
+        self.__file_service = file_service
 
-    def create_thesis(self, conf_id, file, data, session):
+    def create_thesis(self, conf_id, file, dto, session):
         conference = self.__conference_service.get_conference_by_id(conf_id, session)
 
         if conference.submission_deadline < date.today():
             raise ThesisAfterDeadlineException(conference.submission_deadline)
 
-        application = self.__application_service.get_application_by_conf_email(conf_id, data.get("email"), session)
+        application = self.__application_service.get_application_by_conf_email(conf_id, dto.email, session)
         if not application:
-            raise ApplicationNotFoundException(data.get("email"))
+            raise ApplicationNotFoundException(dto.email)
 
-        #TODO проверка уже отправленных тезисов с таким названием
-        valid_data = self.__validate_data(data)
+        self.__validate_file(file)
 
-        original_filename, ext = self.__validate_file(file)
-        new_filename = f"{uuid.uuid4()}.{ext}"
-
-        upload_dir = os.path.join(current_app.config.get("UPLOAD_FOLDER"), str(conf_id))
-        os.makedirs(upload_dir, exist_ok=True)
-
-        file_path = os.path.join(upload_dir, new_filename)
-
-        file.save(file_path)
+        file_path, secured_filename = self.__file_service.save_thesis_file(file, conf_id)
 
         thesis = Thesis(
             application_id=application.id,
-            authors=valid_data.get("authors"),
-            title=valid_data.get("title"),
+            authors=dto.authors,
+            title=dto.title,
             file_path=file_path,
-            file_name=original_filename,
+            file_name=secured_filename,
             status=ThesisStatus.PENDING
         )
 
@@ -71,56 +63,25 @@ class ThesisService:
 
     def delete_conference_theses_files(self, conf_id, session):
         theses = self.__repo.get_by_conf_id(conf_id, session)
-
-        if len(theses) == 0:
-            return
-
-        for thesis in theses:
-            file_path = thesis.file_path
-            if os.path.exists(file_path):
-                os.remove(file_path)
-
-        folder_path = os.path.dirname(theses[0].file_path)
-        if os.path.exists(folder_path) and not os.listdir(folder_path):
-            os.rmdir(folder_path)
-
-    def __validate_data(self, data):
-        cleaned = self.__clean_data(data)
-
-        str_values = ['authors', 'title']
-
-        for key in str_values:
-            if not cleaned.get(key):
-                raise ValidationException(f"Обязательное поле {key} не может быть пустым")
-
-        return cleaned
-
-    def __clean_data(self, data):
-        cleaned = {}
-
-        for key, value in data.items():
-            if isinstance(value, str):
-                cleaned[key] = value.strip()
-            else:
-                cleaned[key] = value
-
-        return cleaned
+        self.__file_service.delete_thesis_files(theses)
 
     def __validate_file(self, file):
-        if file.filename == '':
+        self.__validate_filename(file.filename)
+        self.__validate_file_size(file)
+
+    def __validate_filename(self, filename):
+        if filename == '':
             raise FileNullNameException()
 
-        filename = secure_filename(file.filename) #TODO
         ext = filename.rsplit('.', 1)[1].lower() if '.' in filename else ''
 
         if ext != "pdf":
             raise FileExtensionException(ext, "pdf")
 
+    def __validate_file_size(self, file):
         file.seek(0, os.SEEK_END)
         size = file.tell()
         file.seek(0)
 
         if size > current_app.config.get("MAX_CONTENT_LENGTH"):
             raise FileSizeException(current_app.config.get("MAX_CONTENT_LENGTH") // 1024 // 1024)
-
-        return (filename, ext)

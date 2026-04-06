@@ -4,12 +4,11 @@
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>{% block title %}{{ conference.title }}{% endblock %}</title>
-   <link rel="stylesheet" href="{{ url_for('static', filename='css/тест.css') }}">
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
    {% block info_head %}{% endblock %}
 </head>
 <body>
    {% include "includes/header.html" %}
-   {% include "includes/nav.html" %}
 
    <main class="container">
       {% block content %}{% endblock %}
