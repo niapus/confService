@@ -17,37 +17,46 @@
       <div class="form-container">
          <h1>{% if conference %}Редактировать{% else %}Создать{% endif %} конференцию</h1>
 
+         <!-- ⭐ БЛОК ДЛЯ ОТОБРАЖЕНИЯ ОШИБКИ -->
+         {% if error %}
+         <div class="alert alert-danger" role="alert">
+            <strong>Ошибка:</strong> {{ error }}
+         </div>
+         {% endif %}
+
          <form method="POST" class="conference-form"
             action="{% if conference %}/admin/conferences/{{ conference.id }}/edit{% else %}/admin/conferences/new{% endif %}">
 
             <div class="form-row">
                <div class="form-group">
                   <label>Название *</label>
-                  <input type="text" name="title" value="{{ conference.title if conference else '' }}" required>
+                  <input type="text" name="title"
+                         value="{{ form_data.title if form_data else (conference.title if conference else '') }}" required>
                </div>
 
                <div class="form-group">
                   <label>Теги</label>
-                  <input type="text" name="tagline" value="{{ conference.tagline if conference else '' }}">
+                  <input type="text" name="tagline"
+                         value="{{ form_data.tagline if form_data else (conference.tagline if conference else '') }}">
                </div>
             </div>
 
             <div class="form-group">
                <label>Описание (Markdown)</label>
-               <textarea name="description_md" rows="4">{{ conference.description_md if conference else '' }}</textarea>
+               <textarea name="description_md" rows="4">{{ form_data.description_md if form_data else (conference.description_md if conference else '') }}</textarea>
             </div>
 
             <div class="form-row">
                <div class="form-group">
                   <label>Дата начала *</label>
                   <input type="date" name="start_date"
-                     value="{{ conference.start_date.strftime('%Y-%m-%d') if conference else '' }}" required>
+                         value="{{ form_data.start_date if form_data else (conference.start_date.strftime('%Y-%m-%d') if conference else '') }}" required>
                </div>
 
                <div class="form-group">
                   <label>Дата окончания *</label>
                   <input type="date" name="end_date"
-                     value="{{ conference.end_date.strftime('%Y-%m-%d') if conference else '' }}" required>
+                         value="{{ form_data.end_date if form_data else (conference.end_date.strftime('%Y-%m-%d') if conference else '') }}" required>
                </div>
             </div>
 
@@ -55,21 +64,21 @@
                <div class="form-group">
                   <label>Дедлайн регистрации *</label>
                   <input type="date" name="registration_deadline"
-                     value="{{ conference.registration_deadline.strftime('%Y-%m-%d') if conference else '' }}" required>
+                         value="{{ form_data.registration_deadline if form_data else (conference.registration_deadline.strftime('%Y-%m-%d') if conference else '') }}" required>
                </div>
 
                <div class="form-group">
                   <label>Дедлайн подачи тезисов *</label>
                   <input type="date" name="submission_deadline"
-                     value="{{ conference.submission_deadline.strftime('%Y-%m-%d') if conference else '' }}" required>
+                         value="{{ form_data.submission_deadline if form_data else (conference.submission_deadline.strftime('%Y-%m-%d') if conference else '') }}" required>
                </div>
             </div>
 
             <div class="form-row">
                <div class="form-group">
                   <label>Время на выступление (мин) *</label>
-                  <input type="number" name="performance_time" min="1" 
-                     value="{{ conference.performance_time if conference else 15 }}" required>
+                  <input type="number" name="performance_time" min="1"
+                         value="{{ form_data.performance_time if form_data else (conference.performance_time if conference else 15) }}" required>
                </div>
             </div>
 

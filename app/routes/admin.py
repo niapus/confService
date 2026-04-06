@@ -72,3 +72,8 @@ def view_thesis_file(thesis_id):
 def view_thesis_page(thesis_id):
     thesis = thesis_service.get_thesis_by_id(thesis_id, g.db)
     return render_template('thesis-data.html', thesis=thesis)
+
+@admin_bp.post('/logout')
+def logout():
+    flask_session.clear()
+    return redirect("/")

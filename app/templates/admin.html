@@ -13,6 +13,11 @@
       <button onclick="showSection('conferences')">Конференции</button>
       <button onclick="showSection('applications')">Заявки</button>
       <button onclick="showSection('theses')">Тезисы</button>
+
+      <form method="post" action="{{ url_for('admin.logout') }}">
+         {# <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> #}
+         <button type="submit" class="btn btn-danger">Выйти</button>
+      </form>
    </aside>
 
    <main class="content">
@@ -121,7 +126,9 @@
                      </span>
                   </td>
                   <td>
-                     <a href="/admin/applications/{{ application.id }}" class="small">👁️ Детали</a>
+                     {% for theses in application.theses %}
+                        <a href="/admin/applications/{{ theses.id }}" class="small">👁️ Тезис №{{ loop.index }}</a>
+                     {% endfor %}
                      {% if application.theses %}
                         <span class="small">📄 Тезисы: {{ application.theses|length }}</span>
                      {% endif %}

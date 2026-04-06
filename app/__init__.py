@@ -65,7 +65,6 @@ def create_app():
 
 def __create_admin():
     session = Session()
-    print("Создаааааааааааааааааааааааался")
     admin_service.create_default_admin(
         login=Config.ADMIN_LOGIN,
         password=Config.ADMIN_PASSWORD,
