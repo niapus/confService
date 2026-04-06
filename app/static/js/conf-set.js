@@ -144,7 +144,7 @@ function ConferenceApp() {
 
       const thesisStatus = hasThesis ? app.theses[0].status : 'none';
       const matchesStatus = filters.status === 'all' ||
-         thesisStatus === filters.status;
+         (hasThesis && app.theses.some(thesis => thesis.status === filters.status));
 
       return matchesSearch && matchesFormat && matchesThesis && matchesStatus;
    });
