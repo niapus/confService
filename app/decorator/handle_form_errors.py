@@ -1,8 +1,7 @@
 from functools import wraps
 
-from flask import render_template, request
+from flask import render_template, request, g
 
-from app.exceptions.conflict_exception import ConflictException
 from app.exceptions.conversion_exception import ConversionException
 from app.exceptions.file_exception import FileException
 from app.exceptions.validation_exception import ValidationException
@@ -14,8 +13,8 @@ def handle_form_errors(template_name, pass_conf_id=False):
         def decorated(*args, **kwargs):
             try:
                 return f(*args, **kwargs)
-            except (ValidationException, ConversionException, ConflictException, FileException) as e:
-
+            except (ValidationException, ConversionException, FileException) as e:
+                g._has_error = True
                 context = {
                     'form_data': request.form,
                     'error': str(e)

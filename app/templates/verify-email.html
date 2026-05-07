@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Проверьте почту{% endblock %}
+
+{% block info_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/email-result.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="card">
+   <h1>Проверьте почту</h1>
+   <p class="subtitle">Мы отправили ссылку для подтверждения</p>
+   <p class="info-text">
+      Перейдите по ссылке в письме, чтобы подтвердить свой email адрес.
+      Если вы не получили письмо в течение минуты, отправьте заявку еще раз.
+   </p>
+   <a href="/" class="back-link">← Вернуться на главную</a>
+</div>
+{% endblock %}

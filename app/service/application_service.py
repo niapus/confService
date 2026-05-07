@@ -1,17 +1,21 @@
-from app.exceptions.validation_exception import ValidationException
-from app.exceptions.conflict_exception import ApplicationAfterDeadlineException, ApplicationAlreadyExists
-from app.mapper.application_mapper import ApplicationMapper
-from app.repository.application_repository import ApplicationRepository
-from app.service import ConferenceService
-from app.models.application import *
 from datetime import date
+
+from app.exceptions.conflict_exception import ApplicationAfterDeadlineException, ApplicationAlreadyExists
+from app.exceptions.not_found_exception import ApplicationNotFoundException
+from app.exceptions.validation_exception import ValidationException
+from app.mapper.application_mapper import ApplicationMapper
+from app.models.application import *
+from app.repository.application_repository import ApplicationRepository
+from app.service.conference_service import ConferenceService
 
 
 class ApplicationService:
-    def __init__(self, conference_service: ConferenceService):
-        self.__repo = ApplicationRepository()
-        self.__mapper = ApplicationMapper()
+    def __init__(self, conference_service: ConferenceService, application_repository: ApplicationRepository,
+                 application_mapper: ApplicationMapper, verification_enabled: bool):
+        self.__repo = application_repository
+        self.__mapper = application_mapper
         self.__conf_service = conference_service
+        self.__verification_enabled = verification_enabled
 
     def create_application(self, conf_id, app_dto, session):
         conference = self.__conf_service.get_conference_by_id(conf_id, session)
@@ -22,35 +26,46 @@ class ApplicationService:
         if app_dto.birth_date > date.today():
             raise ValidationException("День рождения не может быть в будущем")
 
-        existing = self.get_application_by_conf_email(conf_id, app_dto.email, session)
+        existing = self.get_confirmed_application_by_conf_email(conf_id, app_dto.email, session)
         if existing:
             raise ApplicationAlreadyExists(app_dto.email)
 
         application = Application()
 
-        self.__fill_application(application, app_dto)
-        application.conference_id = conf_id
-
+        self.__fill_application(application, app_dto, conf_id)
         self.__repo.save(application, session)
         return application
 
-    def get_application_by_conf_email(self, conf_id, email, session):
-        application = self.__repo.find_application_by_conf_email(conf_id, email, session)
+    def get_confirmed_application_by_conf_email(self, conf_id, email, session):
+        application = self.__repo.find_confirmed_application_by_conf_email(conf_id, email, session)
         return application
 
     def get_full_applications_for_conference(self, conf_id, session):
-        self.__conf_service.exists(conf_id, session)
-
         applications = self.__repo.get_full_applications_for_conference(conf_id, session)
 
         data = self.__mapper.applications_to_full_applications_dto(applications)
 
         return data
 
+    def get_application_from_schedule(self, conf_id, session):
+        self.__conf_service.exists(conf_id, session)
+        return self.__repo.get_applications_from_schedule(conf_id, session)
+
     def get_all_applications(self, session):
         return self.__repo.get_all(session)
 
-    def __fill_application(self, application, dto):
+    def get_by_id(self, id, session):
+        application = self.__repo.get_by_id(id, session)
+
+        if not application:
+            raise ApplicationNotFoundException(id)
+        return application
+
+    def set_status(self, application, status: ApplicationStatus, session):
+        application.status = status
+        self.__repo.save(application, session)
+
+    def __fill_application(self, application, dto, conf_id):
         application.surname = dto.surname
         application.name = dto.name
         application.patronymic = dto.patronymic
@@ -71,3 +86,6 @@ class ApplicationService:
 
         application.participation_format = dto.participation_format
         application.email = dto.email
+        application.conference_id = conf_id
+
+        application.status = ApplicationStatus.CONFIRMED if not self.__verification_enabled else ApplicationStatus.UNCONFIRMED

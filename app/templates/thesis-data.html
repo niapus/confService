@@ -55,7 +55,7 @@
             <div class="info-label">Файл:</div>
             <div class="info-value">
                {% if thesis.file_path %}
-                  <a href="{{ url_for('admin.view_thesis_file', thesis_id=thesis.id) }}" class="file-link">
+                  <a href="{{ url_for('admin.view_thesis_file',thesis_id=thesis.id) }}" class="file-link">
                       {{ thesis.file_name }}
                   </a>
                {% else %}

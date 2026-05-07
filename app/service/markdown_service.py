@@ -1,9 +1,10 @@
-import markdown
 # from markdown.extensions import extra
 # from markdown.extensions.extra import extensions
 # from markdown.extensions.toc import TocExtension
 # from markdown.extensions.codehilite import CodeHiliteExtension
 import bleach
+import markdown
+
 
 class MarkdownService:
     def __init__(self):
@@ -47,8 +48,11 @@ class MarkdownService:
             'td': ['colspan', 'rowspan'],
         }
 
+        allowed_protocols = ['http', 'https', 'mailto', 'tel']
+        
         return bleach.clean(
             html,
             tags=allowed_tags,
-            attributes=allowed_attrs
+            attributes=allowed_attrs,
+            protocols=allowed_protocols
         )

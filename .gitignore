@@ -1,7 +1,46 @@
-venv/
-/uploads
-conference_service.db
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+venv/
 .venv/
+env/
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# IDE
 .idea/
+.vscode/
+*.iml
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploads & media
+uploads/
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+app/project_dump.txt
+project_dump.txt

@@ -1,21 +1,18 @@
-import os
+from datetime import date
 
 from app.exceptions.conflict_exception import ThesisAfterDeadlineException
-from app.exceptions.file_exception import FileNullNameException, FileExtensionException, FileSizeException
 from app.exceptions.not_found_exception import ApplicationNotFoundException, ThesisNotFoundException
-from app.repository.thesis_repository import ThesisRepository
-from app.service import ConferenceService, ApplicationService
 from app.models.thesis import Thesis, ThesisStatus
-from datetime import date
-from flask import current_app
-
+from app.repository.thesis_repository import ThesisRepository
+from app.service.application_service import ApplicationService
+from app.service.conference_service import ConferenceService
 from app.service.file_service import FileService
 
 
 class ThesisService:
     def __init__(self, conference_service: ConferenceService, application_service: ApplicationService,
-                 file_service: FileService):
-        self.__repo = ThesisRepository()
+                 file_service: FileService, thesis_repository: ThesisRepository):
+        self.__repo = thesis_repository
         self.__conference_service = conference_service
         self.__application_service = application_service
         self.__file_service = file_service
@@ -26,11 +23,9 @@ class ThesisService:
         if conference.submission_deadline < date.today():
             raise ThesisAfterDeadlineException(conference.submission_deadline)
 
-        application = self.__application_service.get_application_by_conf_email(conf_id, dto.email, session)
+        application = self.__application_service.get_confirmed_application_by_conf_email(conf_id, dto.email, session)
         if not application:
             raise ApplicationNotFoundException(dto.email)
-
-        self.__validate_file(file)
 
         file_path, secured_filename = self.__file_service.save_thesis_file(file, conf_id)
 
@@ -59,29 +54,11 @@ class ThesisService:
         thesis = self.get_thesis_by_id(thesis_id, session)
         new_status = ThesisStatus(status)
         thesis.status = new_status
-        self.__repo.save(thesis, session)
+        return self.__repo.save(thesis, session)
 
-    def delete_conference_theses_files(self, conf_id, session):
+    def delete_all_conference_theses_files(self, conf_id, session):
         theses = self.__repo.get_by_conf_id(conf_id, session)
-        self.__file_service.delete_thesis_files(theses)
+        self.__file_service.delete_files(theses)
 
-    def __validate_file(self, file):
-        self.__validate_filename(file.filename)
-        self.__validate_file_size(file)
-
-    def __validate_filename(self, filename):
-        if filename == '':
-            raise FileNullNameException()
-
-        ext = filename.rsplit('.', 1)[1].lower() if '.' in filename else ''
-
-        if ext != "pdf":
-            raise FileExtensionException(ext, "pdf")
-
-    def __validate_file_size(self, file):
-        file.seek(0, os.SEEK_END)
-        size = file.tell()
-        file.seek(0)
-
-        if size > current_app.config.get("MAX_CONTENT_LENGTH"):
-            raise FileSizeException(current_app.config.get("MAX_CONTENT_LENGTH") // 1024 // 1024)
+    def get_accepted_theses_with_applications(self, conf_id, session):
+        return self.__repo.get_accepted_theses_with_applications(conf_id, session)

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Email подтверждён</title>
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/email-result.css') }}">
+</head>
+<body>
+   <div class="card">
+      <h1>Email подтверждён!</h1>
+      <p class="subtitle">Ваш email успешно подтверждён</p>
+      <div class="info-cont">
+         <p>✅ Теперь вы можете:</p>
+         <p>• Загружать тезисы доклада</p>
+         <p>• Получать уведомления о статусе заявки</p>
+         <p>• Быть в курсе программы конференции</p>
+      </div>
+      <div class="button-group">
+         <a href="/" class="btn-secondary">На главную</a>
+      </div>
+   </div>
+</body>

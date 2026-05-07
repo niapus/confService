@@ -1,6 +1,10 @@
-from app.models.conference import Conference
+from datetime import date, timedelta
+
 from sqlalchemy import exists
-from datetime import date
+from sqlalchemy.orm import Session
+
+from app.models.conference import Conference
+
 
 class ConferenceRepository:
 
@@ -13,11 +17,12 @@ class ConferenceRepository:
         return conference
 
     def get_all(self, session):
-        conferences = session.query(Conference).all()
+        conferences = session.query(Conference).order_by(Conference.id.desc()).all()
         return conferences
 
     def delete(self, conference, session):
         session.delete(conference)
+        return conference
 
     def exists(self, conf_id, session):
         return session.query(
@@ -33,3 +38,9 @@ class ConferenceRepository:
         return session.query(Conference).filter(
             Conference.end_date < date.today()
         ).order_by(Conference.end_date.desc()).all()
+
+    def get_starting_in_days(self, session: Session, days):
+        target = date.today() + timedelta(days=days)
+        return session.query(Conference).filter(
+            Conference.start_date == target
+        ).all()

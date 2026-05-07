@@ -1,0 +1,191 @@
+.conference-card {
+  background: white;
+  border-radius: 16px;
+  padding: 0 50px 40px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ddd;
+}
+
+.conf-application {
+  padding-top: 25px;
+}
+
+.schedule-section {
+  margin: 30px 0;
+  padding: 20px 0;
+  border-top: 1px solid #e5e7eb;
+}
+
+.schedule-section h3 {
+  margin-bottom: 20px;
+  color: #1f2937;
+  font-size: 1.2rem;
+}
+
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border: 1px solid #d1d5db;
+  font-size: 0.9rem;
+}
+
+.schedule-table th {
+  background: #f8fafc;
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 2px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+.schedule-table td {
+  padding: 10px 16px;
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: top;
+}
+
+.schedule-row:hover {
+  background: #f9fafb;
+}
+
+.time-col {
+  width: 160px;
+}
+
+.content-col {
+  width: auto;
+}
+
+.day-row {
+  background: #f8fafc;
+}
+
+.day-cell {
+  background: #eff6ff;
+  border-bottom: 2px solid #dbeafe;
+  padding: 16px;
+}
+
+.day-info {
+  font-size: 1rem;
+  color: #1e40af;
+}
+
+.day-time {
+  margin-left: 12px;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.time-cell {
+  font-family: 'Courier New', monospace;
+  font-weight: 500;
+  color: #374151;
+  white-space: nowrap;
+}
+
+.content-cell {
+  color: #374151;
+}
+
+.talk-content strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.95rem;
+  color: #1f2937;
+}
+
+.break-content {
+  color: #6b7280;
+  font-style: italic;
+}
+
+.speaker-info {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-bottom: 2px;
+}
+
+.duration-info {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.text-row {
+  background: #f9fafb;
+}
+
+.text-cell {
+  background: #f9fafb;
+  padding: 12px 16px;
+}
+
+.text-content {
+  color: #6b7280;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.schedule-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.files-section {
+  margin: 30px 0;
+  padding: 20px 0;
+  border-top: 1px solid #e5e7eb;
+}
+
+.files-section h3 {
+  margin-bottom: 20px;
+  color: #1f2937;
+  font-size: 1.2rem;
+}
+
+.files-subsection {
+  margin-bottom: 24px;
+}
+
+.files-subsection h4 {
+  margin: 0 0 12px 0;
+  color: #374151;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.file-list {
+  margin-bottom: 16px;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: white;
+  border: 1px solid #f3f4f6;
+  transition: background 0.15s;
+}
+
+.file-item:hover {
+  background: #f9fafb;
+}
+
+.file-link {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.file-link:hover {
+  text-decoration: underline;
+}
+
+.file-meta {
+  color: #6b7280;
+  font-size: 12px;
+}

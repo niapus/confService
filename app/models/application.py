@@ -1,9 +1,14 @@
+import enum
+
+from sqlalchemy import Column, Integer, String, ForeignKey, Enum, Date, Boolean
 from sqlalchemy.orm import relationship
 
 from app.core.database import Base
-from sqlalchemy import Column, Integer, String, ForeignKey, Enum, Date, Boolean
 
-import enum
+
+class ApplicationStatus(enum.Enum):
+    CONFIRMED = "confirmed"
+    UNCONFIRMED = "unconfirmed"
 
 class DegreeEnum(enum.Enum):
     NONE = "none"
@@ -51,6 +56,8 @@ class Application(Base):
 
     participation_format = Column(Enum(ParticipationFormatEnum), nullable=False)
     email = Column(String(100), nullable=False, index=True)
+
+    status = Column(Enum(ApplicationStatus), nullable=False, default=ApplicationStatus.UNCONFIRMED, index=True)
 
     conference = relationship(
         "Conference",

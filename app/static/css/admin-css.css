@@ -233,3 +233,102 @@ a.small:hover, button.small:hover {
    background: #fee2e2;
    color: #991b1b;
 }
+
+.files-section {
+   background: white;
+   padding: 24px;
+   border-radius: 8px;
+   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.files-section-title {
+   font-size: 1.1rem;
+   color: #1f2937;
+   margin: 0 0 16px 0;
+   padding-bottom: 8px;
+   border-bottom: 2px solid #e5e7eb;
+}
+
+.file-list {
+   margin-bottom: 16px;
+}
+
+.file-item {
+   display: flex;
+   align-items: center;
+   gap: 12px;
+   padding: 10px 14px;
+   border: 1px solid #e5e7eb;
+   border-radius: 6px;
+   margin-bottom: 6px;
+   background: #f9fafb;
+   transition: background 0.15s;
+}
+
+.file-item:hover {
+   background: #f3f4f6;
+}
+
+.file-link {
+   color: #2563eb;
+   text-decoration: none;
+   font-weight: 500;
+   font-size: 14px;
+}
+
+.file-link:hover {
+   text-decoration: underline;
+}
+
+.file-meta {
+   color: #6b7280;
+   font-size: 13px;
+   flex: 1;
+}
+
+.file-delete-form {
+   margin: 0;
+   padding: 0;
+}
+
+.file-delete-btn {
+   background: none;
+   border: 1px solid #d1d5db;
+   border-radius: 4px;
+   color: #6b7280;
+   cursor: pointer;
+   font-size: 13px;
+   padding: 2px 8px;
+   line-height: 1;
+}
+
+.file-delete-btn:hover {
+   background: #fee2e2;
+   border-color: #fca5a5;
+   color: #dc2626;
+}
+
+.file-upload-form {
+   border-top: 1px solid #e5e7eb;
+   padding-top: 16px;
+}
+
+.file-input-row {
+   display: flex;
+   gap: 16px;
+   margin-bottom: 12px;
+}
+
+.info-message {
+   background: #fef3c7;
+   border: 1px solid #fbbf24;
+   border-radius: 6px;
+   padding: 12px 16px;
+   margin-bottom: 16px;
+}
+
+.info-message p {
+   margin: 0;
+   color: #92400e;
+   font-size: 14px;
+}

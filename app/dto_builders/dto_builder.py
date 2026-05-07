@@ -1,8 +1,9 @@
-from app.dto.dto import ConferenceDTO, ApplicationDTO, ThesisDTO
-from app.exceptions.conversion_exception import EmptyRequiredFieldException, InvalidFieldFormatException
 from datetime import datetime
 
+from app.dto.dto import ConferenceDTO, ApplicationDTO, ThesisDTO, ConferenceFileDTO, ScheduleItemDTO, ScheduleDTO
+from app.exceptions.conversion_exception import EmptyRequiredFieldException, InvalidFieldFormatException
 from app.models.application import GenderEnum, DegreeEnum, EducationEnum, ParticipationFormatEnum
+from app.models.schedule_item import ScheduleItemType
 
 
 def build_conference_dto(form):
@@ -67,6 +68,11 @@ def build_thesis_dto(form):
         email=__parse_str(form.get("email"), "email")
     )
 
+def build_file_dto(form):
+    return ConferenceFileDTO(
+        title=__parse_str(form.get("title"), "title")
+    )
+
 def __parse_date(value, field):
     if not value or not value.strip():
         raise EmptyRequiredFieldException(field)
@@ -75,13 +81,30 @@ def __parse_date(value, field):
     except ValueError:
         raise InvalidFieldFormatException(field, "ожидается формат YYYY-MM-DD")
 
-def __parse_int(value, field):
+def __parse_time_string(value, field):
     if not value or not value.strip():
         raise EmptyRequiredFieldException(field)
     try:
-        return int(value.strip())
-    except:
-        raise InvalidFieldFormatException(field, "должно быть число")
+        datetime.fromisoformat(value.replace('Z', '+00:00'))
+        return value.strip()
+    except ValueError:
+        raise InvalidFieldFormatException(field, "ожидается формат ISO datetime (YYYY-MM-DDTHH:MM:SS)")
+
+def __parse_int(value, field):
+    if value is None:
+        raise EmptyRequiredFieldException(field)
+    if isinstance(value, int):
+        result = value
+    else:
+        if not value or not value.strip():
+            raise EmptyRequiredFieldException(field)
+        try:
+            result = int(value.strip())
+        except ValueError:
+            raise InvalidFieldFormatException(field, "должно быть числом")
+    if result <= 0:
+        raise InvalidFieldFormatException(field, "должно быть положительным числом")
+    return result
 
 def __parse_str(value, field, required = True):
     if value is None:
@@ -110,3 +133,52 @@ def __parse_statuses(form):
     is_student = "student" in statuses
 
     return is_worker, is_student
+
+
+def __build_schedule_item_dto(data: dict) -> ScheduleItemDTO:
+    item_type = __parse_enum(data.get("item_type"), ScheduleItemType, "item_type")
+    global_order = __parse_int(data.get("global_order"), "global_order")
+
+    dto = ScheduleItemDTO(
+        item_type=item_type,
+        global_order=global_order
+    )
+
+    if item_type == ScheduleItemType.DAY:
+        dto.day_date = __parse_date(data.get("day_date"), "day_date")
+        dto.day_title = __parse_str(data.get("day_title"), "day_title", True)
+        dto.day_start_time = __parse_str(data.get("day_start_time"), "day_start_time", True)
+
+    elif item_type == ScheduleItemType.TALK:
+        dto.application_id = __parse_int(data.get("application_id"), "application_id")
+        dto.talk_speaker = __parse_str(data.get("talk_speaker"), "talk_speaker", True)
+        dto.talk_title = __parse_str(data.get("talk_title"), "talk_title", True)
+        dto.talk_duration = __parse_int(data.get("talk_duration"), "talk_duration")
+        dto.start_time = __parse_time_string(data.get("start_time"), "start_time")
+        dto.end_time = __parse_time_string(data.get("end_time"), "end_time")
+
+    elif item_type == ScheduleItemType.BREAK:
+        dto.break_title = __parse_str(data.get("break_title"), "break_title", True)
+        dto.break_duration = __parse_int(data.get("break_duration"), "break_duration")
+        dto.start_time = __parse_time_string(data.get("start_time"), "start_time")
+        dto.end_time = __parse_time_string(data.get("end_time"), "end_time")
+
+    elif item_type == ScheduleItemType.TEXT:
+        dto.text_content = __parse_str(data.get("text_content"), "text_content", True)
+
+    return dto
+
+
+def build_schedule_dto(data: dict) -> ScheduleDTO:
+    schedule_data = data.get("schedule")
+    if not schedule_data or not isinstance(schedule_data, list):
+        raise InvalidFieldFormatException("schedule", "должен быть списком")
+
+    schedule_dtos = []
+    for item_data in schedule_data:
+        item_dto = __build_schedule_item_dto(item_data)
+        schedule_dtos.append(item_dto)
+
+    return ScheduleDTO(
+        schedule=schedule_dtos
+    )

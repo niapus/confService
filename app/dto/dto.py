@@ -1,8 +1,9 @@
 from dataclasses import dataclass
-from typing import Optional
 from datetime import date
+from typing import Optional, List
 
 from app.models.application import GenderEnum, DegreeEnum, EducationEnum, ParticipationFormatEnum
+from app.models.schedule_item import ScheduleItemType
 
 
 @dataclass
@@ -10,7 +11,6 @@ class ThesisInApplicationDTO:
     id: int
     authors: str
     title: str
-    file_path: str
     file_name: str
     status: str
 
@@ -19,10 +19,64 @@ class ThesisInApplicationDTO:
             'id': self.id,
             'authors': self.authors,
             'title': self.title,
-            'file_path': self.file_path,
             'file_name': self.file_name,
             'status': self.status
         }
+
+@dataclass
+class ThesisDTO:
+    authors: str
+    title: str
+    email: str
+
+@dataclass
+class ThesisScheduleDTO:
+    id: int
+    speaker_name: str
+    title: str
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "speaker_name": self.speaker_name,
+            "title": self.title
+        }
+
+
+
+@dataclass
+class ConferenceDTO:
+    title: str
+
+    description_md: str
+    tagline: str
+
+    registration_deadline: date
+    submission_deadline: date
+
+    start_date: date
+    end_date: date
+
+    performance_time: int
+
+@dataclass
+class ConferenceScheduleDTO:
+    id: int
+    title: str
+    start_date: date
+    end_date: date
+    performance_time: int
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "start_date": self.start_date,
+            "end_date": self.end_date,
+            "performance_time": self.performance_time
+        }
+
+
 
 @dataclass
 class FullApplicationDTO:
@@ -90,21 +144,6 @@ class FullApplicationDTO:
         )
 
 @dataclass
-class ConferenceDTO:
-    title: str
-
-    description_md: str
-    tagline: str
-
-    registration_deadline: date
-    submission_deadline: date
-
-    start_date: date
-    end_date: date
-
-    performance_time: int
-
-@dataclass
 class ApplicationDTO:
     surname: str
     name: str
@@ -130,7 +169,43 @@ class ApplicationDTO:
     email: str
 
 @dataclass
-class ThesisDTO:
-    authors: str
+class FullScheduleDTO:
+    conference: ConferenceScheduleDTO
+    applications: List[ThesisScheduleDTO]
+    schedule: List[dict]
+
+    def to_dict(self):
+        return {
+            "conference": self.conference.to_dict(),
+            "applications": [app.to_dict() for app in self.applications],
+            "schedule": self.schedule
+        }
+
+@dataclass
+class ConferenceFileDTO:
     title: str
-    email: str
+
+@dataclass
+class ScheduleItemDTO:
+    item_type: ScheduleItemType
+    global_order: int
+
+    day_date: Optional[date] = None
+    day_title: Optional[str] = None
+    day_start_time: Optional[str] = None
+
+    application_id: Optional[int] = None
+    talk_speaker: Optional[str] = None
+    talk_title: Optional[str] = None
+    talk_duration: Optional[int] = None
+    start_time: Optional[str] = None
+    end_time: Optional[str] = None
+
+    break_title: Optional[str] = None
+    break_duration: Optional[int] = None
+
+    text_content: Optional[str] = None
+
+@dataclass
+class ScheduleDTO:
+    schedule: List[ScheduleItemDTO]

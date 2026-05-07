@@ -11,11 +11,16 @@ class ConferenceNotFoundException(NotFoundException):
         super().__init__(message)
 
 class ApplicationNotFoundException(NotFoundException):
-    def __init__(self, email):
-        message = f"Заявка с email {email} не найдена"
+    def __init__(self, identifier):
+        message = f"Заявка {identifier} не найдена"
         super().__init__(message)
 
 class ThesisNotFoundException(NotFoundException):
     def __init__(self, thesis_id):
         message = f"Файл тезисов с id {thesis_id} не найден"
+        super().__init__(message)
+
+class FileNotFoundException(NotFoundException):
+    def __init__(self, file_name):
+        message = f"Файл {file_name} не найден"
         super().__init__(message)

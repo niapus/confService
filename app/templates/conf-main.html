@@ -14,6 +14,111 @@
       </ul>
    </section>
    <p>{{ conference.description_html|safe }}</p>
+
+   {% if schedule_items %}
+   <section class="schedule-section">
+      <h3>Расписание</h3>
+      <table class="schedule-table">
+         <thead>
+            <tr>
+               <th class="time-col">Время</th>
+               <th class="content-col">Содержание</th>
+            </tr>
+         </thead>
+         <tbody>
+            {% for item in schedule_items %}
+               {% if item.item_type.value == 'day' %}
+               <tr class="schedule-row day-row">
+                  <td colspan="2" class="day-cell">
+                     <div class="day-info">
+                        <strong>{{ item.day_date.strftime('%d.%m.%Y') }}</strong> — {{ item.day_title }}
+                        {% if item.day_start_time %}
+                        <span class="day-time">Начало: {{ item.day_start_time }}</span>
+                        {% endif %}
+                     </div>
+                  </td>
+               </tr>
+
+               {% elif item.item_type.value == 'talk' %}
+               <tr class="schedule-row talk-row">
+                  <td class="time-cell">{{ item.start_time|format_time }} - {{ item.end_time|format_time }}</td>
+                  <td class="content-cell">
+                     <div class="talk-content">
+                        <strong>{{ item.talk_title }}</strong>
+                        <div class="speaker-info">{{ item.talk_speaker }}</div>
+                        {% if item.talk_duration %}
+                        <div class="duration-info">{{ item.talk_duration }} мин</div>
+                        {% endif %}
+                     </div>
+                  </td>
+               </tr>
+
+               {% elif item.item_type.value == 'break' %}
+               <tr class="schedule-row break-row">
+                  <td class="time-cell">{{ item.start_time|format_time }} - {{ item.end_time|format_time }}</td>
+                  <td class="content-cell">
+                     <div class="break-content">
+                        {{ item.break_title }}
+                        {% if item.break_duration %}
+                        <div class="duration-info">{{ item.break_duration }} мин</div>
+                        {% endif %}
+                     </div>
+                  </td>
+               </tr>
+
+               {% elif item.item_type.value == 'text' %}
+               <tr class="schedule-row text-row">
+                  <td colspan="2" class="text-cell">
+                     <div class="text-content">{{ item.text_content|safe }}</div>
+                  </td>
+               </tr>
+               {% endif %}
+            {% endfor %}
+         </tbody>
+      </table>
+   </section>
+   {% endif %}
+
+   {% if conference.files %}
+   <section class="files-section">
+      <h3>Файлы конференции</h3>
+      
+      {% set proceedings = conference.files|selectattr('file_type.value', 'equalto', 'proceedings')|list %}
+      {% if proceedings %}
+      <div class="files-subsection">
+         <h4>Сборник тезисов</h4>
+         <div class="file-list">
+            {% for file in proceedings %}
+            <div class="file-item">
+               <a href="/admin/conferences/files/{{ file.id }}/view" class="file-link" target="_blank">
+                  {{ file.title }}
+               </a>
+               <span class="file-meta">{{ file.original_name }}</span>
+            </div>
+            {% endfor %}
+         </div>
+      </div>
+      {% endif %}
+
+      {% set conf_files = conference.files|selectattr('file_type.value', 'equalto', 'conference_file')|list %}
+      {% if conf_files %}
+      <div class="files-subsection">
+         <h4>Дополнительные файлы</h4>
+         <div class="file-list">
+            {% for file in conf_files %}
+            <div class="file-item">
+               <a href="/admin/conferences/files/{{ file.id }}/view" class="file-link" target="_blank">
+                  {{ file.title }}
+               </a>
+               <span class="file-meta">{{ file.original_name }}</span>
+            </div>
+            {% endfor %}
+         </div>
+      </div>
+      {% endif %}
+   </section>
+   {% endif %}
+
    <div class="conf-application">
       <div class="buttons">
          {% if conference.registration_deadline >= now %}
@@ -32,17 +137,5 @@
    </div>
 </div>
 
-<style>
-.conference-card {
-   background: white;
-   border-radius: 16px;
-   padding: 0 50px 40px;
-   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-   border: 1px solid #ddd;
-}
-
-.conf-application {
-   padding-top: 25px;
-}
-</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/conf-main.css') }}">
 {% endblock %}

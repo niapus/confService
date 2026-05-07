@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+</head>
+<body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+
+    {% if thesis.status.value == 'accepted' %}
+    <h2 style="color: #4CAF50;">✅ Тезисы приняты</h2>
+    {% else %}
+    <h2 style="color: #f44336;">❌ Тезисы отклонены</h2>
+    {% endif %}
+
+    <p>Здравствуйте, <strong>{{ application.surname }} {{ application.name }}</strong>!</p>
+
+    <p>Статус ваших тезисов для конференции <strong>{{ conference.title }}</strong> изменён.</p>
+
+    <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 15px 0;">
+        <p><strong>Название тезисов:</strong> {{ thesis.title }}</p>
+        <p><strong>Авторы:</strong> {{ thesis.authors }}</p>
+        <p><strong>Статус:</strong>
+            {% if thesis.status.value == 'accepted' %}
+            <span style="color: #4CAF50;">Приняты</span>
+            {% else %}
+            <span style="color: #f44336;">Отклонены</span>
+            {% endif %}
+        </p>
+    </div>
+
+    {% if thesis.status.value == 'accepted' %}
+    <p>Поздравляем! Ваши тезисы приняты. Информация о выступлении будет в программе конференции.</p>
+    {% else %}
+    <p>К сожалению, ваши тезисы не были приняты. Вы можете связаться с организаторами для уточнения причин.</p>
+    {% endif %}
+
+    <p>
+        <a href="{{ conference_url }}"
+           style="display: inline-block; padding: 10px 20px; background: #2196F3; color: white; text-decoration: none; border-radius: 4px;">
+            Перейти к конференции
+        </a>
+    </p>
+
+    <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+    <p style="font-size: 12px; color: #999;">Это автоматическое сообщение, не отвечайте на него.</p>
+</body>
+</html>

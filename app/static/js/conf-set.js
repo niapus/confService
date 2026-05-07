@@ -84,7 +84,7 @@ function ApplicationRow({ application }) {
                   'button',
                   {
                      className: 'action-btn',
-                     onClick: () => window.location.href = `/admin/applications/${thesis.id}`,
+                     onClick: () => window.location.href = `/admin/applications/${application.id}/thesis/${thesis.id}`,
                      style: {
                         marginBottom: index < application.theses.length - 1 ? '20px' : '0',
                      }
@@ -112,11 +112,15 @@ function ConferenceApp() {
    });
 
    useEffect(() => {
-      fetch(`/admin/api/conferences/${conferenceId}`)
+      fetch(`/api/conferences/${conferenceId}`)
          .then(res => {
-            if (!res.ok) throw new Error('Ошибка загрузки');
+            if (!res.ok) {
+                return res.json().then(data => {
+                    throw new Error(data.error || 'Ошибка загрузки');
+                });
+            }
             return res.json();
-         })
+        })
          .then(data => {
             setApplications(data.applications);
             setLoading(false);

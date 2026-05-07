@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+</head>
+<body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <h2 style="color: #4CAF50;">Опубликовано расписание</h2>
+
+    <p>Здравствуйте, <strong>{{ application.surname }} {{ application.name }}</strong>!</p>
+
+    <p>Для конференции <strong>{{ conference.title }}</strong> опубликована программа выступлений.</p>
+
+    <p>
+        <a href="{{ conference_url }}"
+           style="display: inline-block; padding: 10px 20px; background: #4CAF50; color: white; text-decoration: none; border-radius: 4px;">
+            Посмотреть расписание
+        </a>
+    </p>
+
+    <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+    <p style="font-size: 12px; color: #999;">Это автоматическое сообщение, не отвечайте на него.</p>
+</body>
+</html>

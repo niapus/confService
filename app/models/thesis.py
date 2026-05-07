@@ -1,8 +1,10 @@
+import enum
+
+from sqlalchemy import Column, Integer, String, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 
 from app.core.database import Base
-from sqlalchemy import Column, Integer, String, ForeignKey, Enum
-import enum
+
 
 class ThesisStatus(enum.Enum):
     PENDING = "pending"

@@ -3,7 +3,7 @@
 <head>
    <meta charset="UTF-8">
    <title>{% if conference %}Редактирование{% else %}Создание{% endif %} конференции</title>
-   <link rel="stylesheet" href="/static/css/admin-css.css">
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-css.css') }}">
 </head>
 <body>
 
@@ -15,7 +15,7 @@
 
    <main class="content">
       <div class="form-container">
-         <h1>{% if conference %}Редактировать{% else %}Создать{% endif %} конференцию</h1>
+         <h1>{% if conf_id %}Редактировать{% else %}Создать{% endif %} конференцию</h1>
 
          {% if error %}
          <div class="alert alert-danger" role="alert">
@@ -24,7 +24,8 @@
          {% endif %}
 
          <form method="POST" class="conference-form"
-            action="{% if conference %}/admin/conferences/{{ conference.id }}/edit{% else %}/admin/conferences/new{% endif %}">
+            action="{% if conf_id %}/admin/conferences/{{ conf_id }}/edit{% else %}/admin/conferences/new{% endif %}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
             <div class="form-row">
                <div class="form-group">
@@ -36,7 +37,7 @@
                <div class="form-group">
                   <label>Теги</label>
                   <input type="text" name="tagline"
-                         value="{{ form_data.tagline if form_data else (conference.tagline if conference else '') }}">
+                     value="{{ form_data.tagline if form_data else (conference.tagline or '' if conference else '') }}">
                </div>
             </div>
 
@@ -86,6 +87,84 @@
                <a href="/admin" class="btn-secondary">Отмена</a>
             </div>
          </form>
+
+         {% if conference %}
+         <div class="files-section" style="margin-top: 32px;">
+            <h2 class="files-section-title">Сборник тезисов</h2>
+
+            {% set proceedings = conference.files|selectattr('file_type.value', 'equalto', 'proceedings')|list %}
+            {% if proceedings %}
+            <div class="file-list">
+               {% for file in proceedings %}
+               <div class="file-item">
+                  <a href="/admin/conferences/files/{{ file.id }}/view" class="file-link" target="_blank">{{ file.title }}</a>
+                  <span class="file-meta">{{ file.original_name }}</span>
+                  <form method="POST" action="/admin/conferences/{{ conference.id }}/files/{{ file.id }}/delete" class="file-delete-form" onsubmit="return confirm('Удалить этот файл?')">
+                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                     <button type="submit" class="file-delete-btn" title="Удалить">✕</button>
+                  </form>
+               </div>
+               {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if not proceedings %}
+            <form method="POST" action="/admin/conferences/{{ conference.id }}/upload/proceedings" enctype="multipart/form-data" class="file-upload-form">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+               <div class="file-input-row">
+                  <div class="form-group" style="flex: 1;">
+                     <label>Название</label>
+                     <input type="text" name="title" placeholder="например: Сборник тезисов 2025" required>
+                  </div>
+                  <div class="form-group" style="flex: 1;">
+                     <label>Файл (PDF, DOC, DOCX)</label>
+                     <input type="file" name="file" accept=".pdf,.doc,.docx" required>
+                  </div>
+               </div>
+               <button type="submit" class="btn-primary">Загрузить сборник</button>
+            </form>
+            {% else %}
+            <div class="info-message">
+               <p>Сборник тезисов уже загружен. Удалите существующий файл, чтобы загрузить новый.</p>
+            </div>
+            {% endif %}
+         </div>
+
+         <div class="files-section" style="margin-top: 24px;">
+            <h2 class="files-section-title">Файлы конференции</h2>
+
+            {% set conf_files = conference.files|selectattr('file_type.value', 'equalto', 'conference_file')|list %}
+            {% if conf_files %}
+            <div class="file-list">
+               {% for file in conf_files %}
+               <div class="file-item">
+                  <a href="/admin/conferences/files/{{ file.id }}/view" class="file-link" target="_blank">{{ file.title }}</a>
+                  <span class="file-meta">{{ file.original_name }}</span>
+                  <form method="POST" action="/admin/conferences/{{ conference.id }}/files/{{ file.id }}/delete" class="file-delete-form" onsubmit="return confirm('Удалить этот файл?')">
+                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                     <button type="submit" class="file-delete-btn" title="Удалить">✕</button>
+                  </form>
+               </div>
+               {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="POST" action="/admin/conferences/{{ conference.id }}/upload/file" enctype="multipart/form-data" class="file-upload-form">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+               <div class="file-input-row">
+                  <div class="form-group" style="flex: 1;">
+                     <label>Название файла</label>
+                     <input type="text" name="title" placeholder="например: Программа конференции" required>
+                  </div>
+                  <div class="form-group" style="flex: 1;">
+                     <label>Файл</label>
+                     <input type="file" name="file" required>
+                  </div>
+               </div>
+               <button type="submit" class="btn-primary">Загрузить файл</button>
+            </form>
+         </div>
+         {% endif %}
       </div>
    </main>
 </div>

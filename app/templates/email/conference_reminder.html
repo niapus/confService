@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+</head>
+<body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <h2 style="color: #2196F3;">Конференция уже скоро</h2>
+
+    <p>Здравствуйте, <strong>{{ application.surname }} {{ application.name }}</strong>!</p>
+
+    <p>Напоминаем, что конференция <strong>{{ conference.title }}</strong> состоится <strong>{{ conference.start_date }} – {{ conference.end_date }}</strong>.</p>
+
+    <p>
+        <a href="{{ conference_url }}"
+           style="display: inline-block; padding: 10px 20px; background: #2196F3; color: white; text-decoration: none; border-radius: 4px;">
+            Перейти к конференции
+        </a>
+    </p>
+
+    <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+    <p style="font-size: 12px; color: #999;">Это автоматическое сообщение, не отвечайте на него.</p>
+</body>
+</html>

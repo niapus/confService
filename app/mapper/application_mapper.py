@@ -31,7 +31,6 @@ class ApplicationMapper:
             id=thesis.id,
             authors=thesis.authors,
             title=thesis.title,
-            file_path=thesis.file_path,
             file_name=thesis.file_name,
             status=thesis.status.value
         )

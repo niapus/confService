@@ -13,11 +13,9 @@
       <button onclick="showSection('conferences')">Конференции</button>
       <button onclick="showSection('applications')">Заявки</button>
       <button onclick="showSection('theses')">Тезисы</button>
+      <a href="/admin/logs" class="sidebar-link">Логи системы</a>
 
-      <form method="post" action="{{ url_for('admin.logout') }}">
-         {# <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> #}
-         <button type="submit" class="btn btn-danger">Выйти</button>
-      </form>
+      <a href="{{ url_for('admin.logout') }}" class="btn btn-danger">Выйти</a>
    </aside>
 
    <main class="content">
@@ -55,11 +53,13 @@
                   <td>{{ conference.submission_deadline.strftime('%d.%m.%Y') }}</td>
                   <td>{{ conference.performance_time }}</td>
                   <td>
-                     <a href="/admin/conferences/{{ conference.id }}/edit" class="small">✏️ Ред.</a>
+                     <a href="/admin/conferences/{{ conference.id }}/edit" class="small">✏️ Редактировать</a>
                      <form method="POST" action="/admin/conferences/{{ conference.id }}/delete" style="display:inline;" onsubmit="return confirm('Удалить конференцию?')">
-                        <button type="submit" class="small">🗑️ Удал.</button>
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="small">🗑️ Удалить</button>
                      </form>
                      <a href="/admin/conferences/{{ conference.id }}" class="small">👁️ Детали</a>
+                     <a href="/admin/conferences/{{ conference.id }}/schedule" class="small">📅 Расписание</a>
                   </td>
                </tr>
                {% endfor %}
@@ -127,7 +127,7 @@
                   </td>
                   <td>
                      {% for theses in application.theses %}
-                        <a href="/admin/applications/{{ theses.id }}" class="small">👁️ Тезис №{{ loop.index }}</a>
+                        <a href="/admin/applications/{{ application.id }}/thesis/{{ theses.id }}" class="small">👁️ Тезис №{{ loop.index }}</a>
                      {% endfor %}
                      {% if application.theses %}
                         <span class="small">Тезисы: {{ application.theses|length }}</span>
@@ -190,6 +190,7 @@
                   </td>
                   <td>
                      <form method="POST" action="/admin/theses/{{ thesis.id }}/status">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <select name="status" onchange="this.form.submit()" class="small">
                            <option value="pending" {% if thesis.status.value =='pending' %}selected{% endif %}>На рассмотрении</option>
                            <option value="accepted" {% if thesis.status.value =='accepted' %}selected{% endif %}>Принят</option>

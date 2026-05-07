@@ -1,0 +1,60 @@
+import logging
+
+from apscheduler.executors.pool import ThreadPoolExecutor
+from apscheduler.schedulers.background import BackgroundScheduler
+
+from app.core import database
+
+logger = logging.getLogger(__name__)
+
+class SchedulerService:
+    def __init__(self, app):
+        self._app = app
+        self._services = app.extensions['services']
+        self._scheduler = BackgroundScheduler(
+            executors={'default': ThreadPoolExecutor(max_workers=2)},
+            job_defaults={
+                'max_instances': 1,
+                'coalesce': True,
+                'misfire_grace_time': 3600,
+            }
+        )
+
+    def start(self):
+        self._scheduler.add_job(self._process_individual, 'interval', seconds=15, id='individual')
+        self._scheduler.add_job(self._process_mass, 'interval', seconds=60, id='mass')
+        self._scheduler.add_job(self._check_reminders, 'cron', hour=9, minute=0, id='reminders')
+        self._scheduler.start()
+        logger.info("Планировщик запущен: individual(15s), mass(60s), reminders(9:00)")
+
+    def _process_individual(self):
+        with self._app.app_context():
+            sent, failed = self._services.email.process_individual_queue()
+            if sent or failed:
+                logger.info(f"Индивидуальная рассылка: отправлено={sent}, ошибок={failed}")
+
+    def _process_mass(self):
+        with self._app.app_context():
+            sent, failed = self._services.email.process_mass_queue()
+            if sent or failed:
+                logger.info(f"Массовая рассылка: отправлено={sent}, ошибок={failed}")
+
+    def _check_reminders(self):
+        with self._app.app_context():
+            self._do_check_reminders()
+
+    def _do_check_reminders(self):
+        session = database.Session()
+        try:
+            upcoming = self._services.conference.get_starting_in_days(session, days=1)
+            for conference in upcoming:
+                applications = self._services.application.get_application_from_schedule(conference.id, session)
+                if applications:
+                    self._services.notification.send_conference_reminder(applications, conference, session)
+                    logger.info(f"Участников: {len(applications)}, сообщения для конференции '{conference.title}'")
+            session.commit()
+        except Exception:
+            session.rollback()
+            logger.error(f"Оповещения не отправлены", exc_info=True)
+        finally:
+            session.close()

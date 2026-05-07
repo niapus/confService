@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Text, Date
 from sqlalchemy.orm import relationship
+
 from app.core.database import Base
 
 
@@ -27,3 +28,24 @@ class Conference(Base):
         back_populates="conference",
         cascade="all, delete-orphan"
     )
+
+    files = relationship(
+        "ConferenceFile",
+        back_populates="conference",
+        cascade="all, delete-orphan"
+    )
+
+    schedule_items = relationship(
+        "ScheduleItem",
+        back_populates="conference",
+        cascade="all, delete-orphan"
+    )
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'start_date': self.start_date.strftime('%Y-%m-%d'),
+            'end_date': self.end_date.strftime('%Y-%m-%d'),
+            'performance_time': self.performance_time
+        }

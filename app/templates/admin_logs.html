@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Логи системы{% endblock %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin-logs.css') }}">
+
+<div class="container">
+
+  <div class="section-header">
+    <h2>Логи системы</h2>
+    <a href="/admin" class="btn-secondary">← Админка</a>
+  </div>
+
+  <!-- Панель управления -->
+  <div class="toolbar">
+    <select id="fileSelect"></select>
+
+    <button class="btn-primary" onclick="reloadLogs()">Обновить</button>
+    
+    <button class="btn-secondary" onclick="downloadLogFile()">Скачать</button>
+
+    <div class="checkbox-wrapper">
+      <input type="checkbox" id="autoupdate">
+      <label for="autoupdate">Автообновление</label>
+    </div>
+  </div>
+
+  <!-- Логи -->
+  <pre id="logBox"></pre>
+
+  <!-- Загрузка истории -->
+  <button class="load-more" onclick="loadMore()">Загрузить старые</button>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/admin-logs.js') }}"></script>
+
+{% endblock %}

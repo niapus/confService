@@ -1,0 +1,55 @@
+# ===== IDE =====
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ===== Python =====
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+
+# ===== Тесты =====
+tests/
+.pytest_cache/
+pytest-cache-files-cmpatyy_/
+.coverage
+htmlcov/
+pytest.ini
+
+# ===== База данных (будет в volume) =====
+*.db
+*.sqlite3
+conference_service.db
+
+# ===== Логи и загрузки (будут в volume) =====
+logs/
+uploads/
+
+# ===== Конфиденциальное =====
+.env
+.env.local
+.env.*
+!.env.example
+
+# ===== Дампы и временные файлы =====
+project_dump.txt
+test_dump.txt
+*.dump
+*.tmp
+*.log
+
+# ===== Docker =====
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# ===== Git =====
+.git/
+.gitignore
+.gitattributes

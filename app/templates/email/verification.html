@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            padding: 20px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-top: none;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .button:hover {
+            background: #45a049;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+        .details {
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+        .warning {
+            color: #f44336;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Подтверждение регистрации</h1>
+    </div>
+
+    <div class="content">
+        <p>Здравствуйте, <strong>{{ application.surname }} {{ application.name }}</strong>!</p>
+
+        <p>Вы зарегистрировались на конференцию:</p>
+
+        <div class="details">
+            <h3>{{ conference.title }}</h3>
+            <p><strong>Даты:</strong> {{ conference.start_date|ru_date }} – {{ conference.end_date|ru_date }}</p>
+            {% if conference.tagline %}
+            <p>{{ conference.tagline }}</p>
+            {% endif %}
+        </div>
+
+        <p>Для подтверждения email перейдите по ссылке:</p>
+
+        <p style="text-align: center;">
+            <a href="{{ verification_url }}" class="button">Подтвердить email</a>
+        </p>
+
+        <p>Или скопируйте ссылку в браузер:</p>
+        <p style="word-break: break-all; font-size: 12px; color: #666;">
+            {{ verification_url }}
+        </p>
+    </div>
+
+    <div class="footer">
+        <p>Это автоматическое сообщение, не отвечайте на него.</p>
+        <p>© Conference Service</p>
+    </div>
+</body>
+</html>
