@@ -6,7 +6,7 @@
 <h2>Заявка на участие в конференции</h2>
 
 {% if error %}
-<div class="alert alert-danger" role="alert">
+<div class="alert">
    <strong>Ошибка:</strong> {{ error }}
 </div>
 {% endif %}
@@ -74,7 +74,7 @@
          </div>
 
          <div class="form-group">
-            <label>Статус</label>
+            <label>Статус *</label>
             <div class="checkbox-group">
                <label class="checkbox-label">
                   <input type="checkbox" name="status" value="worker" id="status-worker"
@@ -126,7 +126,7 @@
          <div class="sub-field">
             <label>Уровень обучения *:</label>
             <select name="study_level" required>
-               <option value="bachelor" {% if form_data and form_data.study_level == 'bachelor' %}selected{% endif %}>Бакалавриат</option>
+               <option value="none" {% if form_data and form_data.study_level == 'none' %}selected{% endif %}>Бакалавриат</option>
                <option value="education_spec" {% if form_data and form_data.study_level == 'education_spec' %}selected{% endif %}>Специалитет</option>
                <option value="education_mag" {% if form_data and form_data.study_level == 'education_mag' %}selected{% endif %}>Магистратура</option>
                <option value="education_asp" {% if form_data and form_data.study_level == 'education_asp' %}selected{% endif %}>Аспирантура</option>
@@ -136,7 +136,7 @@
    </fieldset>
 
    <fieldset>
-      <legend>Участие *</legend>
+      <legend>Участие</legend>
 
       <div class="form-group">
          <div class="radio-group">

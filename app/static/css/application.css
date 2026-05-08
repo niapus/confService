@@ -142,11 +142,6 @@ legend {
    color: #856404;
 }
 
-.alert a {
-   color: #533f03;
-   font-weight: 600;
-}
-
 @media (max-width: 600px) {
    .form-row {
       flex-direction: column;
