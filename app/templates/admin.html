@@ -13,9 +13,8 @@
       <button onclick="showSection('conferences')">Конференции</button>
       <button onclick="showSection('applications')">Заявки</button>
       <button onclick="showSection('theses')">Тезисы</button>
-      <a href="/admin/logs" class="sidebar-link">Логи системы</a>
-
-      <a href="{{ url_for('admin.logout') }}" class="btn btn-danger">Выйти</a>
+      <button onclick="window.location.href='/admin/logs'">Логи системы</button>
+      <button onclick="window.location.href='{{ url_for('admin.logout') }}'" class="btn btn-danger">Выйти</button>
    </aside>
 
    <main class="content">
