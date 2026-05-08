@@ -325,8 +325,6 @@ function ScheduleEditor() {
             id: item.id,
             content: item.text_content
          });
-      } else if (item.item_type === 'talk') {
-         showNotification('Редактирование доклада временно недоступно', 'info');
          return;
       }
       setEditingItem(item.item_type);
@@ -552,7 +550,6 @@ function ScheduleEditor() {
                         React.createElement('div', { className: 'schedule-item-header' },
                            React.createElement('span', { className: 'schedule-item-time' }, timeDisplay),
                            React.createElement('div', { className: 'schedule-item-controls' },
-                              React.createElement('button', { className: 'btn-edit', onClick: () => editItem(item) }, '✏️'),
                               React.createElement('button', { className: 'btn-delete', onClick: () => deleteItem(item.id) }, '🗑')
                            )
                         ),
