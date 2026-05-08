@@ -5,14 +5,14 @@
 {% block content %}
 <h2>Заявка на участие в конференции</h2>
 
-{% if error %}
-<div class="alert">
-   <strong>Ошибка:</strong> {{ error }}
-</div>
-{% endif %}
 
 <form method="post" enctype="multipart/form-data" class="form-application" id="application-form">
    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+   {% if error %}
+   <div class="alert">
+      <strong>Ошибка:</strong> {{ error }}
+   </div>
+   {% endif %}
 
    <fieldset>
       <legend>Персональные данные</legend>
