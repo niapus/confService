@@ -65,7 +65,7 @@
 
       <div class="form-row">
          <div class="form-group">
-            <label>Ученая степень *</label>
+            <label>Ученая степень</label>
             <select name="degree" required>
                <option value="none" {% if form_data and form_data.degree == 'none' %}selected{% endif %}>Нет</option>
                <option value="candidate" {% if form_data and form_data.degree == 'candidate' %}selected{% endif %}>Кандидат наук</option>
@@ -74,7 +74,7 @@
          </div>
 
          <div class="form-group">
-            <label>Статус *</label>
+            <label>Статус</label>
             <div class="checkbox-group">
                <label class="checkbox-label">
                   <input type="checkbox" name="status" value="worker" id="status-worker"
@@ -136,7 +136,7 @@
    </fieldset>
 
    <fieldset>
-      <legend>Участие</legend>
+      <legend>Участие *</legend>
 
       <div class="form-group">
          <div class="radio-group">
