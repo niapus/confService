@@ -325,8 +325,8 @@ function ScheduleEditor() {
             id: item.id,
             content: item.text_content
          });
-         return;
       }
+      return;
       setEditingItem(item.item_type);
    };
 
