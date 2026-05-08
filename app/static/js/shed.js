@@ -326,7 +326,6 @@ function ScheduleEditor() {
             content: item.text_content
          });
       }
-      return;
       setEditingItem(item.item_type);
    };
 
