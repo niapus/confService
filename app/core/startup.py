@@ -10,6 +10,8 @@ from app.exceptions.startup_exception import AdminConfigException, DatabaseSetup
 
 def init_app(app):
     try:
+        __create_directories(app)
+        app.logger.info("✅ Директории созданы")
         __setup_logging(app)
         app.logger.info("✅ Логирование настроено")
         __validate_environment(app)
@@ -22,6 +24,11 @@ def init_app(app):
         app.logger.info("✅ Админы созданы")
     except StartupException as e:
         e.exit()
+
+
+def __create_directories(app):
+    for key in ('LOGS_FOLDER', 'UPLOAD_FOLDER', 'THEMES_FOLDER'):
+        os.makedirs(app.config[key], exist_ok=True)
 
 def __validate_environment(app):
 
@@ -110,8 +117,6 @@ def __validate_admin_data_format(admin_data: str) -> list:
 
 def __setup_logging(app):
     try:
-        os.makedirs(app.config['LOGS_FOLDER'], exist_ok=True)
-
         app.logger.handlers.clear()
 
         formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s - %(message)s')
