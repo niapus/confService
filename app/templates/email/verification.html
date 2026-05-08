@@ -4,89 +4,131 @@
     <meta charset="UTF-8">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
             line-height: 1.6;
             color: #333;
             max-width: 600px;
             margin: 0 auto;
             padding: 20px;
+            background: #f0f2f5;
+        }
+        .email-container {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         .header {
-            background: #4CAF50;
+            background: #2c3e50;
             color: white;
-            padding: 20px;
+            padding: 30px 20px;
             text-align: center;
-            border-radius: 5px 5px 0 0;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
         }
         .content {
+            padding: 30px;
+            background: white;
+        }
+        .content p {
+            margin: 0 0 16px 0;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+        .details {
+            background: #f4f6f8;
             padding: 20px;
-            background: #f9f9f9;
-            border: 1px solid #ddd;
-            border-top: none;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 4px solid #3498db;
+        }
+        .details h3 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+        .details p {
+            margin: 8px 0;
+            color: #555;
         }
         .button {
             display: inline-block;
-            padding: 12px 24px;
-            background: #4CAF50;
+            padding: 12px 28px;
+            background: #3498db;
             color: white;
             text-decoration: none;
-            border-radius: 4px;
-            margin: 20px 0;
+            border-radius: 10px;
+            font-weight: 500;
+            margin: 20px 0 10px;
         }
         .button:hover {
-            background: #45a049;
+            background: #2980b9;
+        }
+        .verification-link {
+            word-break: break-all;
+            font-size: 12px;
+            color: #6b7280;
+            background: #f4f6f8;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #e5e7eb;
+            margin: 30px 0 20px;
         }
         .footer {
-            margin-top: 20px;
-            font-size: 12px;
-            color: #666;
+            padding: 20px 30px;
+            background: #f8f9fa;
             text-align: center;
+            font-size: 12px;
+            color: #6b7280;
+            border-top: 1px solid #e5e7eb;
         }
-        .details {
-            background: white;
-            padding: 15px;
-            border-radius: 4px;
-            margin: 15px 0;
-        }
-        .warning {
-            color: #f44336;
-            font-size: 14px;
+        .footer p {
+            margin: 5px 0;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Подтверждение регистрации</h1>
-    </div>
-
-    <div class="content">
-        <p>Здравствуйте, <strong>{{ application.surname }} {{ application.name }}</strong>!</p>
-
-        <p>Вы зарегистрировались на конференцию:</p>
-
-        <div class="details">
-            <h3>{{ conference.title }}</h3>
-            <p><strong>Даты:</strong> {{ conference.start_date|ru_date }} – {{ conference.end_date|ru_date }}</p>
-            {% if conference.tagline %}
-            <p>{{ conference.tagline }}</p>
-            {% endif %}
+    <div class="email-container">
+        <div class="header">
+            <h1>Подтверждение регистрации</h1>
         </div>
 
-        <p>Для подтверждения email перейдите по ссылке:</p>
+        <div class="content">
+            <p>Здравствуйте, <strong>{{ application.surname }} {{ application.name }}</strong>!</p>
 
-        <p style="text-align: center;">
-            <a href="{{ verification_url }}" class="button">Подтвердить email</a>
-        </p>
+            <p>Вы зарегистрировались на конференцию:</p>
 
-        <p>Или скопируйте ссылку в браузер:</p>
-        <p style="word-break: break-all; font-size: 12px; color: #666;">
-            {{ verification_url }}
-        </p>
-    </div>
+            <div class="details">
+                <h3>{{ conference.title }}</h3>
+                <p><strong>Даты:</strong> {{ conference.start_date|ru_date }} – {{ conference.end_date|ru_date }}</p>
+                {% if conference.tagline %}
+                <p>{{ conference.tagline }}</p>
+                {% endif %}
+            </div>
 
-    <div class="footer">
-        <p>Это автоматическое сообщение, не отвечайте на него.</p>
-        <p>© Conference Service</p>
+            <p>Для подтверждения email перейдите по ссылке:</p>
+
+            <p style="text-align: center;">
+                <a href="{{ verification_url }}" class="button">Подтвердить email</a>
+            </p>
+
+            <p>Или скопируйте ссылку в браузер:</p>
+            <div class="verification-link">
+                {{ verification_url }}
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Это автоматическое сообщение, не отвечайте на него.</p>
+            <p>Conference Service</p>
+        </div>
     </div>
 </body>
 </html>

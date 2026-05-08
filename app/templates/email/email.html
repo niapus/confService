@@ -54,22 +54,6 @@
             margin: 8px 0;
             color: #555;
         }
-        .status-accepted {
-            background: #d1fae5;
-            color: #065f46;
-            padding: 4px 12px;
-            border-radius: 20px;
-            display: inline-block;
-            font-size: 13px;
-        }
-        .status-rejected {
-            background: #fee2e2;
-            color: #dc2626;
-            padding: 4px 12px;
-            border-radius: 20px;
-            display: inline-block;
-            font-size: 13px;
-        }
         .button {
             display: inline-block;
             padding: 12px 28px;
@@ -104,35 +88,31 @@
 <body>
     <div class="email-container">
         <div class="header">
-            <h1>Результат проверки тезисов</h1>
+            <h1>{{ header }}</h1>
         </div>
 
         <div class="content">
             <p>Здравствуйте, <strong>{{ application.surname }} {{ application.name }}</strong>!</p>
 
-            <p>Статус ваших тезисов для конференции <strong>{{ conference.title }}</strong> изменён.</p>
+            <p>{{ mail_text }}</p>
 
+            {% if conference %}
             <div class="details">
-                <h3>{{ thesis.title }}</h3>
-                <p><strong>Авторы:</strong> {{ thesis.authors }}</p>
-                <p><strong>Статус:</strong>
-                    {% if thesis.status.value == 'accepted' %}
-                    <span class="status-accepted">Приняты</span>
-                    {% else %}
-                    <span class="status-rejected">Отклонены</span>
-                    {% endif %}
-                </p>
+                <h3>{{ conference.title }}</h3>
+                <p><strong>Даты:</strong> {{ conference.start_date|ru_date }} – {{ conference.end_date|ru_date }}</p>
+                {% if conference.tagline %}
+                <p>{{ conference.tagline }}</p>
+                {% endif %}
             </div>
-
-            {% if thesis.status.value == 'accepted' %}
-            <p>Поздравляем! Ваши тезисы приняты. Информация о выступлении будет опубликована в программе конференции.</p>
-            {% else %}
-            <p>К сожалению, ваши тезисы не были приняты. Вы можете связаться с организаторами для уточнения причин.</p>
             {% endif %}
 
+            {% if button_url %}
             <p style="text-align: center;">
-                <a href="{{ conference_url }}" class="button">Перейти к конференции</a>
+                <a href="{{ button_url }}" class="button">
+                    {{ button_text }}
+                </a>
             </p>
+            {% endif %}
         </div>
 
         <div class="footer">
