@@ -1,51 +1,61 @@
 from datetime import date
 
+from sqlalchemy.orm import Session
+
+from app.dto.dto import ConferenceDTO
 from app.exceptions.conflict_exception import ConferenceAlreadyEndedException
 from app.exceptions.not_found_exception import ConferenceNotFoundException
 from app.exceptions.validation_exception import ValidationException
 from app.models.conference import Conference
 from app.repository.conference_repository import ConferenceRepository
+from app.service.markdown_service import MarkdownService
 from app.service.notification_service import NotificationService
 
 
 class ConferenceService:
+    """Управление конференциями: создание, редактирование, валидация дат."""
 
-    def __init__(self, conference_repository: ConferenceRepository, markdown_service, notification: NotificationService):
+    def __init__(
+        self,
+        conference_repository: ConferenceRepository,
+        markdown_service: MarkdownService,
+        notification: NotificationService
+    ) -> None:
         self.__repo = conference_repository
         self.__md_service = markdown_service
         self.__notification = notification
 
-    def get_conference_by_id(self, conf_id, session):
+    def get_conference_by_id(self, conf_id: int, session: Session) -> Conference:
+        """Возвращает конференцию по ID. Выбрасывает ConferenceNotFoundException если не найдена."""
         conference = self.__repo.get_by_id(conf_id, session)
-
         if not conference:
             raise ConferenceNotFoundException(conf_id)
         return conference
 
-    def exists(self, conf_id, session):
+    def exists(self, conf_id: int, session: Session) -> bool:
+        """Проверяет существование конференции. Выбрасывает ConferenceNotFoundException если не найдена."""
         existing = self.__repo.exists(conf_id, session)
-
         if not existing:
             raise ConferenceNotFoundException(conf_id)
         return existing
 
-    def get_upcoming_conference(self, conf_id, session):
+    def get_upcoming_conference(self, conf_id: int, session: Session) -> Conference:
+        """Возвращает конференцию, если она ещё не завершилась."""
         conference = self.get_conference_by_id(conf_id, session)
         if conference.end_date < date.today():
             raise ConferenceAlreadyEndedException(conf_id)
         return conference
 
-    def create_conference(self, conf_dto, session):
+    def create_conference(self, conf_dto: ConferenceDTO, session: Session) -> Conference:
+        """Создаёт новую конференцию после валидации дат."""
         self.__validate_dates(conf_dto)
-
         new_conference = Conference()
         self.__fill_conference(new_conference, conf_dto)
-
         return self.__repo.save(new_conference, session)
 
-    def update_conference(self, conf_id, conf_dto, session):
+    def update_conference(self, conf_id: int, conf_dto: ConferenceDTO, session: Session) -> Conference:
+        """Обновляет данные конференции. Уведомляет участников при изменении ключевых полей."""
         conference = self.get_conference_by_id(conf_id, session)
-
         self.__validate_dates(conf_dto)
         is_changed = self.__is_changed(conference, conf_dto)
         self.__fill_conference(conference, conf_dto)
@@ -55,39 +65,42 @@ class ConferenceService:
 
         return conference
 
-    def get_starting_in_days(self, session, days):
+    def get_starting_in_days(self, session: Session, days: int) -> list[Conference]:
+        """Возвращает конференции, начинающиеся ровно через указанное количество дней."""
         return self.__repo.get_starting_in_days(session, days)
 
-    def get_all_conferences(self, session):
-        conferences = self.__repo.get_all(session)
-        return conferences
+    def get_all_conferences(self, session: Session) -> list[Conference]:
+        """Возвращает все конференции."""
+        return self.__repo.get_all(session)
 
-    def delete_conference(self, conference, session):
+    def delete_conference(self, conference: Conference, session: Session) -> Conference:
+        """Удаляет конференцию из базы данных."""
         return self.__repo.delete(conference, session)
 
-    def get_future_conferences(self, session):
+    def get_future_conferences(self, session: Session) -> list[Conference]:
+        """Возвращает конференции, которые ещё не начались."""
         return self.__repo.get_future_conferences(session)
 
-    def get_past_conferences(self, session):
+    def get_past_conferences(self, session: Session) -> list[Conference]:
+        """Возвращает завершённые конференции."""
         return self.__repo.get_past_conferences(session)
 
-    def __fill_conference(self, conference, dto):
+    def __fill_conference(self, conference: Conference, dto: ConferenceDTO) -> None:
         conference.title = dto.title
         conference.tagline = dto.tagline
         conference.registration_deadline = dto.registration_deadline
         conference.submission_deadline = dto.submission_deadline
         conference.start_date = dto.start_date
         conference.end_date = dto.end_date
-        conference.performance_time =  dto.performance_time
-
+        conference.performance_time = dto.performance_time
         self.__update_md_and_html(conference, dto.description_md)
 
-    def __update_md_and_html(self, conference, new_md):
+    def __update_md_and_html(self, conference: Conference, new_md: str) -> None:
         if conference.description_md != new_md or conference.description_html is None:
             conference.description_html = self.__md_service.to_html(new_md)
         conference.description_md = new_md
 
-    def __validate_dates(self, dto):
+    def __validate_dates(self, dto: ConferenceDTO) -> None:
         start = dto.start_date
         end = dto.end_date
         reg_deadline = dto.registration_deadline
@@ -96,29 +109,24 @@ class ConferenceService:
 
         if start < today:
             raise ValidationException(f"Начало конференции ({start}) не может быть в прошлом")
-
         if end < start:
             raise ValidationException(f"Конец конференции ({end}) не может быть до её начала ({start})")
-
         if reg_deadline >= start:
-            raise ValidationException(f"Дедлайн регистрации ({reg_deadline}) должен быть раньше\
-                                        даты начала конференции ({start})")
-
+            raise ValidationException(
+                f"Дедлайн регистрации ({reg_deadline}) должен быть раньше даты начала конференции ({start})"
+            )
         if thesis_deadline >= start:
-            raise ValidationException(f"Дедлайн для подачи тезисов ({thesis_deadline}) \
-                                        должен быть до начала конференции ({start})")
+            raise ValidationException(
+                f"Дедлайн для подачи тезисов ({thesis_deadline}) должен быть до начала конференции ({start})"
+            )
 
-    def __is_changed(self, conference, dto) -> bool:
-        old_title = conference.title
-        old_description = conference.description_md
-        old_dates = (conference.start_date, conference.end_date,
-                     conference.registration_deadline, conference.submission_deadline)
-
-        changed = (
-            old_title != dto.title or
-            old_description != dto.description_md or
-            old_dates != (dto.start_date, dto.end_date,
-                          dto.registration_deadline, dto.submission_deadline)
+    def __is_changed(self, conference: Conference, dto: ConferenceDTO) -> bool:
+        old_dates = (
+            conference.start_date, conference.end_date,
+            conference.registration_deadline, conference.submission_deadline
         )
-
-        return changed
+        return (
+            conference.title != dto.title or
+            conference.description_md != dto.description_md or
+            old_dates != (dto.start_date, dto.end_date, dto.registration_deadline, dto.submission_deadline)
+        )

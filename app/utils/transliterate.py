@@ -2,7 +2,7 @@ from werkzeug.utils import secure_filename
 
 
 def transliterate(text: str) -> str:
-    """Переводит кириллицу в латиницу"""
+    """Транслитерирует кириллический текст в латиницу."""
     mapping = {
         'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e',
         'ё': 'yo', 'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k',
@@ -21,10 +21,7 @@ def transliterate(text: str) -> str:
 
 
 def safe_filename_with_cyrillic(filename: str) -> str:
-    """
-    Безопасное имя файла с поддержкой кириллицы
-    """
-
+    """Транслитерирует кириллицу в имени файла и применяет werkzeug-санитизацию."""
     name, ext = filename.rsplit('.', 1)
 
     name_latin = transliterate(name)

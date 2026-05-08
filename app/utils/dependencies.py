@@ -1,3 +1,4 @@
+"""Вспомогательные функции для получения сервисов из Flask application context."""
 from flask import current_app
 
 from app.service.admin_service import AdminService

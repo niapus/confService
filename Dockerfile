@@ -26,7 +26,7 @@ COPY wsgi.py .
 COPY gunicorn_config.py .
 
 # Создаём директории
-RUN mkdir -p logs uploads
+RUN mkdir -p logs uploads data themes
 
 # Добавляем путь к пакетам в PATH
 ENV PATH=/root/.local/bin:$PATH

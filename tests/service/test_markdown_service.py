@@ -12,7 +12,7 @@ class TestToHtml:
 
     def test_converts_markdown_to_html(self, markdown_service):
         result = markdown_service.to_html("# Hello")
-        assert "<h1>" in result or "<h1>" in result
+        assert "<h1>" in result
         assert "Hello" in result
 
     def test_converts_bold(self, markdown_service):

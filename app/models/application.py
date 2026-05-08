@@ -7,29 +7,46 @@ from app.core.database import Base
 
 
 class ApplicationStatus(enum.Enum):
+    """Статус заявки - подтверждена или не подтверждена."""
+
     CONFIRMED = "confirmed"
     UNCONFIRMED = "unconfirmed"
 
+
 class DegreeEnum(enum.Enum):
+    """Учёная степень участника."""
+
     NONE = "none"
     CANDIDATE = "candidate"
     DOCTOR = "doctor"
 
+
 class EducationEnum(enum.Enum):
-    BACHELOR = "none"
+    """Уровень образования участника."""
+
+    BACHELOR = "bachelor"
     SPECIALIST = "education_spec"
     MASTER = "education_mag"
     POSTGRADUATE = "education_asp"
 
+
 class ParticipationFormatEnum(enum.Enum):
+    """Формат участия в конференции."""
+
     OFFLINE = "offline"
     ONLINE = "online"
 
+
 class GenderEnum(enum.Enum):
+    """Пол участника."""
+
     MALE = "male"
     FEMALE = "female"
 
+
 class Application(Base):
+    """Заявка участника на участие в конференции."""
+
     __tablename__ = "applications"
     id = Column(Integer, primary_key=True)
     conference_id = Column(Integer, ForeignKey("conferences.id", ondelete="CASCADE"), nullable=False, index=True)

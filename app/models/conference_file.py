@@ -7,10 +7,15 @@ from app.core.database import Base
 
 
 class ConferenceFileType(enum.Enum):
+    """Тип файла конференции: сборник тезисов или произвольный файл."""
+
     PROCEEDINGS = "proceedings"
     CONFERENCE_FILE = "conference_file"
 
+
 class ConferenceFile(Base):
+    """Файл, прикреплённый к конференции (сборник тезисов или справочный материал)."""
+
     __tablename__ = "conference_files"
 
     id = Column(Integer, primary_key=True)

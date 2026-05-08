@@ -93,6 +93,13 @@ class TestGetFileById:
         result = conference_file_service.get_file_by_id(1, mock_session)
         assert result == cf
 
+    def test_raises_not_found(self, conference_file_service, mock_conference_file_repository, mock_session):
+        from app.exceptions.not_found_exception import ConferenceFileNotFoundException
+        mock_conference_file_repository.get_by_id.return_value = None
+
+        with pytest.raises(ConferenceFileNotFoundException):
+            conference_file_service.get_file_by_id(999, mock_session)
+
 
 class TestDeleteConferenceFile:
 

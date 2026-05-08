@@ -7,11 +7,16 @@ from app.core.database import Base
 
 
 class ThesisStatus(enum.Enum):
+    """Статус проверки тезисов администратором."""
+
     PENDING = "pending"
     ACCEPTED = "accepted"
     REJECTED = "rejected"
 
+
 class Thesis(Base):
+    """Файл тезисов доклада, прикреплённый к заявке участника."""
+
     __tablename__ = "theses"
 
     id = Column(Integer, primary_key=True)

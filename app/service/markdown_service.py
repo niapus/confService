@@ -1,36 +1,30 @@
-# from markdown.extensions import extra
-# from markdown.extensions.extra import extensions
-# from markdown.extensions.toc import TocExtension
-# from markdown.extensions.codehilite import CodeHiliteExtension
 import bleach
 import markdown
 
 
 class MarkdownService:
-    def __init__(self):
-        self.__extensions = [
-            'extra',
-            'codehilite',
-            'toc',
-        ]
+    """Преобразование Markdown-текста в безопасный HTML."""
 
+    def __init__(self) -> None:
+        self.__extensions = ['extra', 'codehilite', 'toc']
         self.__extensions_config = {
             'toc': {
                 'permalink': False,
                 'toc_class': 'table-of-contents'
             }
         }
-
         self.__md = markdown.Markdown(
             extensions=self.__extensions,
             extension_configs=self.__extensions_config
         )
 
-    def to_html(self, md_text):
+    def to_html(self, md_text: str) -> str:
+        """Конвертирует Markdown в безопасный HTML (очищенный от опасных тегов)."""
         html = self.__md.reset().convert(md_text)
         return self.__secure_html(html)
 
-    def __secure_html(self, html):
+    def __secure_html(self, html: str) -> str:
+        """Очищает HTML от потенциально опасных тегов и атрибутов."""
         allowed_tags = [
             'p', 'br', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
             'strong', 'em', 'u', 's', 'mark',
@@ -40,19 +34,15 @@ class MarkdownService:
             'a', 'img',
             'div', 'span', 'hr',
         ]
-
         allowed_attrs = {
             '*': ['class'],
             'a': ['href', 'title', 'target'],
             'img': ['src', 'alt', 'title'],
             'td': ['colspan', 'rowspan'],
         }
-
-        allowed_protocols = ['http', 'https', 'mailto', 'tel']
-        
         return bleach.clean(
             html,
             tags=allowed_tags,
             attributes=allowed_attrs,
-            protocols=allowed_protocols
+            protocols=['http', 'https', 'mailto', 'tel']
         )

@@ -2,14 +2,22 @@ from app.exceptions import AppException
 
 
 class AuthException(AppException):
-    def __init__(self, message):
+    """Ошибка аутентификации (HTTP 401)."""
+
+    def __init__(self, message: str) -> None:
         super().__init__(message, status_code=401)
 
+
 class ForbiddenException(AuthException):
-    def __init__(self):
+    """Доступ к ресурсу запрещён (HTTP 403)."""
+
+    def __init__(self) -> None:
         super().__init__("Доступ запрещен")
-        self.status_code=403
+        self.status_code = 403
+
 
 class InvalidCredentialsException(AuthException):
-    def __init__(self):
+    """Неверный логин или пароль."""
+
+    def __init__(self) -> None:
         super().__init__("Неверный логин или пароль")

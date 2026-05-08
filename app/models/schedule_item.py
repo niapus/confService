@@ -1,4 +1,5 @@
 import enum
+from typing import Any
 
 from sqlalchemy import Column, Integer, String, Date, ForeignKey, Text, Enum
 from sqlalchemy.orm import relationship
@@ -7,12 +8,17 @@ from app.core.database import Base
 
 
 class ScheduleItemType(enum.Enum):
+    """Тип элемента расписания: день, доклад, перерыв или текстовый блок."""
+
     DAY = "day"
     TALK = "talk"
     BREAK = "break"
     TEXT = "text"
 
+
 class ScheduleItem(Base):
+    """Элемент программы конференции. Структура полей зависит от типа элемента."""
+
     __tablename__ = "schedule_items"
 
     id = Column(Integer, primary_key=True)
@@ -40,7 +46,7 @@ class ScheduleItem(Base):
 
     conference = relationship("Conference", back_populates="schedule_items")
 
-    def to_dict(self):
+    def to_dict(self) -> dict[str, Any]:
         result = {
             'id': self.id,
             'item_type': self.item_type.value if self.item_type else None,

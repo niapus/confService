@@ -7,16 +7,24 @@ from app.core.database import Base
 
 
 class EmailStatus(enum.Enum):
+    """Статус обработки письма в очереди."""
+
     PENDING = 'pending'
     SENDING = 'sending'
     COMPLETED = 'completed'
     FAILED = 'failed'
 
+
 class QueueType(enum.Enum):
+    """Тип очереди: массовая рассылка или индивидуальное письмо."""
+
     MASS = 'mass'
     INDIVIDUAL = 'individual'
 
+
 class EmailQueue(Base):
+    """Запись в очереди исходящих писем для асинхронной отправки."""
+
     __tablename__ = "email_queue"
 
     id = Column(Integer, primary_key=True, index=True)

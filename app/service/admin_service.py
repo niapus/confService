@@ -1,33 +1,38 @@
+from sqlalchemy.orm import Session
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.exceptions.auth_exception import InvalidCredentialsException
 from app.models.admin import Admin
+from app.repository.admin_repository import AdminRepository
 
 
 class AdminService:
-    def __init__(self, admin_repository):
+    """Управление учётными записями администраторов."""
+
+    def __init__(self, admin_repository: AdminRepository) -> None:
         self.__repo = admin_repository
 
-    def create_admins_from_env(self, env_admin_data, session):
+    def create_admins_from_env(self, env_admin_data: str, session: Session) -> None:
+        """Создаёт администраторов из строки ADMIN_DATA, если таблица пуста.
+
+        Args:
+            env_admin_data: Строка вида ``login:password,login2:password2``.
+        """
         if self.__repo.get_admin_count(session) != 0:
             return
 
         admins = []
-        admins_data = env_admin_data.split(',')
-
-        for data in admins_data:
+        for data in env_admin_data.split(','):
             login, password = data.split(':', 1)
-
-            admin = Admin(
+            admins.append(Admin(
                 login=login,
                 password_hash=generate_password_hash(password)
-            )
-
-            admins.append(admin)
+            ))
 
         self.__repo.save_all(admins, session)
 
-    def authenticate(self, login, password, session):
+    def authenticate(self, login: str, password: str, session: Session) -> Admin:
+        """Проверяет логин и пароль. Выбрасывает InvalidCredentialsException при несоответствии."""
         admin = self.__repo.get_admin_by_login(login, session)
 
         if not admin:

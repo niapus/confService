@@ -5,39 +5,47 @@ from app.models.schedule_item import ScheduleItem, ScheduleItemType
 
 
 class ApplicationRepository:
+    """Доступ к данным заявок участников."""
 
-    def save(self, application, session):
+    def save(self, application: Application, session: Session) -> Application:
         session.add(application)
         session.flush()
         return application
 
-    def find_confirmed_application_by_conf_email(self, conf_id, email, session: Session):
-        application = session.query(Application)\
+    def find_confirmed_application_by_conf_email(
+        self, conf_id: int, email: str, session: Session
+    ) -> Application | None:
+        """Возвращает подтверждённую заявку по конференции и email, или None."""
+        return session.query(Application)\
             .filter_by(conference_id=conf_id, email=email, status=ApplicationStatus.CONFIRMED)\
             .first()
-        return application
 
-    def get_full_applications_for_conference(self, conf_id, session: Session):
-        result = session.query(Application).options(
+    def get_full_applications_for_conference(
+        self, conf_id: int, session: Session
+    ) -> list[Application]:
+        """Возвращает подтверждённые заявки конференции с предзагрузкой тезисов."""
+        return session.query(Application).options(
             joinedload(Application.theses)
         ).filter(
             Application.conference_id == conf_id,
             Application.status == ApplicationStatus.CONFIRMED
         ).all()
 
-        return result
-
-    def get_all(self, session):
+    def get_all(self, session: Session) -> list[Application]:
+        """Возвращает все подтверждённые заявки с предзагрузкой тезисов."""
         return session.query(Application)\
             .options(joinedload(Application.theses))\
             .filter(Application.status == ApplicationStatus.CONFIRMED)\
             .order_by(Application.id.desc())\
             .all()
 
-    def get_by_id(self, id, session):
+    def get_by_id(self, id: int, session: Session) -> Application | None:
         return session.query(Application).get(id)
 
-    def get_applications_from_schedule(self, conf_id, session: Session):
+    def get_applications_from_schedule(
+        self, conf_id: int, session: Session
+    ) -> list[Application]:
+        """Возвращает участников, включённых в расписание как докладчики."""
         return session.query(Application).join(
             ScheduleItem,
             ScheduleItem.application_id == Application.id

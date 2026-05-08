@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import date
-from typing import Optional, List
+from typing import Any
 
 from app.models.application import GenderEnum, DegreeEnum, EducationEnum, ParticipationFormatEnum
 from app.models.schedule_item import ScheduleItemType
@@ -8,13 +8,15 @@ from app.models.schedule_item import ScheduleItemType
 
 @dataclass
 class ThesisInApplicationDTO:
+    """Данные тезиса в составе заявки (для API-ответа)."""
+
     id: int
     authors: str
     title: str
     file_name: str
     status: str
 
-    def to_dict(self):
+    def to_dict(self) -> dict[str, Any]:
         return {
             'id': self.id,
             'authors': self.authors,
@@ -23,19 +25,25 @@ class ThesisInApplicationDTO:
             'status': self.status
         }
 
+
 @dataclass
 class ThesisDTO:
+    """Данные для подачи тезисов участником."""
+
     authors: str
     title: str
     email: str
 
+
 @dataclass
 class ThesisScheduleDTO:
+    """Данные тезиса для редактора расписания."""
+
     id: int
     speaker_name: str
     title: str
 
-    def to_dict(self):
+    def to_dict(self) -> dict[str, Any]:
         return {
             "id": self.id,
             "speaker_name": self.speaker_name,
@@ -43,31 +51,31 @@ class ThesisScheduleDTO:
         }
 
 
-
 @dataclass
 class ConferenceDTO:
-    title: str
+    """Данные для создания или редактирования конференции."""
 
+    title: str
     description_md: str
     tagline: str
-
     registration_deadline: date
     submission_deadline: date
-
     start_date: date
     end_date: date
-
     performance_time: int
+
 
 @dataclass
 class ConferenceScheduleDTO:
+    """Краткие данные конференции для редактора расписания."""
+
     id: int
     title: str
     start_date: date
     end_date: date
     performance_time: int
 
-    def to_dict(self):
+    def to_dict(self) -> dict[str, Any]:
         return {
             "id": self.id,
             "title": self.title,
@@ -77,13 +85,14 @@ class ConferenceScheduleDTO:
         }
 
 
-
 @dataclass
 class FullApplicationDTO:
+    """Полные данные заявки для API-ответа. Содержит вычисляемые свойства full_name и age."""
+
     id: int
     surname: str
     name: str
-    patronymic: Optional[str]
+    patronymic: str | None
 
     gender: str
     birth_date: date
@@ -93,21 +102,21 @@ class FullApplicationDTO:
     is_worker: bool
     is_student: bool
 
-    work_name: Optional[str]
-    work_place: Optional[str]
-    work_position: Optional[str]
+    work_name: str | None
+    work_place: str | None
+    work_position: str | None
 
-    study_name: Optional[str]
-    study_place: Optional[str]
-    study_level: Optional[str]
+    study_name: str | None
+    study_place: str | None
+    study_level: str | None
 
     participation_format: str
     email: str
 
     theses: list[ThesisInApplicationDTO]
 
-    def to_dict(self):
-        result = {
+    def to_dict(self) -> dict[str, Any]:
+        return {
             'id': self.id,
             'full_name': self.full_name,
             'gender': self.gender,
@@ -127,8 +136,6 @@ class FullApplicationDTO:
             'theses': [t.to_dict() for t in self.theses]
         }
 
-        return result
-
     @property
     def full_name(self) -> str:
         parts = [self.surname, self.name]
@@ -143,11 +150,14 @@ class FullApplicationDTO:
             (today.month, today.day) < (self.birth_date.month, self.birth_date.day)
         )
 
+
 @dataclass
 class ApplicationDTO:
+    """Данные заявки участника, разобранные из формы регистрации."""
+
     surname: str
     name: str
-    patronymic: Optional[str]
+    patronymic: str | None
 
     gender: GenderEnum
     birth_date: date
@@ -157,55 +167,67 @@ class ApplicationDTO:
     is_worker: bool
     is_student: bool
 
-    work_name: Optional[str]
-    work_place: Optional[str]
-    work_position: Optional[str]
+    work_name: str | None
+    work_place: str | None
+    work_position: str | None
 
-    study_name: Optional[str]
-    study_place: Optional[str]
-    study_level: Optional[EducationEnum]
+    study_name: str | None
+    study_place: str | None
+    study_level: EducationEnum | None
 
     participation_format: ParticipationFormatEnum
     email: str
 
+
 @dataclass
 class FullScheduleDTO:
-    conference: ConferenceScheduleDTO
-    applications: List[ThesisScheduleDTO]
-    schedule: List[dict]
+    """Полные данные расписания конференции для редактора."""
 
-    def to_dict(self):
+    conference: ConferenceScheduleDTO
+    applications: list[ThesisScheduleDTO]
+    schedule: list[dict]
+
+    def to_dict(self) -> dict[str, Any]:
         return {
             "conference": self.conference.to_dict(),
             "applications": [app.to_dict() for app in self.applications],
             "schedule": self.schedule
         }
 
+
 @dataclass
 class ConferenceFileDTO:
+    """Данные файла конференции из формы загрузки."""
+
     title: str
+
 
 @dataclass
 class ScheduleItemDTO:
+    """Элемент расписания. Заполненные поля зависят от значения item_type."""
+
     item_type: ScheduleItemType
     global_order: int
 
-    day_date: Optional[date] = None
-    day_title: Optional[str] = None
-    day_start_time: Optional[str] = None
+    day_date: date | None = None
+    day_title: str | None = None
+    day_start_time: str | None = None
 
-    application_id: Optional[int] = None
-    talk_speaker: Optional[str] = None
-    talk_title: Optional[str] = None
-    talk_duration: Optional[int] = None
-    start_time: Optional[str] = None
-    end_time: Optional[str] = None
+    application_id: int | None = None
+    talk_speaker: str | None = None
+    talk_title: str | None = None
+    talk_duration: int | None = None
+    start_time: str | None = None
+    end_time: str | None = None
 
-    break_title: Optional[str] = None
-    break_duration: Optional[int] = None
+    break_title: str | None = None
+    break_duration: int | None = None
 
-    text_content: Optional[str] = None
+    text_content: str | None = None
+
 
 @dataclass
 class ScheduleDTO:
-    schedule: List[ScheduleItemDTO]
+    """Список элементов расписания из запроса на сохранение."""
+
+    schedule: list[ScheduleItemDTO]

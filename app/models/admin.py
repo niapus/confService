@@ -4,6 +4,8 @@ from app.core.database import Base
 
 
 class Admin(Base):
+    """Учётная запись администратора системы."""
+
     __tablename__ = "admins"
 
     id = Column(Integer, primary_key=True)

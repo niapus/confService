@@ -126,7 +126,7 @@
          <div class="sub-field">
             <label>Уровень обучения *:</label>
             <select name="study_level" required>
-               <option value="none" {% if form_data and form_data.study_level == 'none' %}selected{% endif %}>Бакалавриат</option>
+               <option value="bachelor" {% if form_data and form_data.study_level == 'bachelor' %}selected{% endif %}>Бакалавриат</option>
                <option value="education_spec" {% if form_data and form_data.study_level == 'education_spec' %}selected{% endif %}>Специалитет</option>
                <option value="education_mag" {% if form_data and form_data.study_level == 'education_mag' %}selected{% endif %}>Магистратура</option>
                <option value="education_asp" {% if form_data and form_data.study_level == 'education_asp' %}selected{% endif %}>Аспирантура</option>

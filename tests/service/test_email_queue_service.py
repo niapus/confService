@@ -50,7 +50,7 @@ class TestMarkSending:
         email_queue_service.mark_sending(eq, mock_session)
 
         assert eq.status == EmailStatus.SENDING
-        mock_email_repository.add_to_session.assert_called_once_with(mock_session, eq)
+        mock_email_repository.save.assert_called_once_with(eq, mock_session)
 
 
 class TestMarkCompleted:
@@ -61,7 +61,7 @@ class TestMarkCompleted:
         email_queue_service.mark_completed(eq, mock_session)
 
         assert eq.status == EmailStatus.COMPLETED
-        mock_email_repository.add_to_session.assert_called_once_with(mock_session, eq)
+        mock_email_repository.save.assert_called_once_with(eq, mock_session)
 
 
 class TestMarkFailed:
@@ -73,7 +73,7 @@ class TestMarkFailed:
 
         assert eq.attempts == 1
         assert eq.status != EmailStatus.FAILED
-        mock_email_repository.add_to_session.assert_called_once_with(mock_session, eq)
+        mock_email_repository.save.assert_called_once_with(eq, mock_session)
 
     def test_mark_failed_sets_failed_after_3_attempts(self, email_queue_service, mock_email_repository, mock_session):
         eq = make_email_queue(attempts=2)

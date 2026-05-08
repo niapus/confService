@@ -1,4 +1,3 @@
-import os
 
 from babel.dates import format_date
 from flask import Flask, g, render_template, request, session as flask_session
@@ -8,7 +7,6 @@ from app.app_services import AppServices
 from app.config import Config
 from app.core import database
 from app.core.database import Base, engine, init_engine
-# from app.core.scheduler import SchedulerService
 from app.core.startup import init_app
 from app.core.theme import ThemeLoader
 from app.exceptions import AppException

@@ -2,5 +2,7 @@ from app.exceptions import AppException
 
 
 class ValidationException(AppException):
-    def __init__(self, message: str):
+    """Ошибка бизнес-валидации входных данных (HTTP 400)."""
+
+    def __init__(self, message: str) -> None:
         super().__init__(message, status_code=400)

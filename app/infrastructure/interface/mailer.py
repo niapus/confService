@@ -1,11 +1,14 @@
 from abc import ABC, abstractmethod
-from typing import List
+from contextlib import AbstractContextManager
+
 
 class MailerInterface(ABC):
-    @abstractmethod
-    def send(self, subject: str, recipients: List[str], html_body: str, sender: str) -> None:
-        pass
+    """Интерфейс для отправки email. Позволяет подменять реализацию в тестах."""
 
     @abstractmethod
-    def connect(self):
-        pass
+    def send(self, subject: str, recipients: list[str], html_body: str, sender: str) -> None:
+        """Отправляет одно письмо синхронно."""
+
+    @abstractmethod
+    def connect(self) -> AbstractContextManager:
+        """Возвращает контекстный менеджер SMTP-соединения для пакетной отправки."""

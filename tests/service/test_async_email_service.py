@@ -52,6 +52,8 @@ class TestProcessIndividualQueue:
 
             sent, failed = async_email_service.process_individual_queue()
 
+        assert sent == 1
+        assert failed == 0
         mock_email_queue_service.fetch_pending.assert_called_once_with(
             10, QueueType.INDIVIDUAL, mock_session_obj
         )

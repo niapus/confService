@@ -10,7 +10,7 @@ class ThemeLoader:
     """
     Система тем оформления для Flask, вдохновлённая Nikola.
 
-    Каждая тема — это папка внутри app/themes/<имя_темы>/, содержащая:
+    Каждая тема — это папка внутри themes/<имя_темы>/ (корень проекта), содержащая:
       - theme.yaml   : метаданные (name, parent, description)
       - templates/   : шаблоны Jinja2 (для производной темы — только переопределяемые)
       - static/      : CSS, JS, картинки (для производной темы — только переопределяемые)
@@ -26,7 +26,7 @@ class ThemeLoader:
 
     def __init__(self, themes_dir: str | Path, active_theme: str, app_dir: str | Path):
         """
-        themes_dir  — путь к папке app/themes/
+        themes_dir  — путь к папке themes/ (корень проекта)
         active_theme — имя активной темы (из Config.ACTIVE_THEME)
         app_dir     — путь к папке app/ (для fallback на app/templates/ и app/static/)
         """

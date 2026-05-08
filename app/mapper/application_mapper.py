@@ -4,6 +4,13 @@ from app.models.thesis import Thesis
 
 
 class ApplicationMapper:
+    """Преобразование моделей Application и Thesis в DTO для API-ответа."""
+
+    def applications_to_full_applications_dto(
+        self, applications: list[Application]
+    ) -> list[FullApplicationDTO]:
+        return [self.__to_dto(app) for app in applications]
+
     def __to_dto(self, application: Application) -> FullApplicationDTO:
         return FullApplicationDTO(
             id=application.id,
@@ -34,6 +41,3 @@ class ApplicationMapper:
             file_name=thesis.file_name,
             status=thesis.status.value
         )
-
-    def applications_to_full_applications_dto(self, applications):
-        return [self.__to_dto(app) for app in applications]

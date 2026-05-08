@@ -2,25 +2,35 @@ from app.exceptions import AppException
 
 
 class ConflictException(AppException):
-    def __init__(self, message: str):
+    """Конфликт с текущим состоянием ресурса (HTTP 409)."""
+
+    def __init__(self, message: str) -> None:
         super().__init__(message, status_code=409)
 
+
 class ApplicationAfterDeadlineException(ConflictException):
-    def __init__(self, date):
-        message = f"Дедлайн подачи заявки истек {date}"
-        super().__init__(message)
+    """Дедлайн подачи заявки истёк."""
+
+    def __init__(self, date: str) -> None:
+        super().__init__(f"Дедлайн подачи заявки истек {date}")
+
 
 class ApplicationAlreadyExists(ConflictException):
-    def __init__(self, email):
-        message = f"Заявка с таким email {email} уже существует"
-        super().__init__(message)
+    """Заявка с таким email уже зарегистрирована."""
+
+    def __init__(self, email: str) -> None:
+        super().__init__(f"Заявка с таким email {email} уже существует")
+
 
 class ThesisAfterDeadlineException(ConflictException):
-    def __init__(self, date):
-        messages = f"Дедлайн подачи тезисов истек {date}"
-        super().__init__(messages)
+    """Дедлайн подачи тезисов истёк."""
+
+    def __init__(self, date: str) -> None:
+        super().__init__(f"Дедлайн подачи тезисов истек {date}")
+
 
 class ConferenceAlreadyEndedException(ConflictException):
-    def __init__(self, conf_id):
-        message = f"Конференция с id {conf_id} уже прошла"
-        super().__init__(message)
+    """Конференция уже завершилась."""
+
+    def __init__(self, conf_id: int) -> None:
+        super().__init__(f"Конференция с id {conf_id} уже прошла")

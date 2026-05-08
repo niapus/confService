@@ -17,20 +17,20 @@ def notification_service(mock_email_queue_service):
     )
 
 
-@pytest.fixture
-def notification_service_no_mail(mock_email_queue_service):
-    return NotificationService(
-        email_queue=mock_email_queue_service,
-        mail_enabled=False,
-        verification_enabled=False
-    )
-
-
 class TestInit:
 
     def test_init_properties(self, notification_service):
         assert notification_service.mail_enabled is True
         assert notification_service.verification_enabled is True
+
+    def test_init_mail_disabled(self, mock_email_queue_service):
+        svc = NotificationService(
+            email_queue=mock_email_queue_service,
+            mail_enabled=False,
+            verification_enabled=False
+        )
+        assert svc.mail_enabled is False
+        assert svc.verification_enabled is False
 
 
 class TestSendVerificationEmail:

@@ -1,18 +1,21 @@
-from typing import List, Optional
-
 from app.infrastructure.interface.mailer import MailerInterface
 
 
 class EmailService:
-    def __init__(self, mailer: MailerInterface, default_sender: str):
+    """Синхронная отправка писем через SMTP-подключение."""
+
+    def __init__(self, mailer: MailerInterface, default_sender: str) -> None:
         self.__mailer = mailer
         self.__sender = default_sender
 
     def connect(self):
+        """Открывает SMTP-соединение. Возвращает контекстный менеджер соединения."""
         return self.__mailer.connect()
 
-    def send_sync(self, subject: str, recipients: List[str], html_body: str, sender: Optional[str] = None):
-        """Синхронная отправка (уже в контексте)"""
+    def send_sync(
+        self, subject: str, recipients: list[str], html_body: str, sender: str | None = None
+    ) -> None:
+        """Отправляет письмо синхронно. Использует default_sender если sender не указан."""
         self.__mailer.send(
             subject=subject,
             recipients=recipients,

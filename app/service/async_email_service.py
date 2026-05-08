@@ -14,21 +14,34 @@ SMTP_TIMEOUT = 10
 
 
 class AsyncEmailService:
-    def __init__(self, email_service: EmailService, email_queue: EmailQueueService):
+    """Фоновая обработка очереди исходящих писем через SMTP."""
+
+    def __init__(self, email_service: EmailService, email_queue: EmailQueueService) -> None:
         self._email_service = email_service
         self._email_queue = email_queue
 
     @property
-    def enabled(self):
+    def enabled(self) -> bool:
+        """True если SMTP-сервис настроен и доступен."""
         return self._email_service is not None
 
-    def process_individual_queue(self):
+    def process_individual_queue(self) -> tuple[int, int]:
+        """Обрабатывает до 10 индивидуальных писем из очереди. Возвращает (sent, failed)."""
         return self._process_queue(10, QueueType.INDIVIDUAL)
 
-    def process_mass_queue(self):
+    def process_mass_queue(self) -> tuple[int, int]:
+        """Обрабатывает до 30 массовых писем из очереди. Возвращает (sent, failed)."""
         return self._process_queue(30, QueueType.MASS)
 
-    def _process_queue(self, limit: int, queue_type: QueueType):
+    def _process_queue(self, limit: int, queue_type: QueueType) -> tuple[int, int]:
+        """Забирает письма из очереди и отправляет через SMTP.
+
+        Args:
+            limit: Максимальное количество писем, обрабатываемых за один вызов.
+
+        Returns:
+            Кортеж ``(sent, failed)`` — количество отправленных и упавших писем.
+        """
         if not self.enabled:
             return 0, 0
 

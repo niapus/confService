@@ -62,7 +62,7 @@ class TestSafeFilenameWithCyrillic:
         result = safe_filename_with_cyrillic("мой файл.doc")
         # secure_filename replaces spaces with underscores or strips them
         assert result.endswith(".doc")
-        assert "moi" in result or "moy" in result
+        assert "moy" in result
 
     def test_mixed_cyrillic_latin(self):
         result = safe_filename_with_cyrillic("Доклад2024.pdf")

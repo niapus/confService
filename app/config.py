@@ -11,12 +11,12 @@ class Config:
     LOGS_FOLDER = os.path.join(BASE_DIR, "logs")
     UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
 
-    THEMES_FOLDER = BASE_DIR / 'app' / 'themes'
+    THEMES_FOLDER = BASE_DIR / 'themes'
     ACTIVE_THEME = os.environ.get('ACTIVE_THEME', 'default')
 
     SQLALCHEMY_DATABASE_URL = os.environ.get(
         'DATABASE_URL',
-        'sqlite:///conference_service.db'
+        'sqlite:///data/conference_service.db'
     )
 
     THESIS_CONTENT_LENGTH = 16 * 1024 * 1024

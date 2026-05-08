@@ -1,3 +1,5 @@
+from typing import Any
+
 from sqlalchemy import Column, Integer, String, Text, Date
 from sqlalchemy.orm import relationship
 
@@ -5,6 +7,8 @@ from app.core.database import Base
 
 
 class Conference(Base):
+    """Конференция. Содержит описание конференции, сроки регистрации, подачи тезисов и проведения."""
+
     __tablename__ = "conferences"
 
     id = Column(Integer, primary_key=True)
@@ -41,7 +45,7 @@ class Conference(Base):
         cascade="all, delete-orphan"
     )
 
-    def to_dict(self):
+    def to_dict(self) -> dict[str, Any]:
         return {
             'id': self.id,
             'title': self.title,
