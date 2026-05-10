@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from sqlalchemy.orm import Session, joinedload
 
 from app.models.application import Application, ApplicationStatus
@@ -41,6 +43,13 @@ class ApplicationRepository:
 
     def get_by_id(self, id: int, session: Session) -> Application | None:
         return session.query(Application).get(id)
+
+    def delete_unconfirmed_older_than(self, days: int, session: Session) -> int:
+        cutoff = datetime.now() - timedelta(days=days)
+        return session.query(Application).filter(
+            Application.status == ApplicationStatus.UNCONFIRMED,
+            Application.created_at < cutoff
+        ).delete(synchronize_session=False)
 
     def get_applications_from_schedule(
         self, conf_id: int, session: Session

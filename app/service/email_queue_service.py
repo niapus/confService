@@ -26,19 +26,17 @@ class EmailQueueService:
         """Возвращает до limit писем со статусом PENDING из указанной очереди."""
         return self.__repo.get_pending_with_limit(limit, queue_type, session)
 
-    def mark_sending(self, email: EmailQueue, session: Session) -> None:
-        """Помечает письмо как отправляемое (SENDING)."""
-        self.__repo.save(email, session)
-        email.status = EmailStatus.SENDING
-
-    def mark_completed(self, email: EmailQueue, session: Session) -> None:
-        """Помечает письмо как успешно отправленное (COMPLETED)."""
-        self.__repo.save(email, session)
-        email.status = EmailStatus.COMPLETED
+    def delete(self, email: EmailQueue, session: Session) -> None:
+        """Удаляет письмо из очереди после успешной отправки."""
+        self.__repo.delete(email, session)
 
     def mark_failed(self, email: EmailQueue, session: Session) -> None:
         """Увеличивает счётчик попыток. После 3 неудач переводит письмо в статус FAILED."""
-        self.__repo.save(email, session)
         email.attempts += 1
         if email.attempts == 3:
             email.status = EmailStatus.FAILED
+        self.__repo.save(email, session)
+
+    def cleanup_failed(self, days: int, session: Session) -> int:
+        """Удаляет FAILED письма старше указанного количества дней."""
+        return self.__repo.delete_failed_older_than(days, session)

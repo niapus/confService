@@ -12,36 +12,36 @@ _E = TypeVar('_E')
 def build_conference_dto(form) -> ConferenceDTO:
     """Разбирает форму создания/редактирования конференции в DTO."""
     return ConferenceDTO(
-        title=__parse_str(form.get("title"), "title"),
-        description_md=__parse_str(form.get("description_md"), "description_md"),
-        tagline=__parse_str(form.get("tagline"), "tagline", False),
-        registration_deadline=__parse_date(form.get("registration_deadline"), "registration_deadline"),
-        submission_deadline=__parse_date(form.get("submission_deadline"), "submission_deadline"),
-        start_date=__parse_date(form.get("start_date"), "start_date"),
-        end_date=__parse_date(form.get("end_date"), "end_date"),
-        performance_time=__parse_int(form.get("performance_time"), "performance_time")
+        title=__parse_str(form.get("title"), "Название"),
+        description_md=__parse_str(form.get("description_md"), "Описание"),
+        tagline=__parse_str(form.get("tagline"), "Теги", False),
+        registration_deadline=__parse_date(form.get("registration_deadline"), "Дедлайн регистрации"),
+        submission_deadline=__parse_date(form.get("submission_deadline"), "Дедлайн подачи тезисов"),
+        start_date=__parse_date(form.get("start_date"), "Дата начала"),
+        end_date=__parse_date(form.get("end_date"), "Дата окончания"),
+        performance_time=__parse_int(form.get("performance_time"), "Время выступления")
     )
 
 
 def build_application_dto(form) -> ApplicationDTO:
     """Разбирает форму регистрации участника в DTO."""
     is_worker, is_student = __parse_statuses(form)
-    surname = __parse_str(form.get("surname"), "surname")
-    name = __parse_str(form.get("name"), "name")
-    patronymic = __parse_str(form.get("patronymic"), "patronymic", False)
-    gender = __parse_enum(form.get("gender"), GenderEnum, "gender")
-    birth_date = __parse_date(form.get("birth_date"), "birth_date")
-    degree = __parse_enum(form.get("degree"), DegreeEnum, "degree")
-    work_name = __parse_str(form.get("work_name"), "work_name", is_worker)
-    work_place = __parse_str(form.get("work_place"), "work_place", is_worker)
-    work_position = __parse_str(form.get("work_position"), "work_position", is_worker)
-    study_name = __parse_str(form.get("study_name"), "study_name", is_student)
-    study_place = __parse_str(form.get("study_place"), "study_place", is_student)
-    study_level = __parse_enum(form.get("study_level"), EducationEnum, "study_level") if is_student else None
+    surname = __parse_str(form.get("surname"), "Фамилия")
+    name = __parse_str(form.get("name"), "Имя")
+    patronymic = __parse_str(form.get("patronymic"), "Отчество", False)
+    gender = __parse_enum(form.get("gender"), GenderEnum, "Пол")
+    birth_date = __parse_date(form.get("birth_date"), "Дата рождения")
+    degree = __parse_enum(form.get("degree"), DegreeEnum, "Учёная степень")
+    work_name = __parse_str(form.get("work_name"), "Место работы", is_worker)
+    work_place = __parse_str(form.get("work_place"), "Институт (работа)", is_worker)
+    work_position = __parse_str(form.get("work_position"), "Должность", is_worker)
+    study_name = __parse_str(form.get("study_name"), "Место учёбы", is_student)
+    study_place = __parse_str(form.get("study_place"), "Институт (учёба)", is_student)
+    study_level = __parse_enum(form.get("study_level"), EducationEnum, "Уровень обучения") if is_student else None
     participation_format = __parse_enum(
-        form.get("participation_format"), ParticipationFormatEnum, "participation_format"
+        form.get("participation_format"), ParticipationFormatEnum, "Формат участия"
     )
-    email = __parse_str(form.get("email"), "email", True)
+    email = __parse_str(form.get("email"), "Email", True)
 
     if is_worker and not is_student:
         study_name = study_place = study_level = None
@@ -71,16 +71,16 @@ def build_application_dto(form) -> ApplicationDTO:
 def build_thesis_dto(form) -> ThesisDTO:
     """Разбирает форму подачи тезисов в DTO."""
     return ThesisDTO(
-        authors=__parse_str(form.get("authors"), "authors"),
-        title=__parse_str(form.get("title"), "title"),
-        email=__parse_str(form.get("email"), "email")
+        authors=__parse_str(form.get("authors"), "Авторы"),
+        title=__parse_str(form.get("title"), "Название"),
+        email=__parse_str(form.get("email"), "Email")
     )
 
 
 def build_file_dto(form) -> ConferenceFileDTO:
     """Разбирает форму загрузки файла конференции в DTO."""
     return ConferenceFileDTO(
-        title=__parse_str(form.get("title"), "title")
+        title=__parse_str(form.get("title"), "Название")
     )
 
 

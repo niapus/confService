@@ -1,12 +1,10 @@
-from typing import Any
-
-from flask import url_for, render_template
+from flask import url_for, render_template, current_app
 from sqlalchemy.orm import Session
 
 from app.models.application import Application
 from app.models.conference import Conference
 from app.models.email_queue import QueueType
-from app.models.thesis import Thesis
+from app.models.thesis import Thesis, ThesisStatus
 from app.service.email_queue_service import EmailQueueService
 
 
@@ -42,11 +40,15 @@ class NotificationService:
     def send_registration_confirmed(self, application: Application, session: Session) -> None:
         """Ставит в очередь письмо об успешном подтверждении регистрации."""
         conference = application.conference
+        conference_url = self._get_conference_url(conference)
         html = render_template(
-            'email/registration_confirmed.html',
+            'email/email.html',
+            header='Регистрация подтверждена',
+            mail_text='Ваша регистрация на конференцию успешно подтверждена.',
             application=application,
             conference=conference,
-            conference_url=self._get_conference_url(conference)
+            button_url=conference_url,
+            button_text='Перейти к конференции'
         )
         self._send_email(
             subject=f"Регистрация подтверждена - {conference.title}",
@@ -67,7 +69,7 @@ class NotificationService:
             conference=conference,
             conference_url=self._get_conference_url(conference)
         )
-        status_text = "приняты" if thesis.status.value == "accepted" else "отклонены"
+        status_text = "приняты" if thesis.status == ThesisStatus.ACCEPTED else "отклонены"
         self._send_email(
             subject=f"Тезисы {status_text} - {conference.title}",
             recipient=application.email,
@@ -80,29 +82,53 @@ class NotificationService:
         self, applications: list[Application], conference: Conference, session: Session
     ) -> None:
         """Ставит в очередь массовые напоминания о предстоящей конференции."""
-        self._send_to_applications(applications, conference, 'conference_reminder', 'Напоминание о конференции', session)
+        self._send_to_applications(
+            applications, conference,
+            header='Напоминание о конференции',
+            mail_text='Напоминаем о предстоящей конференции.',
+            subject_prefix='Напоминание о конференции',
+            session=session
+        )
 
     def send_schedule_published(
         self, applications: list[Application], conference: Conference, session: Session
     ) -> None:
         """Ставит в очередь массовые уведомления о публикации расписания."""
-        self._send_to_applications(applications, conference, 'schedule_published', 'Опубликовано расписание', session)
+        self._send_to_applications(
+            applications, conference,
+            header='Опубликовано расписание',
+            mail_text='Опубликовано расписание конференции.',
+            subject_prefix='Опубликовано расписание',
+            session=session
+        )
 
     def send_conference_updated(
         self, applications: list[Application], conference: Conference, session: Session
     ) -> None:
         """Ставит в очередь массовые уведомления об изменении данных конференции."""
-        self._send_to_applications(applications, conference, 'conference_update', 'Изменения в конференции', session)
+        self._send_to_applications(
+            applications, conference,
+            header='Изменения в конференции',
+            mail_text='Произошли изменения в данных конференции.',
+            subject_prefix='Изменения в конференции',
+            session=session
+        )
 
     def send_schedule_updated(
         self, applications: list[Application], conference: Conference, session: Session
     ) -> None:
         """Ставит в очередь массовые уведомления об изменении расписания."""
-        self._send_to_applications(applications, conference, 'schedule_update', 'Изменения в расписании', session)
+        self._send_to_applications(
+            applications, conference,
+            header='Изменения в расписании',
+            mail_text='Произошли изменения в расписании конференции.',
+            subject_prefix='Изменения в расписании',
+            session=session
+        )
 
     def _get_conference_url(self, conference: Conference) -> str:
-        """Генерирует внешний URL страницы конференции."""
-        return url_for('conference.show_conference', conf_id=conference.id, _external=True)
+        base_url = current_app.config.get('BASE_URL', '').rstrip('/')
+        return f"{base_url}/conference/{conference.id}"
 
     def _send_email(
         self, subject: str, recipient: str, html_body: str, queue_type: QueueType, session: Session
@@ -120,23 +146,27 @@ class NotificationService:
         self,
         applications: list[Application] | None,
         conference: Conference,
-        template_name: str,
+        header: str,
+        mail_text: str,
         subject_prefix: str,
         session: Session,
-        **template_kwargs: Any
+        button_url: str | None = None,
+        button_text: str | None = None
     ) -> None:
-        """Рассылает письмо по шаблону всем участникам из списка."""
+        """Рассылает письмо по универсальному шаблону всем участникам из списка."""
         if not applications:
             return
 
         conference_url = self._get_conference_url(conference)
         for app in applications:
             html = render_template(
-                f'email/{template_name}.html',
+                'email/email.html',
+                header=header,
+                mail_text=mail_text,
                 application=app,
                 conference=conference,
-                conference_url=conference_url,
-                **template_kwargs
+                button_url=button_url or conference_url,
+                button_text=button_text or 'Перейти к конференции'
             )
             self._send_email(
                 subject=f"{subject_prefix} - {conference.title}",

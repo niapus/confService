@@ -11,6 +11,7 @@ class ConferenceRepository:
 
     def save(self, conference: Conference, session: Session) -> Conference:
         session.add(conference)
+        session.flush()
         return conference
 
     def get_by_id(self, conference_id: int, session: Session) -> Conference | None:

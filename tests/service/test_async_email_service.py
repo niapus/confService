@@ -115,6 +115,7 @@ class TestProcessQueue:
         assert sent == 2
         assert failed == 0
         assert mock_conn.send.call_count == 2
+        assert mock_email_queue_service.delete.call_count == 2
 
     def test_handles_send_failure(self, async_email_service, mock_email_queue_service,
                                    mock_email_service, mock_conn):

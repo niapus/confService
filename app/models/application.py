@@ -1,6 +1,7 @@
 import enum
+from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, ForeignKey, Enum, Date, Boolean
+from sqlalchemy import Column, Integer, String, ForeignKey, Enum, Date, Boolean, DateTime
 from sqlalchemy.orm import relationship
 
 from app.core.database import Base
@@ -48,6 +49,7 @@ class Application(Base):
     """Заявка участника на участие в конференции."""
 
     __tablename__ = "applications"
+
     id = Column(Integer, primary_key=True)
     conference_id = Column(Integer, ForeignKey("conferences.id", ondelete="CASCADE"), nullable=False, index=True)
 
@@ -73,6 +75,7 @@ class Application(Base):
 
     participation_format = Column(Enum(ParticipationFormatEnum), nullable=False)
     email = Column(String(100), nullable=False, index=True)
+    created_at = Column(DateTime, nullable=False, default=datetime.now)
 
     status = Column(Enum(ApplicationStatus), nullable=False, default=ApplicationStatus.UNCONFIRMED, index=True)
 

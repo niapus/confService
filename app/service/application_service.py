@@ -73,6 +73,10 @@ class ApplicationService:
             raise ApplicationNotFoundException(app_id)
         return application
 
+    def cleanup_unconfirmed_older_than(self, days: int, session: Session) -> int:
+        """Удаляет неподтверждённые заявки старше указанного количества дней."""
+        return self.__repo.delete_unconfirmed_older_than(days, session)
+
     def set_status(self, application: Application, status: ApplicationStatus, session: Session) -> None:
         """Устанавливает статус заявки и сохраняет изменение."""
         application.status = status

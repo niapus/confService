@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 
 def make_conference(
@@ -52,6 +52,7 @@ def make_application(
     study_place="Test City",
     study_level=None,
     participation_format=None,
+    created_at=None,
 ):
     from app.models.application import (
         Application, ApplicationStatus, GenderEnum, DegreeEnum,
@@ -87,6 +88,7 @@ def make_application(
     app_obj.study_place = study_place
     app_obj.study_level = study_level
     app_obj.participation_format = participation_format
+    app_obj.created_at = created_at or datetime.now()
     app_obj.theses = []
     return app_obj
 

@@ -141,6 +141,7 @@ def create_app():
             return ''
         try:
             dt = datetime.fromisoformat(value.replace('Z', '+00:00'))
+            dt = dt.astimezone()
             return dt.strftime('%H:%M')
         except:
             return value

@@ -88,7 +88,7 @@ class AsyncEmailService:
 
                 session = database.Session()
                 try:
-                    self._email_queue.mark_completed(item, session)
+                    self._email_queue.delete(item, session)
                     session.commit()
                     sent += 1
                 finally:

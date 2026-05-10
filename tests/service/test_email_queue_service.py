@@ -42,26 +42,14 @@ class TestFetchPending:
         assert result == ["item1"]
 
 
-class TestMarkSending:
+class TestDelete:
 
-    def test_mark_sending(self, email_queue_service, mock_email_repository, mock_session):
-        eq = make_email_queue(status=EmailStatus.PENDING)
+    def test_delete(self, email_queue_service, mock_email_repository, mock_session):
+        eq = make_email_queue()
 
-        email_queue_service.mark_sending(eq, mock_session)
+        email_queue_service.delete(eq, mock_session)
 
-        assert eq.status == EmailStatus.SENDING
-        mock_email_repository.save.assert_called_once_with(eq, mock_session)
-
-
-class TestMarkCompleted:
-
-    def test_mark_completed(self, email_queue_service, mock_email_repository, mock_session):
-        eq = make_email_queue(status=EmailStatus.SENDING)
-
-        email_queue_service.mark_completed(eq, mock_session)
-
-        assert eq.status == EmailStatus.COMPLETED
-        mock_email_repository.save.assert_called_once_with(eq, mock_session)
+        mock_email_repository.delete.assert_called_once_with(eq, mock_session)
 
 
 class TestMarkFailed:

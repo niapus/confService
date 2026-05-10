@@ -1,7 +1,7 @@
 import enum
 from datetime import datetime
 
-from sqlalchemy import Integer, Column, String, Text, DateTime, Enum
+from sqlalchemy import Integer, Column, String, Text, DateTime, Enum, Index
 
 from app.core.database import Base
 
@@ -10,8 +10,6 @@ class EmailStatus(enum.Enum):
     """Статус обработки письма в очереди."""
 
     PENDING = 'pending'
-    SENDING = 'sending'
-    COMPLETED = 'completed'
     FAILED = 'failed'
 
 
@@ -26,6 +24,10 @@ class EmailQueue(Base):
     """Запись в очереди исходящих писем для асинхронной отправки."""
 
     __tablename__ = "email_queue"
+
+    __table_args__ = (
+        Index('ix_email_queue_status_type_created', 'status', 'queue_type', 'created_at'),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     status = Column(Enum(EmailStatus), nullable=False, default=EmailStatus.PENDING)

@@ -54,8 +54,8 @@ class TestSendVerificationEmail:
 class TestSendRegistrationConfirmed:
 
     @patch('app.service.notification_service.render_template', return_value='<html>confirmed</html>')
-    @patch('app.service.notification_service.url_for', return_value='http://localhost/conf/1')
-    def test_send_registration_confirmed(self, mock_url_for, mock_render, notification_service,
+    @patch.object(NotificationService, '_get_conference_url', return_value='http://localhost:5000/conference/1')
+    def test_send_registration_confirmed(self, mock_get_url, mock_render, notification_service,
                                           mock_email_queue_service, mock_session):
         app = make_application()
         conf = make_conference()
@@ -68,13 +68,16 @@ class TestSendRegistrationConfirmed:
         assert call_kwargs['recipient'] == app.email
         assert call_kwargs['queue_type'] == QueueType.INDIVIDUAL
         assert "Регистрация подтверждена" in call_kwargs['subject']
+        render_kwargs = mock_render.call_args[1]
+        assert render_kwargs['header'] == 'Регистрация подтверждена'
+        assert render_kwargs['button_url'] == 'http://localhost:5000/conference/1'
 
 
 class TestSendThesisStatus:
 
     @patch('app.service.notification_service.render_template', return_value='<html>thesis</html>')
-    @patch('app.service.notification_service.url_for', return_value='http://localhost/conf/1')
-    def test_send_thesis_accepted(self, mock_url_for, mock_render, notification_service,
+    @patch.object(NotificationService, '_get_conference_url', return_value='http://localhost:5000/conference/1')
+    def test_send_thesis_accepted(self, mock_get_url, mock_render, notification_service,
                                    mock_email_queue_service, mock_session):
         thesis = make_thesis(status=ThesisStatus.ACCEPTED)
         app = make_application()
@@ -86,10 +89,17 @@ class TestSendThesisStatus:
 
         call_kwargs = mock_email_queue_service.enqueue.call_args[1]
         assert "приняты" in call_kwargs['subject']
+        assert call_kwargs['queue_type'] == QueueType.INDIVIDUAL
+        render_kwargs = mock_render.call_args
+        assert render_kwargs[0][0] == 'email/thesis_status.html'
+        assert render_kwargs[1]['thesis'] is thesis
+        assert render_kwargs[1]['application'] is app
+        assert render_kwargs[1]['conference'] is conf
+        assert render_kwargs[1]['conference_url'] == 'http://localhost:5000/conference/1'
 
     @patch('app.service.notification_service.render_template', return_value='<html>thesis</html>')
-    @patch('app.service.notification_service.url_for', return_value='http://localhost/conf/1')
-    def test_send_thesis_rejected(self, mock_url_for, mock_render, notification_service,
+    @patch.object(NotificationService, '_get_conference_url', return_value='http://localhost:5000/conference/1')
+    def test_send_thesis_rejected(self, mock_get_url, mock_render, notification_service,
                                    mock_email_queue_service, mock_session):
         thesis = make_thesis(status=ThesisStatus.REJECTED)
         app = make_application()
@@ -101,13 +111,14 @@ class TestSendThesisStatus:
 
         call_kwargs = mock_email_queue_service.enqueue.call_args[1]
         assert "отклонены" in call_kwargs['subject']
+        assert call_kwargs['queue_type'] == QueueType.INDIVIDUAL
 
 
 class TestSendConferenceReminder:
 
     @patch('app.service.notification_service.render_template', return_value='<html>reminder</html>')
-    @patch('app.service.notification_service.url_for', return_value='http://localhost/conf/1')
-    def test_send_conference_reminder(self, mock_url_for, mock_render, notification_service,
+    @patch.object(NotificationService, '_get_conference_url', return_value='http://localhost:5000/conference/1')
+    def test_send_conference_reminder(self, mock_get_url, mock_render, notification_service,
                                        mock_email_queue_service, mock_session):
         app1 = make_application(app_id=1, email="a@test.com")
         app2 = make_application(app_id=2, email="b@test.com")
@@ -120,8 +131,7 @@ class TestSendConferenceReminder:
             assert c[1]['queue_type'] == QueueType.MASS
             assert "Напоминание" in c[1]['subject']
 
-    @patch('app.service.notification_service.url_for', return_value='http://localhost/conf/1')
-    def test_send_conference_reminder_empty_list(self, mock_url_for, notification_service,
+    def test_send_conference_reminder_empty_list(self, notification_service,
                                                   mock_email_queue_service, mock_session):
         conf = make_conference()
 
@@ -129,8 +139,7 @@ class TestSendConferenceReminder:
 
         mock_email_queue_service.enqueue.assert_not_called()
 
-    @patch('app.service.notification_service.url_for', return_value='http://localhost/conf/1')
-    def test_send_conference_reminder_none_list(self, mock_url_for, notification_service,
+    def test_send_conference_reminder_none_list(self, notification_service,
                                                  mock_email_queue_service, mock_session):
         conf = make_conference()
 
@@ -142,8 +151,8 @@ class TestSendConferenceReminder:
 class TestSendSchedulePublished:
 
     @patch('app.service.notification_service.render_template', return_value='<html>schedule</html>')
-    @patch('app.service.notification_service.url_for', return_value='http://localhost/conf/1')
-    def test_send_schedule_published(self, mock_url_for, mock_render, notification_service,
+    @patch.object(NotificationService, '_get_conference_url', return_value='http://localhost:5000/conference/1')
+    def test_send_schedule_published(self, mock_get_url, mock_render, notification_service,
                                       mock_email_queue_service, mock_session):
         app = make_application()
         conf = make_conference()
@@ -158,8 +167,8 @@ class TestSendSchedulePublished:
 class TestSendConferenceUpdated:
 
     @patch('app.service.notification_service.render_template', return_value='<html>update</html>')
-    @patch('app.service.notification_service.url_for', return_value='http://localhost/conf/1')
-    def test_send_conference_updated(self, mock_url_for, mock_render, notification_service,
+    @patch.object(NotificationService, '_get_conference_url', return_value='http://localhost:5000/conference/1')
+    def test_send_conference_updated(self, mock_get_url, mock_render, notification_service,
                                       mock_email_queue_service, mock_session):
         app = make_application()
         conf = make_conference()
@@ -173,8 +182,8 @@ class TestSendConferenceUpdated:
 class TestSendScheduleUpdated:
 
     @patch('app.service.notification_service.render_template', return_value='<html>update</html>')
-    @patch('app.service.notification_service.url_for', return_value='http://localhost/conf/1')
-    def test_send_schedule_updated(self, mock_url_for, mock_render, notification_service,
+    @patch.object(NotificationService, '_get_conference_url', return_value='http://localhost:5000/conference/1')
+    def test_send_schedule_updated(self, mock_get_url, mock_render, notification_service,
                                     mock_email_queue_service, mock_session):
         app = make_application()
         conf = make_conference()
@@ -208,8 +217,8 @@ class TestSendEmail:
 class TestSendToApplications:
 
     @patch('app.service.notification_service.render_template', return_value='<html>test</html>')
-    @patch('app.service.notification_service.url_for', return_value='http://localhost/conf/1')
-    def test_sends_to_each_application(self, mock_url_for, mock_render, notification_service,
+    @patch.object(NotificationService, '_get_conference_url', return_value='http://localhost:5000/conference/1')
+    def test_sends_to_each_application(self, mock_get_url, mock_render, notification_service,
                                         mock_email_queue_service, mock_session):
         app1 = make_application(app_id=1, email="a@test.com")
         app2 = make_application(app_id=2, email="b@test.com")
@@ -218,37 +227,40 @@ class TestSendToApplications:
         notification_service._send_to_applications(
             applications=[app1, app2],
             conference=conf,
-            template_name='test_template',
+            header='Test Header',
+            mail_text='Test text',
             subject_prefix='Test Prefix',
             session=mock_session
         )
 
         assert mock_email_queue_service.enqueue.call_count == 2
+        for c in mock_email_queue_service.enqueue.call_args_list:
+            assert c[1]['queue_type'] == QueueType.MASS
 
-    @patch('app.service.notification_service.url_for', return_value='http://localhost/conf/1')
-    def test_skips_when_applications_empty(self, mock_url_for, notification_service,
+    def test_skips_when_applications_empty(self, notification_service,
                                             mock_email_queue_service, mock_session):
         conf = make_conference()
 
         notification_service._send_to_applications(
             applications=[],
             conference=conf,
-            template_name='test_template',
+            header='Test',
+            mail_text='Test',
             subject_prefix='Test',
             session=mock_session
         )
 
         mock_email_queue_service.enqueue.assert_not_called()
 
-    @patch('app.service.notification_service.url_for', return_value='http://localhost/conf/1')
-    def test_skips_when_applications_none(self, mock_url_for, notification_service,
+    def test_skips_when_applications_none(self, notification_service,
                                            mock_email_queue_service, mock_session):
         conf = make_conference()
 
         notification_service._send_to_applications(
             applications=None,
             conference=conf,
-            template_name='test_template',
+            header='Test',
+            mail_text='Test',
             subject_prefix='Test',
             session=mock_session
         )
@@ -256,21 +268,24 @@ class TestSendToApplications:
         mock_email_queue_service.enqueue.assert_not_called()
 
     @patch('app.service.notification_service.render_template', return_value='<html>test</html>')
-    @patch('app.service.notification_service.url_for', return_value='http://localhost/conf/1')
-    def test_passes_template_kwargs(self, mock_url_for, mock_render, notification_service,
-                                     mock_email_queue_service, mock_session):
+    @patch.object(NotificationService, '_get_conference_url', return_value='http://localhost:5000/conference/1')
+    def test_passes_header_and_mail_text(self, mock_get_url, mock_render, notification_service,
+                                         mock_email_queue_service, mock_session):
         app = make_application()
         conf = make_conference()
 
         notification_service._send_to_applications(
             applications=[app],
             conference=conf,
-            template_name='test_template',
+            header='Test Header',
+            mail_text='Test Body',
             subject_prefix='Test',
-            session=mock_session,
-            extra_key='extra_value'
+            session=mock_session
         )
 
         mock_render.assert_called_once()
         render_kwargs = mock_render.call_args[1]
-        assert render_kwargs.get('extra_key') == 'extra_value'
+        assert render_kwargs['header'] == 'Test Header'
+        assert render_kwargs['mail_text'] == 'Test Body'
+        assert render_kwargs['button_url'] == 'http://localhost:5000/conference/1'
+        assert render_kwargs['button_text'] == 'Перейти к конференции'

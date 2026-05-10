@@ -54,7 +54,7 @@ class AppServices:
 
         self._services['jwt'] = JWTService(secret=app.config["SECRET_KEY"])
 
-        email_queue_service = EmailQueueService(self.__repo['email'])
+        self._services['email_queue'] = EmailQueueService(self.__repo['email'])
 
         mail_enabled = app.config['MAIL_ENABLED']
         verification_enabled = app.config['EMAIL_VERIFICATION_ENABLED']
@@ -63,8 +63,8 @@ class AppServices:
         flask_mailer = FlaskMailer(mail)
         email_service = EmailService(flask_mailer, app.config['MAIL_DEFAULT_SENDER'])
 
-        self._services['email'] = AsyncEmailService(email_service, email_queue_service)
-        self._services['notification'] = NotificationService(email_queue_service, mail_enabled, verification_enabled)
+        self._services['email'] = AsyncEmailService(email_service, self._services['email_queue'])
+        self._services['notification'] = NotificationService(self._services['email_queue'], mail_enabled, verification_enabled)
 
         self._services['admin'] = AdminService(
             self.__repo['admin']
@@ -145,6 +145,10 @@ class AppServices:
     @property
     def email(self) -> AsyncEmailService:
         return self._services['email']
+
+    @property
+    def email_queue(self) -> EmailQueueService:
+        return self._services['email_queue']
 
     @property
     def verification(self) -> VerificationService:
