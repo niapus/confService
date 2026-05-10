@@ -13,14 +13,14 @@ class JWTService:
         self.__secret = secret
 
     def generate_verification_token(self, application_id: int, email: str) -> str:
-        """Генерирует JWT-токен для подтверждения email. Срок действия — 10 минут."""
+        """Генерирует JWT-токен для подтверждения email. Срок действия — 1 час."""
         now = datetime.now(timezone.utc)
         payload = {
             'sub': 'email_verification',
             'app_id': application_id,
             'email': email,
             'iat': now,
-            'exp': now + timedelta(minutes=10)
+            'exp': now + timedelta(hours=1)
         }
         token = jwt.encode(payload, self.__secret, algorithm='HS256')
         if isinstance(token, bytes):

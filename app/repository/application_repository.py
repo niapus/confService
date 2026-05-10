@@ -33,7 +33,7 @@ class ApplicationRepository:
             Application.status == ApplicationStatus.CONFIRMED
         ).all()
 
-    def get_all(self, session: Session) -> list[Application]:
+    def get_all_confirmed(self, session: Session) -> list[Application]:
         """Возвращает все подтверждённые заявки с предзагрузкой тезисов."""
         return session.query(Application)\
             .options(joinedload(Application.theses))\
@@ -42,7 +42,15 @@ class ApplicationRepository:
             .all()
 
     def get_by_id(self, id: int, session: Session) -> Application | None:
-        return session.query(Application).get(id)
+        return session.get(Application, id)
+
+    def delete_unconfirmed_by_conf_email(self, conf_id: int, email: str, session: Session) -> None:
+        """Удаляет неподтверждённые заявки по конференции и email."""
+        session.query(Application).filter_by(
+            conference_id=conf_id,
+            email=email,
+            status=ApplicationStatus.UNCONFIRMED
+        ).delete(synchronize_session=False)
 
     def delete_unconfirmed_older_than(self, days: int, session: Session) -> int:
         cutoff = datetime.now() - timedelta(days=days)

@@ -1,5 +1,6 @@
 from datetime import date
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.dto.dto import ApplicationDTO, FullApplicationDTO
@@ -41,9 +42,14 @@ class ApplicationService:
         if existing:
             raise ApplicationAlreadyExists(app_dto.email)
 
+        self.__repo.delete_unconfirmed_by_conf_email(conf_id, app_dto.email, session)
+
         application = Application()
         self.__fill_application(application, app_dto, conf_id)
-        self.__repo.save(application, session)
+        try:
+            self.__repo.save(application, session)
+        except IntegrityError:
+            raise ApplicationAlreadyExists(app_dto.email)
         return application
 
     def get_confirmed_application_by_conf_email(
@@ -64,7 +70,7 @@ class ApplicationService:
 
     def get_all_applications(self, session: Session) -> list[Application]:
         """Возвращает все заявки без фильтрации."""
-        return self.__repo.get_all(session)
+        return self.__repo.get_all_confirmed(session)
 
     def get_by_id(self, app_id: int, session: Session) -> Application:
         """Возвращает заявку по ID. Выбрасывает ApplicationNotFoundException если не найдена."""

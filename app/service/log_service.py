@@ -37,7 +37,7 @@ class LogService:
             'name': os.path.basename(file_path),
             'size_mb': round(stat.st_size / (1024 * 1024), 2),
             'modified_at': datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc),
-            'first_log_at': first_log_date.replace(tzinfo=timezone.utc) if first_log_date else None
+            'first_log_at': first_log_date if first_log_date else None
         }
 
     def _get_first_log_date(self, file_path: str) -> datetime | None:
@@ -50,7 +50,8 @@ class LogService:
                         break
                     match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', line)
                     if match:
-                        return datetime.strptime(match.group(1), '%Y-%m-%d %H:%M:%S')
+                        naive_dt = datetime.strptime(match.group(1), '%Y-%m-%d %H:%M:%S')
+                        return naive_dt.astimezone(timezone.utc)
             return datetime.fromtimestamp(os.stat(file_path).st_ctime, tz=timezone.utc)
         except Exception:
             return datetime.fromtimestamp(os.stat(file_path).st_ctime, tz=timezone.utc)

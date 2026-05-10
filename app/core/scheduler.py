@@ -30,7 +30,7 @@ class SchedulerService:
         self._scheduler.add_job(self._cleanup_emails, 'cron', day_of_week='sun', hour=3, minute=0, id='cleanup_emails')
         self._scheduler.add_job(self._cleanup_applications, 'cron', day_of_week='sun', hour=3, minute=30, id='cleanup_applications')
         self._scheduler.start()
-        logger.info("Планировщик запущен: individual(15s), mass(60s), reminders(9:00), cleanup(вс 3:00/3:30)")
+        logger.info("Планировщик запущен: individual(15s), mass(60s), reminders(10:00), cleanup(вс 3:00/3:30)")
 
     def _process_individual(self):
         with self._app.app_context():

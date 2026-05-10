@@ -2,7 +2,7 @@ from datetime import date, timedelta
 
 import pytest
 
-from app.exceptions.conflict_exception import ConferenceAlreadyEndedException
+from app.exceptions.conflict_exception import ApplicationAfterDeadlineException
 from app.exceptions.not_found_exception import ConferenceNotFoundException
 from app.exceptions.validation_exception import ValidationException
 from app.service.conference_service import ConferenceService
@@ -49,21 +49,20 @@ class TestExists:
             conference_service.exists(999, mock_session)
 
 
-class TestGetUpcomingConference:
+class TestCheckRegistrationOpen:
 
-    def test_returns_conference_when_upcoming(self, conference_service, mock_conference_repository, mock_session):
-        conf = make_conference(end_date=date.today() + timedelta(days=10))
+    def test_does_not_raise_when_deadline_not_passed(self, conference_service, mock_conference_repository, mock_session):
+        conf = make_conference(registration_deadline=date.today() + timedelta(days=5))
         mock_conference_repository.get_by_id.return_value = conf
 
-        result = conference_service.get_upcoming_conference(1, mock_session)
-        assert result == conf
+        conference_service.check_registration_open(1, mock_session)
 
-    def test_raises_when_ended(self, conference_service, mock_conference_repository, mock_session):
-        conf = make_conference(end_date=date.today() - timedelta(days=1))
+    def test_raises_when_deadline_passed(self, conference_service, mock_conference_repository, mock_session):
+        conf = make_conference(registration_deadline=date.today() - timedelta(days=1))
         mock_conference_repository.get_by_id.return_value = conf
 
-        with pytest.raises(ConferenceAlreadyEndedException):
-            conference_service.get_upcoming_conference(1, mock_session)
+        with pytest.raises(ApplicationAfterDeadlineException):
+            conference_service.check_registration_open(1, mock_session)
 
 
 class TestCreateConference:

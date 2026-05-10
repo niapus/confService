@@ -1,7 +1,7 @@
 import enum
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, ForeignKey, Enum, Date, Boolean, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, Enum, Date, Boolean, DateTime, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from app.core.database import Base
@@ -49,6 +49,9 @@ class Application(Base):
     """Заявка участника на участие в конференции."""
 
     __tablename__ = "applications"
+    __table_args__ = (
+        UniqueConstraint('conference_id', 'email', name='uq_application_conference_email'),
+    )
 
     id = Column(Integer, primary_key=True)
     conference_id = Column(Integer, ForeignKey("conferences.id", ondelete="CASCADE"), nullable=False, index=True)

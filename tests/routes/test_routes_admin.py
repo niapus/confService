@@ -355,17 +355,16 @@ class TestViewThesisFile:
 
 class TestUpdateThesisStatus:
 
-    def test_success_redirects_mail_disabled(self, admin_session, mock_services):
+    def test_success_redirects(self, admin_session, mock_services):
         thesis = make_thesis(thesis_id=1, title="My Thesis")
         thesis.status = ThesisStatus.ACCEPTED
         mock_services["thesis"].update_thesis_status.return_value = thesis
-        mock_services["notification"].mail_enabled = False
 
         resp = admin_session.post("/admin/theses/1/status", data={"status": "accepted"})
         assert resp.status_code == 302
         assert "/admin" in resp.headers["Location"]
         mock_services["thesis"].update_thesis_status.assert_called_once_with(1, "accepted", ANY)
-        mock_services["notification"].send_thesis_status.assert_not_called()
+        mock_services["notification"].send_thesis_status.assert_called_once_with(thesis, ANY)
 
     def test_success_with_mail_enabled(self, admin_session, mock_services):
         thesis = make_thesis(thesis_id=2, title="Thesis Mail")

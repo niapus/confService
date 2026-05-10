@@ -76,19 +76,17 @@ class TestUpdateSchedule:
 
         mock_notification_service.send_schedule_updated.assert_called_once()
 
-    def test_update_schedule_no_notification_when_mail_disabled(self, schedule_service, mock_conference_service,
-                                                                 mock_schedule_repository,
-                                                                 mock_notification_service, mock_session):
+    def test_update_schedule_always_calls_notification(self, schedule_service, mock_conference_service,
+                                                        mock_schedule_repository,
+                                                        mock_notification_service, mock_session):
         conf = make_conference()
         mock_conference_service.get_conference_by_id.return_value = conf
         mock_schedule_repository.delete_all_by_conference_id.return_value = 5
-        mock_notification_service.mail_enabled = False
 
         dto = make_schedule_dto()
         schedule_service.update_schedule(dto, 1, mock_session)
 
-        mock_notification_service.send_schedule_updated.assert_not_called()
-        mock_notification_service.send_schedule_published.assert_not_called()
+        mock_notification_service.send_schedule_updated.assert_called_once()
 
     def test_update_schedule_creates_items(self, schedule_service, mock_conference_service,
                                             mock_schedule_repository, mock_notification_service, mock_session):

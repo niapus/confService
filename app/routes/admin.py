@@ -151,9 +151,7 @@ def update_thesis_status(thesis_id: int):
     thesis = get_thesis_service().update_thesis_status(
         thesis_id, request.form.get("status"), g.db
     )
-    notification = get_notification_service()
-    if notification.mail_enabled:
-        notification.send_thesis_status(thesis, g.db)
+    get_notification_service().send_thesis_status(thesis, g.db)
     logger.info("Админ id=%s, login=%s изменил статус тезиса id=%s, title=%s на %s",
                 flask_session.get("admin_id"), flask_session.get("admin_login"),
                 thesis.id, thesis.title, thesis.status.value)

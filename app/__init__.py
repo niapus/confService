@@ -143,7 +143,7 @@ def create_app():
             dt = datetime.fromisoformat(value.replace('Z', '+00:00'))
             dt = dt.astimezone()
             return dt.strftime('%H:%M')
-        except:
+        except Exception:
             return value
 
     app.register_blueprint(auth_bp)
@@ -152,7 +152,7 @@ def create_app():
     app.register_blueprint(api_bp)
     app.register_blueprint(main_bp)
 
-    csrf.exempt(app.view_functions['auth.admin_login'])
+    # csrf.exempt(app.view_functions['auth.admin_login'])
     csrf.exempt(app.view_functions['conference.create_application'])
     csrf.exempt(app.view_functions['conference.upload_thesis'])
 

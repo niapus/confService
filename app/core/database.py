@@ -18,7 +18,7 @@ def init_engine(app):
         if db_dir:
             os.makedirs(db_dir, exist_ok=True)
 
-    engine = create_engine(database_url, echo='debug')
+    engine = create_engine(database_url, echo=app.config.get('SQLALCHEMY_ECHO', False))
     if engine.url.drivername == 'sqlite':
         @event.listens_for(engine, "connect")
         def set_sqlite_pragma(dbapi_connection, _):

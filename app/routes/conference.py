@@ -24,13 +24,13 @@ def show_conference(conf_id: int):
 
 @conference_bp.get('/<int:conf_id>/application')
 def show_application(conf_id: int):
-    get_conference_service().get_upcoming_conference(conf_id, g.db)
+    get_conference_service().check_registration_open(conf_id, g.db)
     return render_template("application.html")
 
 
 @conference_bp.get('/<int:conf_id>/thesis')
 def show_upload_thesis(conf_id: int):
-    get_conference_service().get_upcoming_conference(conf_id, g.db)
+    get_conference_service().check_submission_open(conf_id, g.db)
     return render_template("thesis.html", conf_id=conf_id)
 
 

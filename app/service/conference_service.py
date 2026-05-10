@@ -3,7 +3,10 @@ from datetime import date
 from sqlalchemy.orm import Session
 
 from app.dto.dto import ConferenceDTO
-from app.exceptions.conflict_exception import ConferenceAlreadyEndedException
+from app.exceptions.conflict_exception import (
+    ApplicationAfterDeadlineException,
+    ThesisAfterDeadlineException,
+)
 from app.exceptions.not_found_exception import ConferenceNotFoundException
 from app.exceptions.validation_exception import ValidationException
 from app.models.conference import Conference
@@ -39,12 +42,17 @@ class ConferenceService:
             raise ConferenceNotFoundException(conf_id)
         return existing
 
-    def get_upcoming_conference(self, conf_id: int, session: Session) -> Conference:
-        """Возвращает конференцию, если она ещё не завершилась."""
+    def check_registration_open(self, conf_id: int, session: Session) -> None:
+        """Выбрасывает исключение, если дедлайн подачи заявки истёк."""
         conference = self.get_conference_by_id(conf_id, session)
-        if conference.end_date < date.today():
-            raise ConferenceAlreadyEndedException(conf_id)
-        return conference
+        if conference.registration_deadline < date.today():
+            raise ApplicationAfterDeadlineException(str(conference.registration_deadline))
+
+    def check_submission_open(self, conf_id: int, session: Session) -> None:
+        """Выбрасывает исключение, если дедлайн подачи тезисов истёк."""
+        conference = self.get_conference_by_id(conf_id, session)
+        if conference.submission_deadline < date.today():
+            raise ThesisAfterDeadlineException(str(conference.submission_deadline))
 
     def create_conference(self, conf_dto: ConferenceDTO, session: Session) -> Conference:
         """Создаёт новую конференцию после валидации дат."""
@@ -60,8 +68,8 @@ class ConferenceService:
         is_changed = self.__is_changed(conference, conf_dto)
         self.__fill_conference(conference, conf_dto)
 
-        if self.__notification.mail_enabled and is_changed:
-            self.__notification.send_conference_updated(conference.applications, conference, session)
+        if is_changed:
+            self.__notification.send_conference_updated(conference.confirmed_applications, conference, session)
 
         return conference
 

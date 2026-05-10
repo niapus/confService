@@ -8,6 +8,15 @@ from app.models.thesis import Thesis, ThesisStatus
 from app.service.email_queue_service import EmailQueueService
 
 
+def _require_mail(func):
+    """Декоратор: пропускает выполнение метода если почта отключена."""
+    def wrapper(self, *args, **kwargs):
+        if not self.mail_enabled:
+            return
+        return func(self, *args, **kwargs)
+    return wrapper
+
+
 class NotificationService:
     """Отправка email-уведомлений участникам через очередь писем."""
 
@@ -18,6 +27,7 @@ class NotificationService:
         self.mail_enabled = mail_enabled
         self.verification_enabled = verification_enabled
 
+    @_require_mail
     def send_verification_email(
         self, token: str, application: Application, conference: Conference, session: Session
     ) -> None:
@@ -37,6 +47,7 @@ class NotificationService:
             session=session
         )
 
+    @_require_mail
     def send_registration_confirmed(self, application: Application, session: Session) -> None:
         """Ставит в очередь письмо об успешном подтверждении регистрации."""
         conference = application.conference
@@ -58,6 +69,7 @@ class NotificationService:
             session=session
         )
 
+    @_require_mail
     def send_thesis_status(self, thesis: Thesis, session: Session) -> None:
         """Ставит в очередь письмо с результатом рассмотрения тезисов (принят/отклонён)."""
         application = thesis.application
@@ -78,6 +90,7 @@ class NotificationService:
             session=session
         )
 
+    @_require_mail
     def send_conference_reminder(
         self, applications: list[Application], conference: Conference, session: Session
     ) -> None:
@@ -90,6 +103,7 @@ class NotificationService:
             session=session
         )
 
+    @_require_mail
     def send_schedule_published(
         self, applications: list[Application], conference: Conference, session: Session
     ) -> None:
@@ -102,6 +116,7 @@ class NotificationService:
             session=session
         )
 
+    @_require_mail
     def send_conference_updated(
         self, applications: list[Application], conference: Conference, session: Session
     ) -> None:
@@ -114,6 +129,7 @@ class NotificationService:
             session=session
         )
 
+    @_require_mail
     def send_schedule_updated(
         self, applications: list[Application], conference: Conference, session: Session
     ) -> None:

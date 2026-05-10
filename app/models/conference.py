@@ -33,6 +33,13 @@ class Conference(Base):
         cascade="all, delete-orphan"
     )
 
+    confirmed_applications = relationship(
+        "Application",
+        primaryjoin="and_(Conference.id == foreign(Application.conference_id), "
+                    "Application.status == 'confirmed')",
+        viewonly=True
+    )
+
     files = relationship(
         "ConferenceFile",
         back_populates="conference",

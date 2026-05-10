@@ -45,13 +45,10 @@ class ScheduleService:
         items = [self._fill_schedule_item(item, conf_id) for item in schedule_dto.schedule]
         self.__repo.create_all(items, session)
 
-        if not self.__notification.mail_enabled:
-            return
-
         if deleted_count > 0:
-            self.__notification.send_schedule_updated(conference.applications, conference, session)
+            self.__notification.send_schedule_updated(conference.confirmed_applications, conference, session)
         else:
-            self.__notification.send_schedule_published(conference.applications, conference, session)
+            self.__notification.send_schedule_published(conference.confirmed_applications, conference, session)
 
     def _fill_schedule_item(self, item_dto: ScheduleItemDTO, conf_id: int) -> ScheduleItem:
         """Создаёт ORM-объект ScheduleItem из DTO элемента расписания."""

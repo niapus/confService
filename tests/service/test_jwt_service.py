@@ -24,7 +24,7 @@ class TestGenerateVerificationToken:
         assert 'iat' in payload
         assert 'exp' in payload
 
-    def test_token_expires_in_10_minutes(self, jwt_service):
+    def test_token_expires_in_1_hour(self, jwt_service):
         token = jwt_service.generate_verification_token(1, "test@test.com")
 
         payload = jwt.decode(token, "test_secret_key", algorithms=['HS256'])
@@ -32,7 +32,7 @@ class TestGenerateVerificationToken:
         iat = datetime.fromtimestamp(payload['iat'], tz=timezone.utc)
 
         diff = exp - iat
-        assert diff == timedelta(minutes=10)
+        assert diff == timedelta(hours=1)
 
     def test_token_is_string(self, jwt_service):
         token = jwt_service.generate_verification_token(1, "test@test.com")

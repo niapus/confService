@@ -15,7 +15,7 @@ class ConferenceRepository:
         return conference
 
     def get_by_id(self, conference_id: int, session: Session) -> Conference | None:
-        return session.query(Conference).get(conference_id)
+        return session.get(Conference, conference_id)
 
     def get_all(self, session: Session) -> list[Conference]:
         return session.query(Conference).order_by(Conference.id.desc()).all()

@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 
 import pytest
+from sqlalchemy.exc import IntegrityError
 
 from app.exceptions.conflict_exception import ApplicationAfterDeadlineException, ApplicationAlreadyExists
 from app.exceptions.not_found_exception import ApplicationNotFoundException
@@ -45,6 +46,19 @@ class TestCreateApplication:
         assert result.email == "ivan@test.com"
         assert result.status == ApplicationStatus.CONFIRMED
         mock_application_repository.save.assert_called_once()
+        mock_application_repository.delete_unconfirmed_by_conf_email.assert_called_once_with(
+            1, application_dto.email, mock_session
+        )
+
+    def test_create_application_race_condition(self, application_service, mock_conference_service,
+                                               mock_application_repository, mock_session, application_dto):
+        conf = make_conference()
+        mock_conference_service.get_conference_by_id.return_value = conf
+        mock_application_repository.find_confirmed_application_by_conf_email.return_value = None
+        mock_application_repository.save.side_effect = IntegrityError(None, None, None)
+
+        with pytest.raises(ApplicationAlreadyExists):
+            application_service.create_application(1, application_dto, mock_session)
 
     def test_create_application_after_deadline(self, application_service, mock_conference_service,
                                                mock_session, application_dto):
@@ -162,7 +176,7 @@ class TestGetApplicationFromSchedule:
 class TestGetAllApplications:
 
     def test_returns_all(self, application_service, mock_application_repository, mock_session):
-        mock_application_repository.get_all.return_value = ["app1", "app2"]
+        mock_application_repository.get_all_confirmed.return_value = ["app1", "app2"]
 
         result = application_service.get_all_applications(mock_session)
         assert result == ["app1", "app2"]
