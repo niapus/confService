@@ -6,7 +6,6 @@
    <meta name="csrf-token" content="{{ csrf_token() }}">
    <title>{% block title %}{{ conference.title if conference else '' }}{% endblock %}</title>
    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-   {% block info_head %}{% endblock %}
 </head>
 <body>
    {% include "includes/header.html" %}
@@ -16,6 +15,5 @@
    </main>
 
    {# {% include "includes/footer.html" %} #}
-   {% block extra_js %}{% endblock %}
 </body>
 </html>
