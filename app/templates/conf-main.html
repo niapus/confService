@@ -5,7 +5,7 @@
 {% block content %}
 
 <div class="conference-card">
-   <h2>Теги: {{ conference.tagline }}</h2>
+   {% if conference.tagline %} <h2>Теги: {{ conference.tagline }}</h2>{% endif %}
    <section class="deadlines">
       <h3>Важные даты</h3>
       <ul>
