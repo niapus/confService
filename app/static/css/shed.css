@@ -91,8 +91,13 @@
    color: white;
 }
 
-.btn-add-day:hover {
-   background: #1a252f;
+.btn-exit {
+   background: #dc3545;
+   color: white;
+}
+
+.btn:hover {
+   filter: brightness(0.92);
 }
 
 .btn-add-break {
@@ -100,17 +105,9 @@
    color: white;
 }
 
-.btn-add-break:hover {
-   background: #d35400;
-}
-
 .btn-add-text {
    background: #8e44ad;
    color: white;
-}
-
-.btn-add-text:hover {
-   background: #7d3c98;
 }
 
 .btn-save {
@@ -119,9 +116,6 @@
    font-weight: 600;
 }
 
-.btn-save:hover {
-   background: #2980b9;
-}
 
 .schedule-panel {
    flex: 1;
@@ -157,10 +151,6 @@
    border-radius: 10px;
    cursor: pointer;
    font-size: 14px;
-}
-
-.btn-preview:hover {
-   background: #7f8c8d;
 }
 
 .schedule-timeline {
@@ -229,9 +219,6 @@
    color: #333;
 }
 
-.btn-edit:hover {
-   background: #d1d5db;
-}
 
 .btn-delete {
    padding: 4px 8px;
@@ -241,10 +228,6 @@
    font-size: 12px;
    background: #fee2e2;
    color: #dc2626;
-}
-
-.btn-delete:hover {
-   background: #fecaca;
 }
 
 .schedule-item-content {
@@ -386,10 +369,6 @@
    font-size: 14px;
 }
 
-.btn-primary:hover {
-   background: #2980b9;
-}
-
 .btn-secondary {
    background: #e5e7eb;
    color: #333;
@@ -398,10 +377,6 @@
    border-radius: 10px;
    cursor: pointer;
    font-size: 14px;
-}
-
-.btn-secondary:hover {
-   background: #d1d5db;
 }
 
 .preview-content {
@@ -530,7 +505,6 @@
    border-color: #3498db;
    color: #2980b9;
 }
-
 
 .notification.info {
    background: #3498db;

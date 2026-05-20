@@ -500,10 +500,11 @@ function ScheduleEditor() {
          React.createElement(
             'div',
             { className: 'toolbar' },
-            React.createElement('button', { className: 'btn-add-day', onClick: () => setDayModalOpen(true) }, 'Добавить день'),
-            React.createElement('button', { className: 'btn-add-break', onClick: () => setBreakModalOpen(true) }, 'Добавить поле с временным интервалом'),
-            React.createElement('button', { className: 'btn-add-text', onClick: () => setTextModalOpen(true) }, 'Добавить поле без временного интервала'),
-            React.createElement('button', { className: 'btn-save', onClick: saveSchedule }, 'Сохранить расписание')
+            React.createElement('button', { className: 'btn btn-add-day', onClick: () => setDayModalOpen(true) }, 'Добавить день'),
+            React.createElement('button', { className: 'btn btn-add-break', onClick: () => setBreakModalOpen(true) }, 'Добавить поле с временным интервалом'),
+            React.createElement('button', { className: 'btn btn-add-text', onClick: () => setTextModalOpen(true) }, 'Добавить поле без временного интервала'),
+            React.createElement('button', { className: 'btn btn-save', onClick: saveSchedule }, 'Сохранить расписание'),
+            React.createElement('button', { className: 'btn btn-exit', onClick: () => window.location.href = '/admin' }, 'Закрыть без сохранения')
          )
       ),
       React.createElement(
@@ -513,7 +514,7 @@ function ScheduleEditor() {
             'div',
             { className: 'schedule-header' },
             React.createElement('h2', null, 'Расписание конференции'),
-            React.createElement('button', { className: 'btn-preview', onClick: () => setPreviewModalOpen(true) }, 'Предпросмотр')
+            React.createElement('button', { className: 'btn btn-preview', onClick: () => setPreviewModalOpen(true) }, 'Предпросмотр')
          ),
          React.createElement(
             'div',
@@ -534,8 +535,8 @@ function ScheduleEditor() {
                         React.createElement('div', { className: 'schedule-item-header' },
                            React.createElement('span', { className: 'schedule-item-time' }, item.day_date),
                            React.createElement('div', { className: 'schedule-item-controls' },
-                              React.createElement('button', { className: 'btn-edit', onClick: () => editItem(item) }, '✏️'),
-                              React.createElement('button', { className: 'btn-delete', onClick: () => deleteDay(item.id) }, '🗑')
+                              React.createElement('button', { className: 'btn btn-edit', onClick: () => editItem(item) }, '✏️'),
+                              React.createElement('button', { className: 'btn btn-delete', onClick: () => deleteDay(item.id) }, '🗑')
                            )
                         ),
                         React.createElement('div', { className: 'schedule-item-content' },
@@ -549,7 +550,7 @@ function ScheduleEditor() {
                         React.createElement('div', { className: 'schedule-item-header' },
                            React.createElement('span', { className: 'schedule-item-time' }, timeDisplay),
                            React.createElement('div', { className: 'schedule-item-controls' },
-                              React.createElement('button', { className: 'btn-delete', onClick: () => deleteItem(item.id) }, '🗑')
+                              React.createElement('button', { className: 'btn btn-delete', onClick: () => deleteItem(item.id) }, '🗑')
                            )
                         ),
                         React.createElement('div', { className: 'schedule-item-content' },
@@ -564,8 +565,8 @@ function ScheduleEditor() {
                         React.createElement('div', { className: 'schedule-item-header' },
                            React.createElement('span', { className: 'schedule-item-time' }, timeDisplay),
                            React.createElement('div', { className: 'schedule-item-controls' },
-                              React.createElement('button', { className: 'btn-edit', onClick: () => editItem(item) }, '✏️'),
-                              React.createElement('button', { className: 'btn-delete', onClick: () => deleteItem(item.id) }, '🗑')
+                              React.createElement('button', { className: 'btn btn-edit', onClick: () => editItem(item) }, '✏️'),
+                              React.createElement('button', { className: 'btn btn-delete', onClick: () => deleteItem(item.id) }, '🗑')
                            )
                         ),
                         React.createElement('div', { className: 'schedule-item-content' },
@@ -579,8 +580,8 @@ function ScheduleEditor() {
                         React.createElement('div', { className: 'schedule-item-header' },
                            React.createElement('span', null, 'Текстовый блок'),
                            React.createElement('div', { className: 'schedule-item-controls' },
-                              React.createElement('button', { className: 'btn-edit', onClick: () => editItem(item) }, '✏️'),
-                              React.createElement('button', { className: 'btn-delete', onClick: () => deleteItem(item.id) }, '🗑')
+                              React.createElement('button', { className: 'btn btn-edit', onClick: () => editItem(item) }, '✏️'),
+                              React.createElement('button', { className: 'btn btn-delete', onClick: () => deleteItem(item.id) }, '🗑')
                            )
                         ),
                         React.createElement('div', { className: 'schedule-item-content' },
@@ -628,8 +629,8 @@ function ScheduleEditor() {
                   React.createElement('input', { type: 'time', value: editDayForm.startTime, onChange: (e) => setEditDayForm({ ...editDayForm, startTime: e.target.value }), required: true })
                ),
                React.createElement('div', { className: 'modal-actions' },
-                  React.createElement('button', { type: 'button', className: 'btn-secondary', onClick: () => setEditingItem(null) }, 'Отмена'),
-                  React.createElement('button', { type: 'submit', className: 'btn-primary' }, 'Сохранить')
+                  React.createElement('button', { type: 'button', className: 'btn btn-secondary', onClick: () => setEditingItem(null) }, 'Отмена'),
+                  React.createElement('button', { type: 'submit', className: 'btn btn-primary' }, 'Сохранить')
                )
             )
          )
@@ -651,8 +652,8 @@ function ScheduleEditor() {
                   React.createElement('input', { type: 'number', value: editBreakForm.duration, min: 5, max: 180, onChange: (e) => setEditBreakForm({ ...editBreakForm, duration: parseInt(e.target.value) }), required: true })
                ),
                React.createElement('div', { className: 'modal-actions' },
-                  React.createElement('button', { type: 'button', className: 'btn-secondary', onClick: () => setEditingItem(null) }, 'Отмена'),
-                  React.createElement('button', { type: 'submit', className: 'btn-primary' }, 'Сохранить')
+                  React.createElement('button', { type: 'button', className: 'btn btn-secondary', onClick: () => setEditingItem(null) }, 'Отмена'),
+                  React.createElement('button', { type: 'submit', className: 'btn btn-primary' }, 'Сохранить')
                )
             )
          )
@@ -670,8 +671,8 @@ function ScheduleEditor() {
                   React.createElement('textarea', { value: editTextForm.content, onChange: (e) => setEditTextForm({ ...editTextForm, content: e.target.value }), rows: 4, required: true })
                ),
                React.createElement('div', { className: 'modal-actions' },
-                  React.createElement('button', { type: 'button', className: 'btn-secondary', onClick: () => setEditingItem(null) }, 'Отмена'),
-                  React.createElement('button', { type: 'submit', className: 'btn-primary' }, 'Сохранить')
+                  React.createElement('button', { type: 'button', className: 'btn btn-secondary', onClick: () => setEditingItem(null) }, 'Отмена'),
+                  React.createElement('button', { type: 'submit', className: 'btn btn-primary' }, 'Сохранить')
                )
             )
          )
@@ -697,8 +698,8 @@ function ScheduleEditor() {
                   React.createElement('input', { type: 'time', value: dayForm.startTime, onChange: (e) => setDayForm({ ...dayForm, startTime: e.target.value }), required: true })
                ),
                React.createElement('div', { className: 'modal-actions' },
-                  React.createElement('button', { type: 'button', className: 'btn-secondary', onClick: () => setDayModalOpen(false) }, 'Отмена'),
-                  React.createElement('button', { type: 'submit', className: 'btn-primary' }, 'Добавить')
+                  React.createElement('button', { type: 'button', className: 'btn btn-secondary', onClick: () => setDayModalOpen(false) }, 'Отмена'),
+                  React.createElement('button', { type: 'submit', className: 'btn btn-primary' }, 'Добавить')
                )
             )
          )
@@ -720,8 +721,8 @@ function ScheduleEditor() {
                   React.createElement('input', { type: 'number', value: breakForm.duration, min: 5, max: 180, onChange: (e) => setBreakForm({ ...breakForm, duration: parseInt(e.target.value) }), required: true })
                ),
                React.createElement('div', { className: 'modal-actions' },
-                  React.createElement('button', { type: 'button', className: 'btn-secondary', onClick: () => setBreakModalOpen(false) }, 'Отмена'),
-                  React.createElement('button', { type: 'submit', className: 'btn-primary' }, 'Добавить')
+                  React.createElement('button', { type: 'button', className: 'btn btn-secondary', onClick: () => setBreakModalOpen(false) }, 'Отмена'),
+                  React.createElement('button', { type: 'submit', className: 'btn btn-primary' }, 'Добавить')
                )
             )
          )
@@ -739,8 +740,8 @@ function ScheduleEditor() {
                   React.createElement('textarea', { value: textForm.content, onChange: (e) => setTextForm({ content: e.target.value }), rows: 4, required: true })
                ),
                React.createElement('div', { className: 'modal-actions' },
-                  React.createElement('button', { type: 'button', className: 'btn-secondary', onClick: () => setTextModalOpen(false) }, 'Отмена'),
-                  React.createElement('button', { type: 'submit', className: 'btn-primary' }, 'Добавить')
+                  React.createElement('button', { type: 'button', className: 'btn btn-secondary', onClick: () => setTextModalOpen(false) }, 'Отмена'),
+                  React.createElement('button', { type: 'submit', className: 'btn btn-primary' }, 'Добавить')
                )
             )
          )
@@ -754,8 +755,8 @@ function ScheduleEditor() {
             React.createElement('h3', null, 'Предпросмотр расписания'),
             React.createElement('div', { className: 'preview-content' }, renderPreview()),
             React.createElement('div', { className: 'modal-actions' },
-               React.createElement('button', { className: 'btn-secondary', onClick: () => setPreviewModalOpen(false) }, 'Закрыть'),
-               React.createElement('button', { className: 'btn-primary', onClick: copyToClipboard }, 'Копировать JSON')
+               React.createElement('button', { className: 'btn btn-secondary', onClick: () => setPreviewModalOpen(false) }, 'Закрыть'),
+               React.createElement('button', { className: 'btn btn-primary', onClick: copyToClipboard }, 'Копировать JSON')
             )
          )
       ),
