@@ -31,7 +31,7 @@
 ### Минимальный запуск
 
 ```bash
-docker run -d -p 5000:5000 ваш_ник/confservice
+docker run -d -p 5000:5000 aberonimb/confservice
 ```
 
 Откройте `http://localhost:5000`. Логин администратора и сгенерированный пароль будут напечатаны в логах контейнера — посмотреть их:
@@ -64,7 +64,7 @@ docker logs <container_id> | head -n 30
 docker run -d -p 5000:5000 \
   -v confservice_data:/app/data \
   -v confservice_uploads:/app/uploads \
-  ваш_ник/confservice
+  aberonimb/confservice
 ```
 
 Docker создаст именованные тома автоматически. Данные переживают пересоздание контейнера и обновление образа.
@@ -77,7 +77,7 @@ Docker создаст именованные тома автоматически
 docker run -d -p 5000:5000 \
   -e ADMIN_DATA="admin:мой_длинный_пароль" \
   -v confservice_data:/app/data \
-  ваш_ник/confservice
+  aberonimb/confservice
 ```
 
 Формат `ADMIN_DATA`: `логин:пароль` (логин ≥ 4 символов, пароль ≥ 8). Несколько админов через запятую: `admin1:pass1,admin2:pass2`.
@@ -89,22 +89,10 @@ docker run -d -p 5000:5000 \
   -e ACTIVE_THEME=my-theme \
   -v ./themes:/app/themes \
   -v confservice_data:/app/data \
-  ваш_ник/confservice
+  aberonimb/confservice
 ```
 
 Подробнее про темы — см. раздел [Темы оформления](#темы-оформления) ниже.
-
-### Обновление образа
-
-```bash
-docker pull ваш_ник/confservice
-docker stop <container_id>
-docker rm <container_id>
-docker run -d -p 5000:5000 \
-  -v confservice_data:/app/data \
-  -v confservice_uploads:/app/uploads \
-  ваш_ник/confservice
-```
 
 Данные в volume сохраняются.
 
@@ -141,17 +129,6 @@ docker compose up -d
 ```
 
 Файл `.env` подключается автоматически — отдельных команд не нужно. Без `.env` сервис тоже работает (все обязательные значения сгенерируются).
-
-> Требуется Docker Compose 2.24+ (декабрь 2023). В более старых версиях нужно либо обновиться, либо вручную создать пустой `.env`.
-
-### Остановить / перезапустить / обновить
-
-```bash
-docker compose down              # остановить и удалить контейнер (данные остаются)
-docker compose up -d             # запустить снова
-docker compose restart           # перезапустить без пересоздания
-git pull && docker compose up -d --build   # обновить из git и пересобрать
-```
 
 ---
 
@@ -201,7 +178,7 @@ docker run -d -p 5000:5000 \
   -e MAIL_DEFAULT_SENDER=your@email.com \
   -e EMAIL_VERIFICATION_ENABLED=true \
   -v confservice_data:/app/data \
-  ваш_ник/confservice
+  aberonimb/confservice
 ```
 
 ### Внешняя БД (MariaDB / MySQL)
@@ -210,7 +187,7 @@ docker run -d -p 5000:5000 \
 docker run -d -p 5000:5000 \
   -e DATABASE_URL=mysql+pymysql://user:password@db_host:3306/conference_db \
   -v confservice_uploads:/app/uploads \
-  ваш_ник/confservice
+  aberonimb/confservice
 ```
 
 ---
@@ -249,7 +226,7 @@ docker run -d -p 5000:5000 \
   -e ACTIVE_THEME=my-theme \
   -v ./themes:/app/themes \
   -v confservice_data:/app/data \
-  ваш_ник/confservice
+  aberonimb/confservice
 ```
 
 ---
