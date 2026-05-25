@@ -90,7 +90,7 @@
          <div class="file-list">
             {% for file in proceedings %}
             <div class="file-item">
-               <a href="/admin/conferences/files/{{ file.id }}/view" class="file-link" target="_blank">
+               <a href="{{ url_for('conference.view_conference_file', conf_id=conference.id, file_id=file.id) }}" class="file-link" target="_blank">
                   {{ file.title }}
                </a>
                <span class="file-meta">{{ file.original_name }}</span>
@@ -107,7 +107,7 @@
          <div class="file-list">
             {% for file in conf_files %}
             <div class="file-item">
-               <a href="/admin/conferences/files/{{ file.id }}/view" class="file-link" target="_blank">
+               <a href="{{ url_for('conference.view_conference_file', conf_id=conference.id, file_id=file.id) }}" class="file-link" target="_blank">
                   {{ file.title }}
                </a>
                <span class="file-meta">{{ file.original_name }}</span>

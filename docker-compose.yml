@@ -5,10 +5,11 @@ services:
     ports:
       - "5000:5000"
     env_file:
-      - .env
+      - path: .env
+        required: false
     volumes:
       - ./logs:/app/logs
       - ./uploads:/app/uploads
       - ./data:/app/data
       - ./themes:/app/themes
-    restart: unless-stopped
+    restart: on-failure:5

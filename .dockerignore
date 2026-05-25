@@ -27,9 +27,11 @@ pytest.ini
 *.sqlite3
 conference_service.db
 
-# ===== Логи и загрузки (будут в volume) =====
+# ===== Логи, загрузки, данные, темы (будут в volume) =====
 logs/
 uploads/
+data/
+themes/
 
 # ===== Конфиденциальное =====
 .env
@@ -53,3 +55,10 @@ docker-compose.yml
 .git/
 .gitignore
 .gitattributes
+
+# ===== Нагрузочное тестирование =====
+loadtest/
+
+# ===== Инструменты разработки =====
+README.md
+main.py

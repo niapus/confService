@@ -24,7 +24,7 @@ class SchedulerService:
     UNCONFIRMED_APPLICATION_RETENTION_DAYS = 7
 
     def start(self):
-        self._scheduler.add_job(self._process_individual, 'interval', seconds=15, id='individual')
+        self._scheduler.add_job(self._process_individual, 'interval', seconds=10, id='individual')
         self._scheduler.add_job(self._process_mass, 'interval', seconds=60, id='mass')
         self._scheduler.add_job(self._check_reminders, 'cron', hour=10, minute=0, id='reminders')
         self._scheduler.add_job(self._cleanup_emails, 'cron', day_of_week='sun', hour=3, minute=0, id='cleanup_emails')

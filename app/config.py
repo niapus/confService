@@ -1,9 +1,39 @@
 import os
+import secrets
 from datetime import timedelta
 from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
+
+
+def _resolve_secret_key(base_dir: Path) -> str | None:
+    """Возвращает SECRET_KEY из окружения; если не задан — читает или генерирует data/.secret_key.
+
+    Возвращает None только в одном случае: SECRET_KEY задан в окружении явно
+    пустой строкой длины < 32 — пусть валидация в startup сообщит понятную ошибку.
+    """
+    explicit = os.environ.get('SECRET_KEY')
+    if explicit:
+        return explicit
+
+    data_dir = base_dir / 'data'
+    secret_file = data_dir / '.secret_key'
+
+    if secret_file.exists():
+        stored = secret_file.read_text(encoding='utf-8').strip()
+        if stored:
+            return stored
+
+    data_dir.mkdir(parents=True, exist_ok=True)
+    new_key = secrets.token_hex(32)
+    secret_file.write_text(new_key, encoding='utf-8')
+    try:
+        os.chmod(secret_file, 0o600)
+    except OSError:
+        pass
+    return new_key
+
 
 class Config:
     BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,7 +68,7 @@ class Config:
     CSRF_COOKIE_NAME = 'csrf_token'
 
     ADMIN_DATA = os.environ.get('ADMIN_DATA')
-    SECRET_KEY = os.environ.get('SECRET_KEY')
+    SECRET_KEY = _resolve_secret_key(BASE_DIR)
 
     MAIL_ENABLED = os.environ.get('MAIL_ENABLED', 'false').lower() == 'true'
     EMAIL_VERIFICATION_ENABLED = os.environ.get('EMAIL_VERIFICATION_ENABLED', 'false').lower() == 'true'

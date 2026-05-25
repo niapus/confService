@@ -1,12 +1,15 @@
+import os
 from datetime import date
 
-from flask import Blueprint, render_template, request, g, redirect
+from flask import Blueprint, render_template, request, g, redirect, \
+    current_app, send_from_directory
 
 from app.decorator.handle_form_errors import handle_form_errors
 from app.dto_builders.dto_builder import build_application_dto, build_thesis_dto
 from app.utils.dependencies import (
     get_conference_service, get_application_service, get_thesis_service,
-    get_verification_service, get_notification_service, get_schedule_service
+    get_verification_service, get_notification_service, get_schedule_service,
+    get_conference_file_service
 )
 
 conference_bp = Blueprint("conference", __name__, url_prefix="/conference")
@@ -62,3 +65,17 @@ def upload_thesis(conf_id: int):
 @conference_bp.get('/<int:conf_id>/application/verify')
 def verify_email(conf_id: int):
     return render_template("verify-email.html")
+
+
+@conference_bp.get('/<int:conf_id>/files/<int:file_id>/view')
+def view_conference_file(conf_id: int, file_id: int):
+    conf_file = get_conference_file_service().get_conference_file(conf_id, file_id, g.db)
+    directory = os.path.join(
+        current_app.config.get("UPLOAD_FOLDER"), os.path.dirname(conf_file.file_path)
+    )
+    return send_from_directory(
+        directory,
+        os.path.basename(conf_file.file_path),
+        as_attachment=False,
+        download_name=conf_file.original_name
+    )

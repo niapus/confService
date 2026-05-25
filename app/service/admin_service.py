@@ -1,3 +1,5 @@
+import secrets
+
 from sqlalchemy.orm import Session
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -30,6 +32,26 @@ class AdminService:
             ))
 
         self.__repo.save_all(admins, session)
+
+    def create_default_admin_if_empty(self, session: Session) -> tuple[str, str] | None:
+        """Создаёт админа "admin" со случайным паролем, если таблица пуста.
+
+        Returns:
+            Кортеж (login, password) при создании, None — если админы уже есть.
+            Пароль возвращается plaintext один раз для показа организатору; в БД лежит хеш.
+        """
+        if self.__repo.get_admin_count(session) != 0:
+            return None
+
+        login = 'admin'
+        password = secrets.token_urlsafe(12)
+
+        self.__repo.save_all([Admin(
+            login=login,
+            password_hash=generate_password_hash(password)
+        )], session)
+
+        return login, password
 
     def authenticate(self, login: str, password: str, session: Session) -> Admin:
         """Проверяет логин и пароль. Выбрасывает InvalidCredentialsException при несоответствии."""

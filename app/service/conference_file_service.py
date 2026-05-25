@@ -54,6 +54,13 @@ class ConferenceFileService:
             raise ConferenceFileNotFoundException(file_id)
         return conf_file
 
+    def get_conference_file(self, conf_id: int, file_id: int, session: Session) -> ConferenceFile:
+        """Возвращает файл конференции, проверяя его принадлежность к указанной конференции."""
+        conf_file = self.get_file_by_id(file_id, session)
+        if conf_file.conference_id != conf_id:
+            raise ConferenceFileNotFoundException(file_id)
+        return conf_file
+
     def delete_conference_file(self, file_id: int, session: Session) -> None:
         """Удаляет запись файла из БД и сам файл с диска."""
         conf_file = self.__repo.get_by_id(file_id, session)

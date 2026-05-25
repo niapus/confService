@@ -166,10 +166,12 @@ class ThemeLoader:
         # Подменяем view-функцию маршрута /static/
         app.view_functions["static"] = themed_send_static_file
 
-        # 3. Добавляем информацию о теме в контекст всех шаблонов
+        # 3. Добавляем информацию о теме в контекст всех шаблонов.
+        cached_theme = {
+            "theme": self.get_theme_meta(),
+            "active_theme": self.active_theme,
+        }
+
         @app.context_processor
         def inject_theme():
-            return {
-                "theme": self.get_theme_meta(),
-                "active_theme": self.active_theme,
-            }
+            return cached_theme

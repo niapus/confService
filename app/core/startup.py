@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 from logging.handlers import RotatingFileHandler
 
 from app.core import database
@@ -41,9 +42,7 @@ def __validate_environment(app):
 
     admin_data = app.config.get('ADMIN_DATA')
 
-    if not admin_data:
-        errors.append('ADMIN_DATA не задан в переменных окружения')
-    else:
+    if admin_data:
         admin_errors = __validate_admin_data_format(admin_data)
         errors.extend(admin_errors)
 
@@ -148,10 +147,20 @@ def __init_database():
 def __create_admin(app):
     session = database.Session()
     try:
-        app.extensions['services'].admin.create_admins_from_env(
-            env_admin_data=app.config['ADMIN_DATA'],
-            session=session
-        )
+        admin_service = app.extensions['services'].admin
+        admin_data = app.config.get('ADMIN_DATA')
+
+        if admin_data:
+            admin_service.create_admins_from_env(
+                env_admin_data=admin_data,
+                session=session
+            )
+        else:
+            generated = admin_service.create_default_admin_if_empty(session=session)
+            if generated is not None:
+                login, password = generated
+                __print_generated_admin_credentials(login, password)
+
         session.commit()
     except AdminConfigException as e:
         session.rollback()
@@ -162,3 +171,22 @@ def __create_admin(app):
         raise StartupException(f"Ошибка создания администраторов: {e}") from e
     finally:
         session.close()
+
+
+def __print_generated_admin_credentials(login: str, password: str) -> None:
+    border = '=' * 72
+    lines = [
+        '',
+        border,
+        '  АДМИНИСТРАТОР СОЗДАН АВТОМАТИЧЕСКИ',
+        '',
+        f'  Логин:  {login}',
+        f'  Пароль: {password}',
+        '',
+        '  Сохраните эти данные — пароль больше не будет показан.',
+        '  Чтобы задать свои значения, установите переменную окружения ADMIN_DATA.',
+        border,
+        '',
+    ]
+    sys.stderr.write('\n'.join(lines) + '\n')
+    sys.stderr.flush()

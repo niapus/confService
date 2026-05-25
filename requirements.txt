@@ -28,6 +28,11 @@ filetype~=1.2.0
 # Работа с YAML файлами (часто для конфигов)
 PyYAML~=6.0.3
 
+
+python-dotenv~=1.0
+
+#gevent
+
 gunicorn
 flask-seasurf
 werkzeug

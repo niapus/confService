@@ -1,3 +1,4 @@
+from functools import lru_cache
 
 from babel.dates import format_date
 from flask import Flask, g, render_template, request, session as flask_session
@@ -130,9 +131,13 @@ def create_app():
             error={'status_code': 500, 'message': "Внутренняя ошибка сервера"}
         ), 500
 
+    @lru_cache(maxsize=4096)
+    def _ru_date_cached(value, fmt):
+        return format_date(value, format=fmt, locale='ru')
+
     @app.template_filter('ru_date')
     def ru_date(value, fmt='d MMM y'):
-        return format_date(value, format=fmt, locale='ru')
+        return _ru_date_cached(value, fmt)
 
     @app.template_filter('format_time')
     def format_time(value):
@@ -151,15 +156,5 @@ def create_app():
     app.register_blueprint(admin_bp)
     app.register_blueprint(api_bp)
     app.register_blueprint(main_bp)
-
-    # csrf.exempt(app.view_functions['auth.admin_login'])
-    csrf.exempt(app.view_functions['conference.create_application'])
-    csrf.exempt(app.view_functions['conference.upload_thesis'])
-
-    import os
-    worker_id = os.environ.get('WORKER_ID', '0')
-
-    if app.config.get('MAIL_ENABLED'):
-        _try_start_scheduler(app, worker_id)
 
     return app
