@@ -3,10 +3,9 @@
 {% block title %}Тезис | {{ thesis.title }}{% endblock %}
 
 {% block content %}
-
 <div class="thesis-detail-container">
    <div class="thesis-header">
-      <h1>{{ thesis.title }}</h1>
+      <h1><a href="/admin/conferences/{{ thesis.application.conference.id }}" style="text-decoration: none; color: inherit;">← Назад</a> | {{ thesis.title }}</h1>
       <div class="thesis-meta">
          <span class="status-badge status-{{ thesis.status.value }}">
             {% if thesis.status.value == 'pending' %}⏳ На рассмотрении
@@ -78,6 +77,11 @@
          </div>
 
          <div class="info-row">
+            <div class="info-label">Теги:</div>
+            <div class="info-value">{{ thesis.application.conference.tagline or '—' }}</div>
+         </div>
+
+         <div class="info-row">
             <div class="info-label">Даты проведения:</div>
             <div class="info-value">
                {{ thesis.application.conference.start_date.strftime('%d.%m.%Y') }} -
@@ -102,11 +106,6 @@
          <div class="info-row">
             <div class="info-label">Время на выступление:</div>
             <div class="info-value">{{ thesis.application.conference.performance_time }} минут</div>
-         </div>
-
-         <div class="info-row">
-            <div class="info-label">Теги:</div>
-            <div class="info-value">{{ thesis.application.conference.tagline or '—' }}</div>
          </div>
 
          <div class="info-row">
