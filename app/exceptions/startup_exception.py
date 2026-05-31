@@ -11,7 +11,7 @@ class StartupException(Exception):
         self.exit_code = exit_code
 
     def exit(self) -> None:
-        print(f"❌ КРИТИЧЕСКАЯ ОШИБКА: {self.message}")
+        print(f"КРИТИЧЕСКАЯ ОШИБКА: {self.message}")
         sys.exit(self.exit_code)
 
 

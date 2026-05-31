@@ -32,7 +32,7 @@ class EmailQueue(Base):
     id = Column(Integer, primary_key=True, index=True)
     status = Column(Enum(EmailStatus), nullable=False, default=EmailStatus.PENDING)
     queue_type = Column(Enum(QueueType), nullable=False, default=QueueType.MASS)
-    subject = Column(String, nullable=False)
+    subject = Column(String(500), nullable=False)
     html_body = Column(Text, nullable=False)
     recipient = Column(Text, nullable=False)
     created_at = Column(DateTime, default=datetime.now)

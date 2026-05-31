@@ -24,8 +24,8 @@ class Thesis(Base):
 
     authors = Column(String(100), nullable=False)
     title = Column(String(200), nullable=False)
-    file_path = Column(String, nullable=False)
-    file_name = Column(String, nullable=False)
+    file_path = Column(String(500), nullable=False)
+    file_name = Column(String(255), nullable=False)
 
     status = Column(Enum(ThesisStatus), nullable=False)
 

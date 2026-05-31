@@ -10,4 +10,4 @@ class Admin(Base):
 
     id = Column(Integer, primary_key=True)
     login = Column(String(50), unique=True, nullable=False)
-    password_hash = Column(String, nullable=False)
+    password_hash = Column(String(255), nullable=False)

@@ -12,12 +12,12 @@ class Conference(Base):
     __tablename__ = "conferences"
 
     id = Column(Integer, primary_key=True)
-    title = Column(String, nullable=False)
+    title = Column(String(500), nullable=False)
 
     description_md = Column(Text, nullable=False)
     description_html = Column(Text, nullable=False)
 
-    tagline = Column(String)
+    tagline = Column(String(500))
 
     registration_deadline = Column(Date, nullable=False)
     submission_deadline = Column(Date, nullable=False)
