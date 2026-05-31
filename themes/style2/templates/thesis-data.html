@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}Тезис | {{ thesis.title }}{% endblock %}
+
+{% block content %}
+<div class="thesis-detail-container">
+   <div class="thesis-header">
+      <h1><a href="/admin/conferences/{{ thesis.application.conference.id }}" style="text-decoration: none; color: inherit;">← Назад</a> | {{ thesis.title }}</h1>
+      <div class="thesis-meta">
+         <span class="status-badge status-{{ thesis.status.value }}">
+            {% if thesis.status.value == 'pending' %}На рассмотрении
+            {% elif thesis.status.value == 'accepted' %}Принят
+            {% elif thesis.status.value == 'rejected' %}Отклонён
+            {% endif %}
+         </span>
+         <span class="date-badge">ID: {{ thesis.id }}</span>
+      </div>
+   </div>
+
+   <div class="thesis-content-grid">
+      <div class="info-card">
+         <h2>Информация об авторе</h2>
+
+         <div class="info-row">
+            <div class="info-label">ФИО:</div>
+            <div class="info-value">
+               {{ thesis.application.surname }} {{ thesis.application.name }}
+               {% if thesis.application.patronymic %}{{ thesis.application.patronymic }}{% endif %}
+            </div>
+         </div>
+
+         <div class="info-row">
+            <div class="info-label">Email:</div>
+            <div class="info-value">
+               <a href="mailto:{{ thesis.application.email }}" class="email-link">{{ thesis.application.email }}</a>
+            </div>
+         </div>
+
+         <div class="info-row">
+            <div class="info-label">Авторы доклада:</div>
+            <div class="info-value">{{ thesis.authors }}</div>
+         </div>
+      </div>
+
+      <div class="info-card">
+         <h2>Доклад</h2>
+
+         <div class="info-row">
+            <div class="info-label">Название доклада:</div>
+            <div class="info-value">{{ thesis.title }}</div>
+         </div>
+
+         <div class="info-row">
+            <div class="info-label">Файл:</div>
+            <div class="info-value">
+               {% if thesis.file_path %}
+                  <a href="{{ url_for('admin.view_thesis_file',thesis_id=thesis.id) }}" class="file-link">
+                      {{ thesis.file_name }}
+                  </a>
+               {% else %}
+                  <span class="empty-value">Файл не прикреплен</span>
+               {% endif %}
+            </div>
+         </div>
+      </div>
+
+      <div class="info-card">
+         <h2>Конференция</h2>
+
+         <div class="info-row">
+            <div class="info-label">Название:</div>
+            <div class="info-value">
+               <a href="{{ url_for('admin.conference_page', conf_id=thesis.application.conference.id) }}" class="conference-link">
+                  {{ thesis.application.conference.title }}
+               </a>
+            </div>
+         </div>
+
+         <div class="info-row">
+            <div class="info-label">Теги:</div>
+            <div class="info-value">{{ thesis.application.conference.tagline or '—' }}</div>
+         </div>
+
+         <div class="info-row">
+            <div class="info-label">Даты проведения:</div>
+            <div class="info-value">
+               {{ thesis.application.conference.start_date.strftime('%d.%m.%Y') }} -
+               {{ thesis.application.conference.end_date.strftime('%d.%m.%Y') }}
+            </div>
+         </div>
+
+         <div class="info-row">
+            <div class="info-label">Дедлайн регистрации:</div>
+            <div class="info-value">{{ thesis.application.conference.registration_deadline.strftime('%d.%m.%Y') }}</div>
+         </div>
+
+         <div class="info-row">
+            <div class="info-label">Дедлайн подачи тезисов:</div>
+            <div class="info-value">{{ thesis.application.conference.submission_deadline.strftime('%d.%m.%Y') }}</div>
+         </div>
+      </div>
+
+      <div class="info-card">
+         <h2>Дополнительно</h2>
+
+         <div class="info-row">
+            <div class="info-label">Время на выступление:</div>
+            <div class="info-value">{{ thesis.application.conference.performance_time }} минут</div>
+         </div>
+
+         <div class="info-row">
+            <div class="info-label">Статус участника:</div>
+            <div class="info-value">
+               {% if thesis.application.is_worker and thesis.application.is_student %}
+                  Работает и учится
+               {% elif thesis.application.is_worker %}
+                  Работник
+               {% elif thesis.application.is_student %}
+                  Студент
+               {% else %}
+                  —
+               {% endif %}
+            </div>
+         </div>
+
+         <div class="info-row">
+            <div class="info-label">Ученая степень:</div>
+            <div class="info-value">
+               {% if thesis.application.degree.value == 'none' %}Нет
+               {% elif thesis.application.degree.value == 'candidate' %}Кандидат наук
+               {% elif thesis.application.degree.value == 'doctor' %}Доктор наук
+               {% endif %}
+            </div>
+         </div>
+
+         <div class="info-row">
+            <div class="info-label">Формат участия:</div>
+            <div class="info-value">
+               {% if thesis.application.participation_format.value == 'offline' %}Очно
+               {% elif thesis.application.participation_format.value == 'online' %}Онлайн
+               {% endif %}
+            </div>
+         </div>
+      </div>
+
+      <div class="info-card full-width">
+         <h2>Личные данные</h2>
+
+         <div class="info-row">
+            <div class="info-label">Пол:</div>
+            <div class="info-value">
+               {% if thesis.application.gender.value == 'male' %}Мужской
+               {% elif thesis.application.gender.value == 'female' %}Женский
+               {% endif %}
+            </div>
+         </div>
+
+         <div class="info-row">
+            <div class="info-label">Дата рождения:</div>
+            <div class="info-value">{{ thesis.application.birth_date.strftime('%d.%m.%Y') }}</div>
+         </div>
+
+         {% if thesis.application.work_name %}
+         <div class="info-row">
+            <div class="info-label">Место работы:</div>
+            <div class="info-value">
+               {% if thesis.application.work_name %}{{ thesis.application.work_name }}{% endif %}
+               {% if thesis.application.work_place %}, {{ thesis.application.work_place }}{% endif %}
+               {% if thesis.application.work_position %}, {{ thesis.application.work_position }}{% endif %}
+            </div>
+         </div>
+         {% endif %}
+
+         {% if thesis.application.study_name %}
+         <div class="info-row">
+            <div class="info-label">Место учёбы:</div>
+            <div class="info-value">
+               {% if thesis.application.study_name %}{{ thesis.application.study_name }}{% endif %}
+               {% if thesis.application.study_place %}, {{ thesis.application.study_place }}{% endif %}
+               {% if thesis.application.study_level %}
+                  <br>
+                  <span class="study-level">
+                     {% if thesis.application.study_level.value == 'bachelor' %}Бакалавриат
+                     {% elif thesis.application.study_level.value == 'education_spec' %}Специалитет
+                     {% elif thesis.application.study_level.value == 'education_mag' %}Магистратура
+                     {% elif thesis.application.study_level.value == 'education_asp' %}Аспирантура
+                     {% endif %}
+                  </span>
+               {% endif %}
+            </div>
+         </div>
+         {% endif %}
+      </div>
+
+      <div class="action-card">
+         <h2>Действия</h2>
+         <div class="action-buttons">
+            {% if thesis.status.value == 'pending' or  thesis.status.value == 'rejected' %}
+               <button class="btn btn-success" onclick="updateStatus('accepted', {{ thesis.id }})">
+                  Принять тезис
+               </button>
+            {% endif %}
+            {% if thesis.status.value == 'pending' or  thesis.status.value == 'accepted' %}
+            <button class="btn btn-deny" onclick="updateStatus('rejected', {{ thesis.id }})">
+               Отклонить тезис
+            </button>
+            {% endif %}
+
+            {#{% if thesis.file_path %}
+               <a href="{{ url_for('thesis.download', thesis_id=thesis.id) }}" class="btn btn-primary">
+                  📎 Скачать файл
+               </a>
+            {% endif %}#}
+         </div>
+      </div>
+   </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/thesis-data.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/thesis-data.css') }}">
+{% endblock %}
