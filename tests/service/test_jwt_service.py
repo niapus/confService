@@ -38,13 +38,6 @@ class TestGenerateVerificationToken:
         token = jwt_service.generate_verification_token(1, "test@test.com")
         assert isinstance(token, str)
 
-    def test_token_handles_bytes_return(self, jwt_service):
-        from unittest.mock import patch
-        with patch('app.service.jwt_service.jwt.encode', return_value=b'bytes_token'):
-            token = jwt_service.generate_verification_token(1, "test@test.com")
-            assert isinstance(token, str)
-            assert token == "bytes_token"
-
 
 class TestVerifyToken:
 

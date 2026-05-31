@@ -1,4 +1,4 @@
-from unittest.mock import ANY, MagicMock
+from unittest.mock import ANY
 
 from app.exceptions.auth_exception import InvalidCredentialsException
 from app.exceptions.email_verification_exception import EmailVerificationException
@@ -30,10 +30,6 @@ class TestAdminLogin:
         admin.id = 5
         admin.login = "superadmin"
         mock_services["admin"].authenticate.return_value = admin
-
-        with client.session_transaction() as sess:
-            pass  # just open to ensure session works
-
         resp = client.post("/auth/login", data={"login": "superadmin", "password": "pass"})
         assert resp.status_code == 302
 
@@ -45,7 +41,6 @@ class TestAdminLogin:
         mock_services["admin"].authenticate.side_effect = InvalidCredentialsException()
 
         resp = client.post("/auth/login", data={"login": "bad", "password": "bad"})
-        # AuthException is caught by errorhandler -> renders error.html with 401
         assert resp.status_code == 401
 
     def test_missing_login_field(self, client, mock_services):
@@ -75,5 +70,4 @@ class TestVerifyEmail:
         mock_services["verification"].verify_email.side_effect = EmailVerificationException("Неверный токен")
 
         resp = client.get("/auth/verify/badtoken")
-        # AppException handler renders error.html with status from exception
         assert resp.status_code == 400

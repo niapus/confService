@@ -1,4 +1,4 @@
-from unittest.mock import ANY, MagicMock, patch
+from unittest.mock import ANY
 
 from app.exceptions.conversion_exception import EmptyRequiredFieldException
 from app.exceptions.conflict_exception import (
@@ -7,7 +7,6 @@ from app.exceptions.conflict_exception import (
 )
 from app.exceptions.file_exception import FileSizeException, FileExtensionException
 from app.exceptions.not_found_exception import ConferenceNotFoundException, ApplicationNotFoundException
-from app.exceptions.validation_exception import ValidationException
 from tests.factories import make_conference, make_application, make_thesis
 
 
@@ -134,7 +133,6 @@ class TestCreateApplication:
             "participation_format": "offline",
             "email": "ivan@test.com",
         })
-        # ConflictException -> AppException handler -> 409
         assert resp.status_code == 409
 
     def test_duplicate_email_returns_409(self, client, mock_services):
@@ -165,7 +163,6 @@ class TestCreateApplication:
             "name": "Ivan",
             "email": "ivan@test.com",
         })
-        # handle_form_errors catches ConversionException -> renders template with error
         assert resp.status_code == 200
 
 
@@ -202,7 +199,6 @@ class TestUploadThesis:
             "title": "Test Thesis",
             "email": "ivan@test.com",
         })
-        # handle_form_errors catches FileException -> renders template
         assert resp.status_code == 200
 
     def test_file_extension_error(self, client, mock_services):

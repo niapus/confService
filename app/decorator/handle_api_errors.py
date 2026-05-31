@@ -7,8 +7,8 @@ from app import AppException
 
 
 def handle_api_errors(f: Callable) -> Callable:
-    """Декоратор для API-роутов. Перехватывает AppException → JSON с нужным статусом,
-    все остальные исключения → JSON 500 с логированием."""
+    """Декоратор для API-роутов. Перехватывает AppException - JSON с нужным статусом,
+    все остальные исключения - JSON 500 с логированием."""
     @wraps(f)
     def decorated(*args: Any, **kwargs: Any) -> Any:
         try:

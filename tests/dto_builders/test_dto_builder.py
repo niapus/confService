@@ -20,11 +20,6 @@ from tests.factories import (
     make_thesis_form, make_file_form, _day_item_data, _talk_item_data, _break_item_data, _text_item_data,
 )
 
-
-# ---------------------------------------------------------------------------
-# build_conference_dto
-# ---------------------------------------------------------------------------
-
 class TestBuildConferenceDTO:
 
     def test_valid_full_form(self):
@@ -114,11 +109,6 @@ class TestBuildConferenceDTO:
         form = make_conference_form(title="  Spaced Title  ")
         dto = build_conference_dto(form)
         assert dto.title == "Spaced Title"
-
-
-# ---------------------------------------------------------------------------
-# build_application_dto
-# ---------------------------------------------------------------------------
 
 class TestBuildApplicationDTO:
 
@@ -216,11 +206,6 @@ class TestBuildApplicationDTO:
         assert dto.degree == DegreeEnum.CANDIDATE
         assert dto.participation_format == ParticipationFormatEnum.ONLINE
 
-
-# ---------------------------------------------------------------------------
-# build_thesis_dto
-# ---------------------------------------------------------------------------
-
 class TestBuildThesisDTO:
 
     def test_valid_form(self):
@@ -256,11 +241,6 @@ class TestBuildThesisDTO:
         dto = build_thesis_dto(make_thesis_form(authors="  Ivanov I.I.  "))
         assert dto.authors == "Ivanov I.I."
 
-
-# ---------------------------------------------------------------------------
-# build_file_dto
-# ---------------------------------------------------------------------------
-
 class TestBuildFileDTO:
 
     def test_valid_form(self):
@@ -279,11 +259,6 @@ class TestBuildFileDTO:
     def test_whitespace_trimmed(self):
         dto = build_file_dto(make_file_form(title="  My File  "))
         assert dto.title == "My File"
-
-
-# ---------------------------------------------------------------------------
-# build_schedule_dto
-# ---------------------------------------------------------------------------
 
 class TestBuildScheduleDTO:
 

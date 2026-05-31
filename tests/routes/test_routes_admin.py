@@ -1,18 +1,15 @@
 import io
 import os
-import tempfile
-from unittest.mock import ANY, MagicMock, patch
+from unittest.mock import ANY
 
-from app.exceptions.conversion_exception import EmptyRequiredFieldException, InvalidFieldFormatException
-from app.exceptions.conflict_exception import ApplicationAlreadyExists
-from app.exceptions.file_exception import FileSizeException, FileExtensionException
-from app.exceptions.not_found_exception import ConferenceNotFoundException, FileNotFoundException
+
+from app.exceptions.file_exception import FileSizeException
+from app.exceptions.not_found_exception import ConferenceNotFoundException
 from app.models.conference_file import ConferenceFileType
 from app.models.thesis import ThesisStatus
 from tests.factories import make_conference, make_application, make_thesis, make_conference_file
 
 
-# ─── Auth guard (before_request) ───────────────────────────────────────────────
 
 class TestAdminAuthGuard:
 
@@ -33,7 +30,6 @@ class TestAdminAuthGuard:
         assert resp.status_code == 403
 
     def test_logout_without_session_returns_403(self, client, mock_services):
-        # logout is also behind before_request
         resp = client.get("/admin/logout")
         assert resp.status_code == 403
 
@@ -82,7 +78,6 @@ class TestAdminAuthGuard:
         assert resp.status_code == 403
 
 
-# ─── GET conference endpoints ────────────────────────────────────────────────────
 
 class TestShowAdminCreateConference:
 
@@ -145,7 +140,6 @@ class TestConferencePage:
         assert resp.status_code == 404
 
 
-# ─── POST conference endpoints ───────────────────────────────────────────────────
 
 class TestCreateConference:
 
@@ -167,7 +161,6 @@ class TestCreateConference:
         mock_services["conference"].create_conference.assert_called_once()
 
     def test_validation_error_renders_form(self, admin_session, mock_services):
-        # Empty title -> build_conference_dto raises EmptyRequiredFieldException
         resp = admin_session.post("/admin/conferences/new", data={
             "title": "",
             "description_md": "# Desc",
@@ -177,7 +170,6 @@ class TestCreateConference:
             "end_date": "2025-08-03",
             "performance_time": "15",
         })
-        # handle_form_errors catches ConversionException -> renders template
         assert resp.status_code == 200
 
     def test_invalid_date_format(self, admin_session, mock_services):
@@ -190,7 +182,7 @@ class TestCreateConference:
             "end_date": "2025-08-03",
             "performance_time": "15",
         })
-        assert resp.status_code == 200  # re-renders form with error
+        assert resp.status_code == 200
 
 
 class TestUpdateConference:
@@ -222,7 +214,6 @@ class TestUpdateConference:
             "end_date": "2025-08-03",
             "performance_time": "15",
         })
-        # handle_form_errors("conference_form.html", True) -> pass_conf_id=True
         assert resp.status_code == 200
 
 
@@ -244,7 +235,6 @@ class TestDeleteConference:
         assert resp.status_code == 404
 
 
-# ─── File endpoints ──────────────────────────────────────────────────────────────
 
 class TestUploadProceedings:
 
@@ -266,7 +256,6 @@ class TestUploadProceedings:
         data["file"] = (io.BytesIO(b"x" * 100), "huge.pdf")
         resp = admin_session.post("/admin/conferences/1/upload/proceedings",
                                   data=data, content_type="multipart/form-data")
-        # FileException is caught by global AppException handler (not handle_form_errors)
         assert resp.status_code == 400
 
 
@@ -290,7 +279,6 @@ class TestViewConferenceFile:
         conf_file = make_conference_file(file_id=1, file_path="1/proceedings/test.pdf", original_name="test.pdf")
         mock_services["conference_file"].get_file_by_id.return_value = conf_file
 
-        # Create the actual file so send_from_directory works
         upload_dir = app.config["UPLOAD_FOLDER"]
         file_dir = os.path.join(upload_dir, "1", "proceedings")
         os.makedirs(file_dir, exist_ok=True)
@@ -301,7 +289,6 @@ class TestViewConferenceFile:
         resp = admin_session.get("/admin/conferences/files/1/view")
         assert resp.status_code == 200
 
-        # Cleanup (ignore Windows file-in-use errors)
         try:
             os.remove(file_path)
         except PermissionError:
@@ -351,8 +338,6 @@ class TestViewThesisFile:
         assert resp.status_code == 404
 
 
-# ─── Thesis status ───────────────────────────────────────────────────────────────
-
 class TestUpdateThesisStatus:
 
     def test_success_redirects(self, admin_session, mock_services):
@@ -390,8 +375,6 @@ class TestViewThesisPage:
         mock_services["thesis"].get_thesis_by_id.assert_called_once_with(1, ANY)
 
 
-# ─── Logout ──────────────────────────────────────────────────────────────────────
-
 class TestLogout:
 
     def test_redirects_to_root(self, admin_session, mock_services):
@@ -406,8 +389,6 @@ class TestLogout:
             assert "admin_login" not in sess
 
 
-# ─── Schedule page ───────────────────────────────────────────────────────────────
-
 class TestViewSchedulePage:
 
     def test_returns_200(self, admin_session, mock_services):
@@ -421,8 +402,6 @@ class TestViewSchedulePage:
         resp = admin_session.get("/admin/conferences/1/schedule")
         assert resp.status_code == 404
 
-
-# ─── Logs page ───────────────────────────────────────────────────────────────────
 
 class TestViewLogs:
 

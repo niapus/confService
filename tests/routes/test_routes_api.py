@@ -1,17 +1,10 @@
-import io
-import json
 import os
-import tempfile
-from unittest.mock import ANY, MagicMock
+from unittest.mock import ANY
 
 from app.exceptions.not_found_exception import ConferenceNotFoundException, FileNotFoundException
-from app.exceptions.conversion_exception import InvalidFieldFormatException
 from app.dto.dto import FullScheduleDTO, ConferenceScheduleDTO, FullApplicationDTO, ThesisInApplicationDTO
-from app.models.conference import Conference
-from tests.factories import make_conference, make_application, make_schedule_dto
+from tests.factories import make_conference, make_application
 
-
-# ─── Auth guard (require_admin_api) ─────────────────────────────────────────────
 
 class TestApiAuthGuard:
 
@@ -42,8 +35,6 @@ class TestApiAuthGuard:
         assert resp.status_code == 403
 
 
-# ─── GET /api/log-files ─────────────────────────────────────────────────────────
-
 class TestGetLogFiles:
 
     def test_returns_json_list(self, admin_session, mock_services):
@@ -64,8 +55,6 @@ class TestGetLogFiles:
         data = resp.get_json()
         assert data == []
 
-
-# ─── GET /api/logs ──────────────────────────────────────────────────────────────
 
 class TestGetLogs:
 
@@ -97,12 +86,9 @@ class TestGetLogs:
         assert data["status_code"] == 404
 
 
-# ─── GET /api/download-log ──────────────────────────────────────────────────────
-
 class TestDownloadLog:
 
     def test_sends_file(self, admin_session, mock_services, app):
-        # Create a real log file for send_from_directory
         logs_dir = app.config["LOGS_FOLDER"]
         os.makedirs(logs_dir, exist_ok=True)
         log_path = os.path.join(logs_dir, "test_download.log")
@@ -125,8 +111,6 @@ class TestDownloadLog:
         data = resp.get_json()
         assert "error" in data
 
-
-# ─── GET /api/conferences/<conf_id> ────────────────────────────────────────────
 
 class TestGetFullApplications:
 
@@ -163,8 +147,6 @@ class TestGetFullApplications:
         assert resp.status_code == 404
 
 
-# ─── GET /api/conferences/<conf_id>/schedule-data ───────────────────────────────
-
 class TestGetScheduleData:
 
     def test_returns_json(self, admin_session, mock_services):
@@ -192,8 +174,6 @@ class TestGetScheduleData:
         assert resp.status_code == 404
 
 
-# ─── POST /api/schedule ─────────────────────────────────────────────────────────
-
 class TestUpdateSchedule:
 
     def test_success_returns_200(self, admin_session, mock_services):
@@ -217,7 +197,6 @@ class TestUpdateSchedule:
         mock_services["schedule"].update_schedule.assert_called_once()
 
     def test_invalid_schedule_format(self, admin_session, mock_services):
-        # build_schedule_dto raises InvalidFieldFormatException for non-list schedule
         payload = {"conference_id": 1, "schedule": "not-a-list"}
         resp = admin_session.post("/api/schedule", json=payload)
         assert resp.status_code == 400
@@ -230,7 +209,6 @@ class TestUpdateSchedule:
         assert resp.status_code == 400
 
     def test_empty_schedule_list(self, admin_session, mock_services):
-        # Empty list is falsy -> InvalidFieldFormatException
         payload = {"conference_id": 1, "schedule": []}
         resp = admin_session.post("/api/schedule", json=payload)
         assert resp.status_code == 400
@@ -248,8 +226,6 @@ class TestUpdateSchedule:
         resp = admin_session.post("/api/schedule", json=payload)
         assert resp.status_code == 400
 
-
-# ─── Unexpected errors ───────────────────────────────────────────────────────────
 
 class TestApiUnexpectedErrors:
 

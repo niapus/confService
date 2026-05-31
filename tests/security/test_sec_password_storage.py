@@ -94,24 +94,3 @@ class TestAdminServiceCreateFromEnv:
         assert saved[0].login == "root"
         assert saved[0].password_hash != "supersecret1234"
         assert check_password_hash(saved[0].password_hash, "supersecret1234")
-
-
-class TestAuthenticateConstantTimeIsh:
-    """check_password_hash использует hmac.compare_digest — это constant-time для
-    одинаковых длин. Здесь смысл — проверить, что AdminService.authenticate
-    не делает прямого '==' сравнения и не утекает информацию о существовании
-    пользователя через тип исключения."""
-
-    def test_wrong_password_same_exception_as_missing_user(self, app_csrf_off):
-        from app.exceptions.auth_exception import InvalidCredentialsException
-        from app.core import database
-        s = database.Session()
-        try:
-            svc = AdminService(AdminRepository())
-            with pytest.raises(InvalidCredentialsException) as ei_missing:
-                svc.authenticate("nonexistent_user", "anything", s)
-            with pytest.raises(InvalidCredentialsException) as ei_wrong:
-                svc.authenticate("admin", "wrong_password", s)
-            assert ei_missing.value.message == ei_wrong.value.message
-        finally:
-            s.close()

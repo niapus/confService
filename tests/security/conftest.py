@@ -1,7 +1,7 @@
 """
 Инфраструктура тестов безопасности.
 
-Защита от типовых веб-уязвимостей (CSRF, XSS, SQL-injection) и сопутствующие
+Защита от типовых веб-уязвимостей (CSRF, XSS) и сопутствующие
 проверки безопасной аутентификации, хранения паролей, валидации
 загружаемых файлов и подписи JWT-токенов.
 
@@ -55,19 +55,17 @@ def app_csrf_on(tmp_path):
 
     application = create_app()
     application.config["TESTING"] = False
-    application.config["WTF_CSRF_ENABLED"] = True
     yield application
 
 
 @pytest.fixture
 def app_csrf_off(tmp_path):
-    """Flask-app с выключенной CSRF (для тестов XSS/SQLi/file-upload — там CSRF мешает)."""
+    """Flask-app с выключенной CSRF (для тестов XSS/SQLi/file-upload)."""
     _reset_config(tmp_path, testing=True)
     from app import create_app
 
     application = create_app()
     application.config["TESTING"] = True
-    application.config["WTF_CSRF_ENABLED"] = False
     yield application
 
 

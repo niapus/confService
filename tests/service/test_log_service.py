@@ -52,7 +52,6 @@ class TestGetLogFiles:
     def test_stops_at_missing_rotated(self, log_service, logs_folder):
         create_log_file(logs_folder, "app.log")
         create_log_file(logs_folder, "app.log.1")
-        # app.log.2 is missing, so app.log.3 won't be checked
 
         create_log_file(logs_folder, "app.log.3")
 
@@ -91,8 +90,6 @@ class TestGetFirstLogDate:
         assert result is not None
 
     def test_returns_creation_date_on_error(self, log_service, logs_folder):
-        # _get_first_log_date falls back to os.stat when no date found
-        # but os.stat fails on nonexistent file - this is expected to raise
         filepath = os.path.join(logs_folder, "nonexistent.log")
         with pytest.raises(FileNotFoundError):
             log_service._get_first_log_date(filepath)
@@ -141,5 +138,4 @@ class TestGetFilePath:
         create_log_file(logs_folder, "app.log")
 
         result = log_service.get_file_path("../../etc/app.log")
-        # basename extracts "app.log" which exists
         assert result == os.path.join(logs_folder, "app.log")

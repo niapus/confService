@@ -1,7 +1,7 @@
 """
 Безопасность загрузки файлов.
 
-FileService применяет три уровня валидации (см. app/service/file_service.py):
+FileService применяет три уровня валидации:
   1. Расширение в списке allowed_extensions;
   2. Размер ≤ max_size (в байтах);
   3. Сигнатура (magic bytes) через filetype.guess — должна совпадать с

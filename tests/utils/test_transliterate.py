@@ -60,7 +60,6 @@ class TestSafeFilenameWithCyrillic:
 
     def test_cyrillic_with_spaces(self):
         result = safe_filename_with_cyrillic("мой файл.doc")
-        # secure_filename replaces spaces with underscores or strips them
         assert result.endswith(".doc")
         assert "moy" in result
 
@@ -70,11 +69,9 @@ class TestSafeFilenameWithCyrillic:
 
     def test_dots_in_name(self):
         result = safe_filename_with_cyrillic("файл.версия2.txt")
-        # rsplit('.', 1) splits only on last dot
         assert result.endswith(".txt")
 
     def test_path_traversal_stripped(self):
         result = safe_filename_with_cyrillic("../../../отчет.pdf")
-        # secure_filename should strip path components
         assert ".." not in result
         assert result.endswith(".pdf")

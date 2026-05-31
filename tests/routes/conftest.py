@@ -47,7 +47,6 @@ def client(app):
 
 @pytest.fixture
 def mock_services(app):
-    """Replace all real service instances with mocks."""
     services = app.extensions["services"]
 
     mocks = {
@@ -77,7 +76,6 @@ def mock_services(app):
 
 @pytest.fixture
 def admin_session(client, mock_services):
-    """Log in as admin and return the client."""
     from app.models.admin import Admin
     admin = Admin()
     admin.id = 1

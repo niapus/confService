@@ -7,8 +7,8 @@
   - sub='email_verification', другие sub не принимаются;
   - require=[sub, app_id, email, iat, exp];
   - токен с подписью другим секретом отклоняется;
-  - токен с алгоритмом 'none' отклоняется (CVE-класса 2015 года);
-  - истёкший токен → EmailVerificationException.
+  - токен с алгоритмом 'none' отклоняется;
+  - истёкший токен - EmailVerificationException.
 """
 from datetime import datetime, timedelta, timezone
 
@@ -34,7 +34,7 @@ class TestGenerateToken:
     def test_returns_string_three_parts(self, svc):
         token = svc.generate_verification_token(42, "u@test.com")
         assert isinstance(token, str)
-        assert token.count(".") == 2  # header.payload.signature
+        assert token.count(".") == 2
 
     def test_payload_contains_required_claims(self, svc):
         token = svc.generate_verification_token(42, "u@test.com")
@@ -108,7 +108,6 @@ class TestVerifyToken:
 
     def test_token_missing_claim_rejected(self, svc):
         """options={'require': [...]} — все обязательные поля должны быть."""
-        # без 'app_id'
         forged = pyjwt.encode(
             {
                 "sub": "email_verification", "email": "x@x.ru",
@@ -124,7 +123,6 @@ class TestVerifyToken:
     def test_expired_token_rejected(self, svc):
         with freeze_time("2026-05-19 10:00:00"):
             token = svc.generate_verification_token(1, "x@x.ru")
-        # +2 часа — токен протух (exp=1ч)
         with freeze_time("2026-05-19 12:00:01"):
             with pytest.raises(EmailVerificationException) as ei:
                 svc.verify_token(token)

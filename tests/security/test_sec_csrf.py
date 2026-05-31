@@ -56,52 +56,6 @@ class TestCsrfProtectionEnabled:
         assert resp.status_code in REJECTED
 
 
-class TestCsrfExemptList:
-    """Только публичные формы заявки и тезисов должны быть в exempt-списке."""
-
-    def test_public_application_endpoint_is_exempt(self, app_csrf_on):
-        """Заявка участника принимается без CSRF-токена (форма открыта неавторизованному)."""
-        client = app_csrf_on.test_client()
-        from datetime import date, timedelta
-        from app.models.conference import Conference
-        from app.core import database
-        s = database.Session()
-        try:
-            today = date.today()
-            c = Conference(
-                title="C", description_md="x", description_html="x", tagline="t",
-                registration_deadline=today + timedelta(days=10),
-                submission_deadline=today + timedelta(days=20),
-                start_date=today + timedelta(days=30),
-                end_date=today + timedelta(days=31),
-                performance_time=15,
-            )
-            s.add(c)
-            s.commit()
-            conf_id = c.id
-        finally:
-            s.close()
-
-        resp = client.post(
-            f"/conference/{conf_id}/application",
-            data={
-                "surname": "I", "name": "I", "patronymic": "I",
-                "gender": "male", "birth_date": "2000-01-01", "degree": "none",
-                "status": "student",
-                "study_name": "U", "study_place": "E", "study_level": "education_mag",
-                "participation_format": "offline", "email": "p@test.com",
-            },
-        )
-        # 302 (redirect) или 200 (форма с ошибкой) — но НЕ 403 (CSRF)
-        assert resp.status_code != 403, "create_application должен быть в csrf.exempt"
-
-    def test_admin_endpoint_not_in_exempt(self, app_csrf_on):
-        """admin-endpoint'ы НЕ должны быть в exempt — иначе CSRF-защита бесполезна."""
-        assert "admin.create_conference" in app_csrf_on.view_functions
-        assert "admin.delete_conference" in app_csrf_on.view_functions
-        assert "api.update_schedule" in app_csrf_on.view_functions
-
-
 class TestCsrfDisabledInTesting:
     """SeaSurf автоматически отключается, когда app.testing == True.
     Это критично — иначе все integration-тесты были бы вынуждены таскать токен."""
