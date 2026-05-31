@@ -129,7 +129,7 @@
                         <a href="/admin/applications/{{ application.id }}/thesis/{{ theses.id }}" class="small">Тезис №{{ loop.index }}</a>
                      {% endfor %}
                      {% if application.theses %}
-                        <span class="small">Всего тезисов: {{ application.theses|length }}</span>
+                        <br><span class="small">Всего тезисов: {{ application.theses|length }}</span>
                      {% endif %}
                   </td>
                </tr>

@@ -189,7 +189,7 @@ function ConferenceApp() {
          { className: 'filters' },
          React.createElement('input', {
             type: 'text',
-            placeholder: '🔍 Поиск по ФИО или email...',
+            placeholder: 'Поиск по ФИО или email...',
             className: 'filter-input',
             value: filters.search,
             onChange: (e) => setFilters({...filters, search: e.target.value})
