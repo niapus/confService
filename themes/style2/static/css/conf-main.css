@@ -165,7 +165,8 @@
   gap: 12px;
   padding: 8px 12px;
   border-radius: 6px;
-  background: white;
+  background: #f8fafc;
+  color: #004080;
   border: 1px solid #f3f4f6;
   transition: background 0.15s;
 }

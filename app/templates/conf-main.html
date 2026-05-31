@@ -19,12 +19,6 @@
    <section class="schedule-section">
       <h3>Расписание</h3>
       <table class="schedule-table">
-         <thead>
-            <tr>
-               <th class="time-col">Время</th>
-               <th class="content-col">Содержание</th>
-            </tr>
-         </thead>
          <tbody>
             {% for item in schedule_items %}
                {% if item.item_type.value == 'day' %}
