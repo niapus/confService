@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Главная | Конференции{% endblock %}
+
+{% block content %}
+
+{% if conferences_future %}
+<div class="timeline-cont">
+   <h2>Предстоящие конференции</h2>
+   <div class="timeline">
+      {% set ns = namespace(last_date=None) %}
+      {% for conference in conferences_future %}
+         {% if conference.start_date != ns.last_date %}
+            {% if not loop.first %}
+                  </div>
+               </div>
+            {% endif %}
+            <div class="timeline-date-group">
+               <div class="timeline-date">
+                  <div class="date-day">{{ conference.start_date|ru_date('d') }}</div>
+                  <div class="date-month">{{ conference.start_date|ru_date('MMM') }}</div>
+                  <div class="date-year">{{ conference.start_date|ru_date('y') }}</div>
+                  <div class="date-weekday">{{ conference.start_date|ru_date('EEEE') }}</div>
+               </div>
+               <div class="timeline-events">
+            {% set ns.last_date = conference.start_date %}
+         {% endif %}
+
+         <div class="timeline-item future" data-start-date="{{ conference.start_date.isoformat() }}">
+            <div class="timeline-content">
+               <a href="{{ url_for('conference.show_conference', conf_id=conference.id) }}" style="text-decoration: none">
+                  <div class="card-badge">
+                     {% set days_until = (conference.start_date - now).days %}
+                     {% if days_until % 10 == 1 and days_until % 100 != 11 %}
+                        Через {{ days_until }} день
+                     {% elif days_until % 10 in [2,3,4] and days_until % 100 not in [12,13,14] %}
+                        Через {{ days_until }} дня
+                     {% else %}
+                        Через {{ days_until }} дней
+                     {% endif %}
+                  </div>
+                  <h3>{{ conference.title }}</h3>
+                  {% if conference.tagline %}
+                     <p class="tagline">{{ conference.tagline }}</p>
+                  {% endif %}
+
+                  <div class="conference-dates">
+                     <div class="date-range">
+                        <span class="date-text">
+                           Даты проведения: {{ conference.start_date.strftime('%d.%m.%Y') }} - {{ conference.end_date.strftime('%d.%m.%Y') }}
+                        </span>
+                     </div>
+                  </div>
+
+                  <div class="deadlines">
+                     <div class="deadline-item {% if conference.registration_deadline < now %}expired{% endif %}">
+                        <span class="deadline-label"> Регистрация до:</span>
+                        <span class="deadline-value">{{ conference.registration_deadline.strftime('%d.%m.%Y') }}</span>
+                        {% if conference.registration_deadline < now %}
+                           <span class="expired-badge">(Закрыта)</span>
+                        {% endif %}
+                     </div>
+                     <div class="deadline-item {% if conference.submission_deadline < now %}expired{% endif %}">
+                        <span class="deadline-label"> Загрузить тезисы можно до:</span>
+                        <span class="deadline-value">{{ conference.submission_deadline.strftime('%d.%m.%Y') }}</span>
+                        {% if conference.submission_deadline < now %}
+                           <span class="expired-badge">(Прием завершен)</span>
+                        {% endif %}
+                     </div>
+                  </div>
+
+                  <div class="card-actions">
+                     {% if conference.registration_deadline >= now %}
+                        <a href="{{ url_for('conference.show_application', conf_id=conference.id) }}"
+                           class="btn btn-primary">
+                           Подать заявку
+                        </a>
+                     {% else %}
+                        <button class="btn btn-disabled" disabled>
+                           Регистрация закрыта
+                        </button>
+                     {% endif %}
+
+                     {% if conference.submission_deadline >= now %}
+                        <a href="{{ url_for('conference.show_upload_thesis', conf_id=conference.id) }}"
+                           class="btn btn-secondary">
+                           Загрузить тезисы
+                        </a>
+                     {% else %}
+                        <button class="btn btn-disabled" disabled>
+                           Прием тезисов завершен
+                        </button>
+                     {% endif %}
+                  </div>
+               </a>
+            </div>
+         </div>
+      {% endfor %}
+   </div>
+</div>
+{% endif %}
+
+{% if conferences_past %}
+<div class="timeline-cont">
+   <h2>Прошедшие конференции</h2>
+   <div class="timeline">
+      {% set ns = namespace(last_date=None) %}
+      {% for conference in conferences_past %}
+         {% if conference.start_date != ns.last_date %}
+            {% if not loop.first %}
+                  </div>
+               </div>
+            {% endif %}
+            <div class="timeline-date-group">
+               <div class="timeline-date past-date">
+                  <div class="date-day">{{ conference.start_date|ru_date('d') }}</div>
+                  <div class="date-month">{{ conference.start_date|ru_date('MMM') }}</div>
+                  <div class="date-year">{{ conference.start_date|ru_date('y') }}</div>
+                  <div class="date-weekday">{{ conference.start_date|ru_date('EEEE') }}</div>
+               </div>
+               <div class="timeline-events">
+            {% set ns.last_date = conference.start_date %}
+         {% endif %}
+
+
+         <div class="timeline-item past">
+            <div class="timeline-content">
+               <a href="{{ url_for('conference.show_conference', conf_id=conference.id) }}" style="text-decoration: none">
+                  <div class="card-badge past">
+                     Завершена
+                  </div>
+                  <h3>{{ conference.title }}</h3>
+                  {% if conference.tagline %}
+                     <p class="tagline">{{ conference.tagline }}</p>
+                  {% endif %}
+
+                  <div class="conference-dates">
+                     <div class="date-range">
+                        <span class="date-text"> Даты проведения: 
+                           {{ conference.start_date.strftime('%d.%m.%Y') }} -
+                           {{ conference.end_date.strftime('%d.%m.%Y') }}
+                        </span>
+                     </div>
+                  </div>
+
+                  <div class="stats-mini">
+                     <div class="stat-item">
+                        <span class="stat-label">Участников:</span>
+                        <span class="stat-value">{{ conference.participants_count or '—' }}</span>
+                     </div>
+                     <div class="stat-item">
+                        <span class="stat-label">Докладов:</span>
+                        <span class="stat-value">{{ conference.papers_count or '—' }}</span>
+                     </div>
+                  </div>
+               </a>
+            </div>
+         </div>
+      {% endfor %}
+   </div>
+</div>
+{% endif %}
+
+{% if not conferences_future and not conferences_past %}
+<div class="empty-state">
+   <h3>Нет конференций</h3>
+   <p>На данный момент нет запланированных конференций</p>
+</div>
+{% endif %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,49 @@
+body {
+   margin: 0;
+   font-family: system-ui, sans-serif;
+   background: #E8ECED;
+   color: #333;
+}
+
+.container {
+   max-width: 1100px;
+   margin: auto;
+   padding: 1rem;
+}
+
+.site-header {
+   background: #374151;
+   color: white;
+}
+
+.btn {
+   background: #337ab7;
+   color: white;
+   padding: 0.6rem 1rem;
+   border-radius: 10px;
+   text-decoration: none;
+}
+
+.btn-last{
+   margin-left: 20px
+}
+
+.btn:hover {
+   background: #004080;
+}
+
+@media (max-width: 768px) {
+
+   .site-nav ul {
+      display: none;
+      flex-direction: column;
+   }
+
+   .nav-toggle {
+   display: block;
+   }
+
+   .talk-card {
+   flex-direction: column;
+   }
+}
